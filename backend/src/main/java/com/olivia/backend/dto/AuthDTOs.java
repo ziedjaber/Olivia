@@ -55,5 +55,6 @@ public class AuthDTOs {
         private String fullName;
         private Role role;
         private boolean active;
+        private String avatarUrl;
     }
 }
