@@ -89,7 +89,7 @@ public class AuthService {
 
             log.info("[Auth] Login successful for: {}", user.getFullName());
 
-            return new AuthResponse(user.getId(), idToken, normalizedEmail, user.getFullName(), user.getRole(), user.isActive());
+            return new AuthResponse(user.getId(), idToken, normalizedEmail, user.getFullName(), user.getRole(), user.isActive(), user.getAvatarUrl());
         } catch (Exception e) {
             log.error("[Auth] Login verification failed: {}", e.getMessage());
             throw e;

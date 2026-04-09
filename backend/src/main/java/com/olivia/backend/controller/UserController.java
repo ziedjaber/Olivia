@@ -26,8 +26,8 @@ public class UserController {
     @GetMapping("/me")
     public ResponseEntity<?> getMe() {
         try {
-            String email = SecurityContextHolder.getContext().getAuthentication().getName();
-            return ResponseEntity.ok(userService.getProfile(email));
+            String uid = SecurityContextHolder.getContext().getAuthentication().getName();
+            return ResponseEntity.ok(userService.getUserById(uid));
         } catch (Exception e) {
             return ResponseEntity.status(404).body("Profile not found");
         }
@@ -46,7 +46,7 @@ public class UserController {
     // --- Administrative Endpoints ---
 
     @GetMapping
-    @PreAuthorize("hasRole('DIRECTEUR')")
+    @PreAuthorize("hasAnyAuthority('ROLE_DIRECTEUR', 'ROLE_CHEF_EQUIPE_RECOLTE')")
     public ResponseEntity<?> getAllUsers() {
         try {
             return ResponseEntity.ok(userService.getAllUsers());
@@ -56,7 +56,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}/role")
-    @PreAuthorize("hasRole('DIRECTEUR')")
+    @PreAuthorize("hasAnyAuthority('ROLE_DIRECTEUR')")
     public ResponseEntity<?> updateRole(@PathVariable String id, @RequestBody Map<String, String> body) {
         try {
             Role role = Role.valueOf(body.get("role"));
@@ -68,7 +68,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}/status")
-    @PreAuthorize("hasRole('DIRECTEUR')")
+    @PreAuthorize("hasAnyAuthority('ROLE_DIRECTEUR')")
     public ResponseEntity<?> toggleStatus(@PathVariable String id, @RequestBody Map<String, Boolean> body) {
         try {
             userService.toggleStatus(id, body.get("active"));
@@ -82,7 +82,7 @@ public class UserController {
     private com.olivia.backend.service.AuthService authService;
 
     @PostMapping("/admin/create")
-    @PreAuthorize("hasRole('DIRECTEUR')")
+    @PreAuthorize("hasAnyAuthority('ROLE_DIRECTEUR')")
     public ResponseEntity<?> adminCreateUser(@RequestBody com.olivia.backend.dto.AuthDTOs.RegisterRequest request) {
         try {
             authService.register(request);
@@ -95,8 +95,8 @@ public class UserController {
     @PostMapping("/avatar")
     public ResponseEntity<?> uploadAvatar(@RequestParam("file") MultipartFile file) {
         try {
-            String email = SecurityContextHolder.getContext().getAuthentication().getName();
-            User user = userService.getProfile(email);
+            String uid = SecurityContextHolder.getContext().getAuthentication().getName();
+            User user = userService.getUserById(uid);
             String fileName = fileService.saveAvatar(file, user.getId());
             String avatarUrl = "/uploads/avatars/" + fileName;
             user.setAvatarUrl(avatarUrl);

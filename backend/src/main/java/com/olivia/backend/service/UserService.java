@@ -35,6 +35,17 @@ public class UserService {
         return user;
     }
 
+    public User getUserById(String id) throws Exception {
+        Firestore db = FirestoreClient.getFirestore();
+        var doc = db.collection("users").document(id).get().get();
+        if (!doc.exists()) {
+            throw new Exception("User not found with ID: " + id);
+        }
+        User user = doc.toObject(User.class);
+        user.setId(doc.getId());
+        return user;
+    }
+
     public void updateProfile(User user) throws Exception {
         if (user.getEmail() != null) {
             user.setEmail(user.getEmail().toLowerCase());

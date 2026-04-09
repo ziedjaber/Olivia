@@ -13,16 +13,29 @@ import java.util.UUID;
 @Service
 public class FileService {
 
-    private final String uploadDir = "uploads/avatars/";
+    private final String avatarUploadDir = "uploads/avatars/";
+    private final String resourceUploadDir = "uploads/resources/";
 
     public String saveAvatar(MultipartFile file, String userId) throws IOException {
-        File dir = new File(uploadDir);
+        File dir = new File(avatarUploadDir);
         if (!dir.exists()) {
             dir.mkdirs();
         }
 
         String fileName = userId + "_" + System.currentTimeMillis() + "_" + file.getOriginalFilename();
-        Path path = Paths.get(uploadDir + fileName);
+        Path path = Paths.get(avatarUploadDir + fileName);
+        Files.write(path, file.getBytes());
+
+        return fileName;
+    }
+    public String saveResourceImage(MultipartFile file, String resourceIdStr) throws IOException {
+        File dir = new File(resourceUploadDir);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
+        String fileName = "res_" + System.currentTimeMillis() + "_" + file.getOriginalFilename().replaceAll("[^a-zA-Z0-9.-]", "_");
+        Path path = Paths.get(resourceUploadDir + fileName);
         Files.write(path, file.getBytes());
 
         return fileName;
