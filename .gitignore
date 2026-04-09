@@ -1,19 +1,19 @@
-# Firebase secret
-backend/src/main/resources/firebase-key.json
-backend/src/main/resources/firebase_config.json
-*.json.key
-firebase-key.json
+# Frontend Angular
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+frontend/.vscode/
+frontend/coverage/
+frontend/*.log
+frontend/.env*
 
-# Dossiers d'uploads (images, fichiers temporaires)
-backend/uploads/
-
-# Autres classiques pour Spring Boot + React/Vite/Angular
+# Backend
 backend/target/
-backend/.mvn/
-*.log
+backend/uploads/
+backend/src/main/resources/firebase-key.json
+
+# Général
 .env
-application-local.properties
-node_modules/
-dist/
-build/
 .DS_Store
+*.log
+Thumbs.db
