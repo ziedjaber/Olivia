@@ -177,4 +177,15 @@ public class CollecteController {
     public ResponseEntity<?> getParticipations(@PathVariable String id) {
         return ResponseEntity.ok(participationService.getByCollecte(id));
     }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_DIRECTEUR')")
+    public ResponseEntity<?> deleteCollecte(@PathVariable String id) {
+        try {
+            collecteService.deleteCollecte(id);
+            return ResponseEntity.ok("Mission deleted successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error deleting mission: " + e.getMessage());
+        }
+    }
 }

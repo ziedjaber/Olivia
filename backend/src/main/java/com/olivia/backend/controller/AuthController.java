@@ -39,4 +39,16 @@ public class AuthController {
             return ResponseEntity.status(401).body("Invalid token: " + e.getMessage());
         }
     }
+
+    @PostMapping("/complete-social-registration")
+    @CrossOrigin(origins = "http://localhost:4200")
+    public ResponseEntity<?> completeSocialRegistration(@Valid @RequestBody SocialCompleteRequest request) {
+        try {
+            return ResponseEntity.ok(authService.completeSocialRegistration(request));
+        } catch (Exception e) {
+            java.util.Map<String, String> error = new java.util.HashMap<>();
+            error.put("error", "Error during social completion: " + e.getMessage());
+            return ResponseEntity.badRequest().body(error);
+        }
+    }
 }

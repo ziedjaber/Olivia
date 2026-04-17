@@ -30,61 +30,65 @@ public class JwtFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String authHeader = request.getHeader("Authorization");
+        log.info("[JwtFilter] ENTRY: Processing request to {}. Auth Header: {}", request.getRequestURI(), authHeader != null ? "FOUND" : "MISSING");
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
+            log.info("[JwtFilter] Bearer token detected. Proceeding to verify.");
 
             try {
+                log.info("[JwtFilter] Decoding token for URI: {}", request.getRequestURI());
                 FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdToken(token);
                 String email = decodedToken.getEmail();
                 String uid = decodedToken.getUid();
+                log.info("[JwtFilter] Token decode successful. UID: {}, Email: {}", uid, email);
 
-                // Try to get role from custom claims first
-                String role = (String) decodedToken.getClaims().get("role");
-
-                // If no role in claims, look it up from Firestore as fallback
-                if (role == null || role.isEmpty()) {
-                    try {
-                        Firestore db = FirestoreClient.getFirestore();
-                        QuerySnapshot query = db.collection("users")
+                String role = null;
+                // TRY UID LOOKUP FROM FIRESTORE (Primary)
+                try {
+                    var doc = FirestoreClient.getFirestore().collection("users").document(uid).get().get();
+                    if (doc.exists()) {
+                        Object roleObj = doc.get("role");
+                        if (roleObj != null) {
+                            role = roleObj.toString().trim().toUpperCase().replace(" ", "_");
+                            log.info("[JwtFilter] Role found by UID {}: {}", uid, role);
+                        }
+                    } else if (email != null) {
+                        // FALLBACK TO EMAIL QUERY
+                        log.info("[JwtFilter] UID document miss. Falling back to email lookup for {}", email);
+                        var query = FirestoreClient.getFirestore().collection("users")
                                 .whereEqualTo("email", email.toLowerCase())
-                                .get()
-                                .get(20, TimeUnit.SECONDS);
-
+                                .get().get();
                         if (!query.isEmpty()) {
                             Object roleObj = query.getDocuments().get(0).get("role");
                             if (roleObj != null) {
-                                // NORMALIZE ROLE TO UPPERCASE FOR CASE-INSENSITIVE SECURITY MATCHING
-                                role = roleObj.toString().trim().toUpperCase();
-                                log.info("[JwtFilter] Role loaded from Firestore for {}: {}", email, role);
-                            } else {
-                                log.warn("[JwtFilter] Role field is null in Firestore for {}", email);
+                                role = roleObj.toString().trim().toUpperCase().replace(" ", "_");
+                                log.info("[JwtFilter] Role found by Email {}: {}", email, role);
                             }
-                        } else {
-                            log.warn("[JwtFilter] No Firestore document found for email: {}", email);
                         }
-                    } catch (Exception firestoreEx) {
-                        log.error("[JwtFilter] Firestore fetch failed for {}: {}", email, firestoreEx.getMessage());
                     }
-                } else {
-                    role = role.trim().toUpperCase(); 
+                } catch (Exception firestoreEx) {
+                    log.error("[JwtFilter] Firestore identity bridge failed: {}", firestoreEx.getMessage());
                 }
 
-                if (uid != null) {
-                    SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + (role != null ? role : "USER"));
-                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                            uid, null,
-                            Collections.singletonList(authority)
-                    );
-                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                    log.info("[JwtFilter] Security Context established for {} with authority: {}", email, authority.getAuthority());
+                if (role == null) {
+                    log.warn("[JwtFilter] No identity mapping found for {}. Assigning ROLE_USER", uid);
+                    role = "USER";
                 }
+
+                SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + role);
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                        uid, null, Collections.singletonList(authority));
+                
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+                log.info("[JwtFilter] Access Granted. Context: {} | Authority: {}", uid, authority.getAuthority());
+
             } catch (Exception e) {
-                log.warn("[JwtFilter] Token verification failed: {}", e.getMessage());
+                log.error("[JwtFilter] AUTHENTICATION CRITICAL FAILURE: {}", e.getMessage(), e);
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.setContentType("application/json");
-                response.getWriter().write("{\"error\": \"Unauthorized\", \"message\": \"Token verification failed: " + e.getMessage() + "\"}");
+                response.getWriter().write("{\"error\": \"Unauthorized\", \"message\": \"" + e.getMessage() + "\"}");
                 return;
             }
         }

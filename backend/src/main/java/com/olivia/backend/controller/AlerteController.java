@@ -10,20 +10,53 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/alertes")
-@CrossOrigin(origins = "*")
-@PreAuthorize("hasAnyAuthority('ROLE_DIRECTEUR', 'ROLE_RESPONSABLE_LOGISTIQUE', 'ROLE_CHEF_EQUIPE_RECOLTE')")
 public class AlerteController {
 
     @Autowired
     private AlerteService service;
 
     @PostMapping
+    @PreAuthorize("hasAnyAuthority('ROLE_DIRECTEUR', 'ROLE_RESPONSABLE_LOGISTIQUE', 'ROLE_CHEF_EQUIPE_RECOLTE')")
     public String create(@RequestBody Alerte a) throws Exception {
-        return service.create(a);
+        System.out.println("[DIAGNOSTIC] AlerteController.create CALLED. Type: " + a.getType());
+        try {
+            String result = service.create(a);
+            System.out.println("[DIAGNOSTIC] Alerte successfully created. ID: " + result);
+            return result;
+        } catch (Exception e) {
+            System.err.println("[DIAGNOSTIC] Alerte creation FAILED: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('ROLE_DIRECTEUR')")
     public List<Alerte> getAll() throws Exception {
         return service.getAll();
+    }
+
+    @GetMapping("/mine/{uid}")
+    @PreAuthorize("hasAnyAuthority('ROLE_CHEF_EQUIPE_RECOLTE', 'ROLE_RESPONSABLE_LOGISTIQUE')")
+    public List<Alerte> getMyAlertes(@PathVariable String uid) throws Exception {
+        return service.getBySender(uid);
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_CHEF_EQUIPE_RECOLTE', 'ROLE_RESPONSABLE_LOGISTIQUE')")
+    public String update(@PathVariable String id, @RequestBody Alerte a) throws Exception {
+        return service.update(id, a);
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_CHEF_EQUIPE_RECOLTE', 'ROLE_RESPONSABLE_LOGISTIQUE')")
+    public String delete(@PathVariable String id) throws Exception {
+        return service.delete(id);
+    }
+
+    @PutMapping("/{id}/solve")
+    @PreAuthorize("hasAuthority('ROLE_DIRECTEUR')")
+    public String solve(@PathVariable String id) throws Exception {
+        return service.solve(id);
     }
 }

@@ -56,5 +56,17 @@ public class AuthDTOs {
         private Role role;
         private boolean active;
         private String avatarUrl;
+        private boolean needsProfile; // New field for social login
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SocialCompleteRequest {
+        @NotBlank
+        private String idToken;
+        @NotBlank
+        private String fullName;
+        private Role role;
     }
 }

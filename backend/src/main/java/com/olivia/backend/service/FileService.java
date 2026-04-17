@@ -28,6 +28,34 @@ public class FileService {
 
         return fileName;
     }
+
+    public String saveAvatarFromUrl(String imageUrl, String userId) {
+        if (imageUrl == null || imageUrl.isEmpty()) return null;
+
+        try {
+            File dir = new File(avatarUploadDir);
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+
+            String extension = ".jpg"; // Default extension
+            if (imageUrl.contains(".png")) extension = ".png";
+            else if (imageUrl.contains(".webp")) extension = ".webp";
+            
+            String fileName = userId + "_" + System.currentTimeMillis() + "_google" + extension;
+            Path path = Paths.get(avatarUploadDir + fileName);
+
+            try (java.io.InputStream in = new java.net.URL(imageUrl).openStream()) {
+                Files.copy(in, path, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            }
+
+            return fileName;
+        } catch (Exception e) {
+            System.err.println("Failed to download avatar: " + e.getMessage());
+            return null;
+        }
+    }
+
     public String saveResourceImage(MultipartFile file, String resourceIdStr) throws IOException {
         File dir = new File(resourceUploadDir);
         if (!dir.exists()) {

@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/vergers")
@@ -72,6 +73,42 @@ public class VergerController {
             return ResponseEntity.ok(vergerService.updateVerger(id, verger));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Failed to update Verger: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/responsable")
+    @PreAuthorize("hasAnyAuthority('ROLE_CHEF_EQUIPE_RECOLTE')")
+    public ResponseEntity<?> getAssignedVergers() {
+        return ResponseEntity.ok(vergerService.getVergersByResponsable(getCurrentUserUid()));
+    }
+
+    @PutMapping("/{id}/maturite")
+    @PreAuthorize("hasAnyAuthority('ROLE_CHEF_EQUIPE_RECOLTE', 'ROLE_DIRECTEUR')")
+    public ResponseEntity<?> updateMaturite(@PathVariable String id, @RequestBody Map<String, Object> update) {
+        try {
+            var existingOpt = vergerService.getVergerById(id);
+            if (existingOpt.isEmpty())
+                return ResponseEntity.notFound().build();
+
+            Verger verger = existingOpt.get();
+            if (update.containsKey("descriptionMaturite")) {
+                verger.setDescriptionMaturite((String) update.get("descriptionMaturite"));
+            }
+            if (update.containsKey("imageMaturiteUrl")) {
+                verger.setImageMaturiteUrl((String) update.get("imageMaturiteUrl"));
+            }
+            if (update.containsKey("niveauMaturite")) {
+                Object val = update.get("niveauMaturite");
+                if (val instanceof Number) {
+                    verger.setNiveauMaturite(((Number) val).intValue());
+                }
+            }
+
+            verger.setDateDerniereMaturite(new java.util.Date().toString());
+
+            return ResponseEntity.ok(vergerService.updateVerger(id, verger));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Failed to update maturity: " + e.getMessage());
         }
     }
 

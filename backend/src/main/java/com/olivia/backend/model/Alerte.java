@@ -10,7 +10,15 @@ import lombok.NoArgsConstructor;
 public class Alerte {
     private String id;
     private String vergerId;
-    private String type;
+    private String collecteId;
+    private String type; // MACHINE, ACCIDENT, INFRASTRUCTURE, WEATHER, OTHER
     private String description;
-    private String statut;
+    private String importance; // LOW, MEDIUM, URGENT
+    private String imageUrl; // Kept for legacy compatibility
+    private java.util.List<String> imageUrls;
+    private String localisation; // lat,lng
+    private String senderUid;
+    private String senderName;
+    private java.util.Date date;
+    private String statut; // NON_TRAITEE, TRAITEE
 }

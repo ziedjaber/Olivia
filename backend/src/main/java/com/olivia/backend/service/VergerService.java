@@ -50,6 +50,24 @@ public class VergerService {
         }
     }
 
+    public List<Verger> getVergersByResponsable(String chefUid) {
+        if (chefUid == null) return new ArrayList<>();
+        try {
+            Firestore db = FirestoreClient.getFirestore();
+            QuerySnapshot query = db.collection(COLLECTION_NAME)
+                    .whereEqualTo("responsableUid", chefUid)
+                    .get().get(30, TimeUnit.SECONDS);
+            List<Verger> vergers = new ArrayList<>();
+            for (QueryDocumentSnapshot document : query.getDocuments()) {
+                vergers.add(document.toObject(Verger.class));
+            }
+            return vergers;
+        } catch (Exception e) {
+            log.error("Error fetching vergers for responsable {}: {}", chefUid, e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
     public Optional<Verger> getVergerById(String id) {
         if (id == null) return Optional.empty();
         try {
@@ -82,6 +100,11 @@ public class VergerService {
             data.put("niveauMaturite", verger.getNiveauMaturite());
             data.put("localisation", verger.getLocalisation());
             data.put("proprietaireId", verger.getProprietaireId());
+            data.put("responsableUid", verger.getResponsableUid());
+            data.put("responsableName", verger.getResponsableName());
+            data.put("descriptionMaturite", verger.getDescriptionMaturite());
+            data.put("imageMaturiteUrl", verger.getImageMaturiteUrl());
+            data.put("dateDerniereMaturite", verger.getDateDerniereMaturite());
             data.put("nombreArbres", verger.getNombreArbres());
             data.put("statut", verger.getStatut());
 
@@ -107,6 +130,11 @@ public class VergerService {
             data.put("niveauMaturite", vergerDetails.getNiveauMaturite());
             data.put("localisation", vergerDetails.getLocalisation());
             data.put("proprietaireId", vergerDetails.getProprietaireId());
+            data.put("responsableUid", vergerDetails.getResponsableUid());
+            data.put("responsableName", vergerDetails.getResponsableName());
+            data.put("descriptionMaturite", vergerDetails.getDescriptionMaturite());
+            data.put("imageMaturiteUrl", vergerDetails.getImageMaturiteUrl());
+            data.put("dateDerniereMaturite", vergerDetails.getDateDerniereMaturite());
             data.put("nombreArbres", vergerDetails.getNombreArbres());
             data.put("statut", vergerDetails.getStatut());
 

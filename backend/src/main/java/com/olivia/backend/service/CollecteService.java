@@ -112,6 +112,16 @@ public class CollecteService {
         }
     }
 
+    public void deleteCollecte(String id) {
+        try {
+            Firestore db = FirestoreClient.getFirestore();
+            db.collection(COL_COLLECTES).document(id).delete().get(30, TimeUnit.SECONDS);
+            log.info("Collecte {} deleted", id);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to delete collecte: " + e.getMessage(), e);
+        }
+    }
+
     // ─── LIFECYCLE ────────────────────────────────────────────────────────────
 
     /**

@@ -17,6 +17,9 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class AuthService {
 
+    @org.springframework.beans.factory.annotation.Autowired
+    private FileService fileService;
+
     public String register(RegisterRequest request) throws Exception {
         String normalizedEmail = request.getEmail().toLowerCase();
         log.info("[Auth] Starting registration for: {}", normalizedEmail);
@@ -75,9 +78,21 @@ public class AuthService {
             com.google.cloud.firestore.QuerySnapshot query = 
                 db.collection("users").whereEqualTo("email", normalizedEmail).get().get(30, TimeUnit.SECONDS);
             
+            UserRecord userRecord = FirebaseAuth.getInstance().getUser(decodedToken.getUid());
+            String photoUrl = userRecord.getPhotoUrl();
+            String localAvatarPath = null;
+
+            if (photoUrl != null) {
+                String fileName = fileService.saveAvatarFromUrl(photoUrl, decodedToken.getUid());
+                if (fileName != null) {
+                    localAvatarPath = "/uploads/avatars/" + fileName;
+                }
+            }
+
             if (query.isEmpty()) {
-                log.warn("[Firestore] No profile found for: {}", normalizedEmail);
-                throw new Exception("User profile not found in database.");
+                log.info("[Auth] Initial social login detected for: {}", normalizedEmail);
+                return new AuthResponse(decodedToken.getUid(), idToken, normalizedEmail, 
+                    userRecord.getDisplayName(), null, true, localAvatarPath, true);
             }
 
             User user = query.getDocuments().get(0).toObject(User.class);
@@ -89,9 +104,54 @@ public class AuthService {
 
             log.info("[Auth] Login successful for: {}", user.getFullName());
 
-            return new AuthResponse(user.getId(), idToken, normalizedEmail, user.getFullName(), user.getRole(), user.isActive(), user.getAvatarUrl());
+            return new AuthResponse(user.getId(), idToken, normalizedEmail, user.getFullName(), user.getRole(), user.isActive(), user.getAvatarUrl(), false);
         } catch (Exception e) {
             log.error("[Auth] Login verification failed: {}", e.getMessage());
+            throw e;
+        }
+    }
+
+    public AuthResponse completeSocialRegistration(SocialCompleteRequest request) throws Exception {
+        log.info("[Auth] Finalizing social registration for role: {}", request.getRole());
+        try {
+            com.google.firebase.auth.FirebaseToken decodedToken = 
+                com.google.firebase.auth.FirebaseAuth.getInstance().verifyIdToken(request.getIdToken());
+            
+            String uid = decodedToken.getUid();
+            String email = decodedToken.getEmail().toLowerCase();
+
+            // 1. Set custom claims for RBAC
+            Map<String, Object> claims = new HashMap<>();
+            claims.put("role", request.getRole().name());
+            FirebaseAuth.getInstance().setCustomUserClaims(uid, claims);
+
+            UserRecord userRecord = FirebaseAuth.getInstance().getUser(uid);
+            String photoUrl = userRecord.getPhotoUrl();
+            String localAvatarPath = null;
+
+            if (photoUrl != null) {
+                String fileName = fileService.saveAvatarFromUrl(photoUrl, uid);
+                if (fileName != null) {
+                    localAvatarPath = "/uploads/avatars/" + fileName;
+                }
+            }
+
+            // 2. Save user profile in Firestore
+            Firestore db = FirestoreClient.getFirestore();
+            User user = new User();
+            user.setId(uid);
+            user.setEmail(email);
+            user.setFullName(request.getFullName());
+            user.setRole(request.getRole());
+            user.setActive(true);
+            user.setAvatarUrl(localAvatarPath);
+
+            db.collection("users").document(uid).set(user).get(30, TimeUnit.SECONDS);
+            log.info("[Firestore] Social profile complete for: {}", email);
+
+            return new AuthResponse(uid, request.getIdToken(), email, user.getFullName(), user.getRole(), true, user.getAvatarUrl(), false);
+        } catch (Exception e) {
+            log.error("[Auth] Social completion failed: {}", e.getMessage());
             throw e;
         }
     }
