@@ -37,3 +37,4 @@ backend/src/main/resources/firebase-key.json
 .env
 .DS_Store
 *.log
+Thumbs.db
