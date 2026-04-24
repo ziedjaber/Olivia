@@ -46,7 +46,7 @@ public class UserController {
     // --- Administrative Endpoints ---
 
     @GetMapping
-    @PreAuthorize("hasAnyAuthority('ROLE_DIRECTEUR', 'ROLE_CHEF_EQUIPE_RECOLTE')")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> getAllUsers() {
         try {
             return ResponseEntity.ok(userService.getAllUsers());

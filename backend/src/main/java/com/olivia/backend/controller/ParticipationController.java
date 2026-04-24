@@ -22,15 +22,25 @@ public class ParticipationController {
 
     // ─── GET WORKER INVITATIONS ────────────────────────────────────────────────
 
+    // @GetMapping("/mine")
+    // @PreAuthorize("hasAnyAuthority('ROLE_OUVRIER_RECOLTE')")
+    // public ResponseEntity<?> getMyParticipations() {
+    //     try {
+    //         return ResponseEntity.ok(participationService.getByOuvrier(currentUid()));
+    //     } catch (Exception e) {
+    //         return ResponseEntity.badRequest().body("Error fetching participations: " + e.getMessage());
+    //     }
+    // }
+///Modification par chaima pour que le chef d'equipe et le directeur puissent voir les participations
     @GetMapping("/mine")
-    @PreAuthorize("hasAnyAuthority('ROLE_OUVRIER_RECOLTE')")
-    public ResponseEntity<?> getMyParticipations() {
-        try {
-            return ResponseEntity.ok(participationService.getByOuvrier(currentUid()));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error fetching participations: " + e.getMessage());
-        }
+@PreAuthorize("hasAnyAuthority('ROLE_OUVRIER_RECOLTE', 'ROLE_CHEF_EQUIPE_RECOLTE', 'ROLE_DIRECTEUR', 'ROLE_OLEICULTEUR')")
+public ResponseEntity<?> getMyParticipations() {
+    try {
+        return ResponseEntity.ok(participationService.getByOuvrier(currentUid()));
+    } catch (Exception e) {
+        return ResponseEntity.badRequest().body("Error fetching participations: " + e.getMessage());
     }
+}
 
     // ─── WORKER ACTIONS ────────────────────────────────────────────────────────
 

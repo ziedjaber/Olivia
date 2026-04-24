@@ -21,4 +21,5 @@ public class Verger {
     private String dateDerniereMaturite;
     private int nombreArbres;
     private String statut; // EN_ATTENTE, RECOLTE_EN_COURS, RECOLTE_TERMINEE
+    private Double gddCumules;
 }
