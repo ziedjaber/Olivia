@@ -1,0 +1,117 @@
+<div class="max-w-7xl mx-auto py-8 px-4">
+  <header class="mb-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+    <div class="space-y-2">
+      <h1 class="text-4xl font-black text-on-surface font-headline tracking-tighter uppercase text-primary">Cooperative Workforce</h1>
+      <p class="text-on-surface-variant font-medium max-w-xl italic">Administrative hub for managing account permissions, roles, and access credentials across the Olivia ecosystem.</p>
+    </div>
+    <div class="flex gap-3">
+      <button (click)="loadUsers()" class="p-3 bg-surface-container rounded-2xl border border-outline-variant/10 hover:bg-surface-container-high transition-colors shadow-sm">
+        <span class="material-symbols-outlined text-outline">refresh</span>
+      </button>
+      <button (click)="showCreateForm = !showCreateForm" 
+              class="bg-primary text-on-primary px-6 py-3 rounded-2xl font-bold flex items-center gap-2 shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
+        <span class="material-symbols-outlined">{{ showCreateForm ? 'close' : 'person_add' }}</span>
+        {{ showCreateForm ? 'Cancel Registration' : 'Onboard New User' }}
+      </button>
+    </div>
+  </header>
+
+
+
+  <!-- Registration Form -->
+  <div *ngIf="showCreateForm" class="mb-10 bg-surface-container-low rounded-[32px] p-8 border border-primary/10 shadow-editorial animate-in fade-in zoom-in-95 duration-300">
+    <h3 class="text-lg font-black uppercase tracking-widest text-primary mb-6">User Onboarding</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="space-y-1">
+        <label class="text-[10px] font-black uppercase text-outline ml-4">Full Identity Name</label>
+        <input [(ngModel)]="newUser.fullName" type="text" placeholder="John Doe" 
+               class="w-full bg-white border border-outline-variant/10 rounded-2xl px-6 py-4 focus:ring-2 focus:ring-primary/20 outline-none transition-all">
+      </div>
+      <div class="space-y-1">
+        <label class="text-[10px] font-black uppercase text-outline ml-4">Official Email</label>
+        <input [(ngModel)]="newUser.email" type="email" placeholder="john@example.com" 
+               class="w-full bg-white border border-outline-variant/10 rounded-2xl px-6 py-4 focus:ring-2 focus:ring-primary/20 outline-none transition-all">
+      </div>
+      <div class="space-y-1">
+        <label class="text-[10px] font-black uppercase text-outline ml-4">Initial Credentials</label>
+        <input [(ngModel)]="newUser.password" type="password" placeholder="••••••••" 
+               class="w-full bg-white border border-outline-variant/10 rounded-2xl px-6 py-4 focus:ring-2 focus:ring-primary/20 outline-none transition-all">
+      </div>
+      <div class="space-y-1">
+        <label class="text-[10px] font-black uppercase text-outline ml-4">Assigned Role</label>
+        <select [(ngModel)]="newUser.role" 
+                class="w-full bg-white border border-outline-variant/10 rounded-2xl px-6 py-4 focus:ring-2 focus:ring-primary/20 outline-none transition-all appearance-none">
+          <option *ngFor="let role of roles" [value]="role">{{ role }}</option>
+        </select>
+      </div>
+    </div>
+    <div class="mt-8 flex justify-end">
+      <button (click)="onCreateUser()" 
+              [disabled]="loading"
+              class="bg-primary text-on-primary px-10 py-4 rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl shadow-primary/20 hover:translate-y-[-2px] transition-all disabled:opacity-50 flex items-center gap-3 min-w-[200px] justify-center">
+        <span *ngIf="loading" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+        {{ loading ? 'Onboarding...' : 'Register Account' }}
+      </button>
+    </div>
+  </div>
+
+  <div class="bg-surface-container-lowest rounded-[32px] border border-outline-variant/5 shadow-editorial overflow-hidden">
+    <!-- Table Header -->
+    <div class="grid grid-cols-12 gap-4 px-8 py-6 bg-surface-container-low border-b border-outline-variant/10 text-[10px] font-black uppercase tracking-widest text-outline">
+      <div class="col-span-4">User Details</div>
+      <div class="col-span-3">System Role</div>
+      <div class="col-span-3 text-center">Status Control</div>
+      <div class="col-span-2 text-right">Reference</div>
+    </div>
+
+    <!-- Table Rows -->
+    <div class="divide-y divide-outline-variant/5">
+      <div *ngFor="let u of users" class="grid grid-cols-12 gap-4 px-8 py-6 items-center hover:bg-surface-container-low/30 transition-colors group">
+        <!-- Identity -->
+        <div class="col-span-4 flex items-center gap-4">
+          <div class="w-12 h-12 rounded-2xl overflow-hidden border border-outline-variant/10 bg-surface-container shadow-sm group-hover:scale-105 transition-transform">
+            <img [src]="authService.getAvatarUrl(u.avatarUrl)" alt="" class="w-full h-full object-cover">
+          </div>
+          <div>
+            <p class="font-bold text-on-surface">{{ u.fullName }}</p>
+            <p class="text-xs text-outline font-medium tracking-tight">{{ u.email }}</p>
+          </div>
+        </div>
+
+        <!-- Role Action -->
+        <div class="col-span-3">
+          <select [ngModel]="u.role" (ngModelChange)="onRoleChange(u, $event)"
+                  class="bg-surface-container-high/50 border border-outline-variant/10 rounded-xl px-4 py-2.5 text-xs font-bold text-on-surface focus:ring-2 focus:ring-primary/20 outline-none w-full appearance-none cursor-pointer transition-all hover:bg-white">
+            <option *ngFor="let role of roles" [value]="role">{{ role }}</option>
+          </select>
+        </div>
+
+        <!-- Status Action -->
+        <div class="col-span-3 flex justify-center">
+          <button (click)="onToggleStatus(u)"
+                  [ngClass]="u.active ? 'bg-secondary/10 text-secondary border-secondary/20' : 'bg-error/10 text-error border-error/20'"
+                  class="px-5 py-2 rounded-full border text-[10px] font-black uppercase tracking-widest flex items-center gap-2 transition-all hover:scale-105 active:scale-95 shadow-sm">
+             <span class="w-2 h-2 rounded-full" [ngClass]="u.active ? 'bg-secondary animate-pulse' : 'bg-error'"></span>
+             {{ u.active ? 'Active' : 'Banned' }}
+          </button>
+        </div>
+
+        <!-- ID Card -->
+        <div class="col-span-2 text-right font-mono text-[10px] text-outline opacity-50">
+          {{ u.id }}
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div *ngIf="loading" class="p-20 text-center space-y-4">
+        <div class="w-12 h-12 border-4 border-primary/10 border-t-primary rounded-full animate-spin mx-auto"></div>
+        <p class="text-xs font-bold text-outline uppercase tracking-widest">Querying Digital Records...</p>
+      </div>
+      
+      <!-- Empty State -->
+      <div *ngIf="!loading && users.length === 0" class="p-20 text-center text-outline italic">
+        No administrative records found.
+      </div>
+    </div>
+  </div>
+</div>

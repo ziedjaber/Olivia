@@ -1,0 +1,199 @@
+<div class="max-w-7xl mx-auto py-8 px-4">
+  <!-- Header -->
+  <header class="mb-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+    <div class="space-y-2">
+      <h1 class="text-4xl font-black text-primary font-headline tracking-tighter uppercase">Orchard Management</h1>
+      <p class="text-on-surface-variant font-medium max-w-xl italic">
+        Cliquez sur la carte pour placer un verger. Gérez vos actifs oléicoles à travers la Tunisie.
+      </p>
+    </div>
+    <div class="flex gap-3">
+      <button (click)="loadVergers()" class="p-3 bg-surface-container rounded-2xl border border-outline-variant/10 hover:bg-surface-container-high transition-colors shadow-sm" title="Rafraîchir">
+        <span class="material-symbols-outlined text-outline">refresh</span>
+      </button>
+      <button *ngIf="!isGrower" (click)="toggleForm()"
+              class="bg-primary text-on-primary px-6 py-3 rounded-2xl font-bold flex items-center gap-2 shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
+        <span class="material-symbols-outlined">{{ showCreateForm ? 'close' : 'add_location_alt' }}</span>
+        {{ showCreateForm ? 'Annuler' : 'Enregistrer un Verger' }}
+      </button>
+    </div>
+  </header>
+
+  <!-- Registration / Edit Form -->
+  <div *ngIf="showCreateForm" class="mb-8 bg-surface-container-low rounded-[28px] p-8 border border-primary/10 shadow-lg">
+    <h3 class="text-sm font-black uppercase tracking-widest text-primary mb-6 flex items-center gap-2">
+      <span class="material-symbols-outlined">{{ isEditing ? 'edit' : 'yard' }}</span>
+      {{ isEditing ? 'Modifier le Verger' : 'Enregistrer un Nouveau Verger' }}
+    </h3>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-5">
+      <!-- Nom -->
+      <div class="space-y-1.5">
+        <label class="text-[10px] font-black uppercase text-outline ml-1">Nom du Verger *</label>
+        <input [(ngModel)]="newVerger.nom" type="text" placeholder="ex: Verger Est"
+               class="w-full bg-white border border-outline-variant/20 rounded-2xl px-5 py-3.5 focus:ring-2 focus:ring-primary/30 outline-none transition-all text-sm">
+      </div>
+
+      <!-- Type d'olive -->
+      <div class="space-y-1.5">
+        <label class="text-[10px] font-black uppercase text-outline ml-1">Type d'Olive *</label>
+        <input [(ngModel)]="newVerger.typeOlive" type="text" placeholder="Chemlali, Chetoui..."
+               class="w-full bg-white border border-outline-variant/20 rounded-2xl px-5 py-3.5 focus:ring-2 focus:ring-primary/30 outline-none transition-all text-sm">
+      </div>
+
+      <div class="space-y-1.5">
+        <label class="text-[10px] font-black uppercase text-outline ml-1">
+          <span class="material-symbols-outlined text-[12px] align-middle mr-1">forest</span>
+          Nombre d'Arbres
+        </label>
+        <input [(ngModel)]="newVerger.nombreArbres" type="number" min="0" placeholder="ex: 350"
+               class="w-full bg-white border border-outline-variant/20 rounded-2xl px-5 py-3.5 focus:ring-2 focus:ring-primary/30 outline-none transition-all text-sm">
+      </div>
+
+      <!-- Maturité -->
+      <div class="space-y-1.5">
+        <label class="text-[10px] font-black uppercase text-outline ml-1">Niveau de Maturité (%)</label>
+        <input [(ngModel)]="newVerger.niveauMaturite" type="number" min="0" max="100" placeholder="0-100"
+               class="w-full bg-white border border-outline-variant/20 rounded-2xl px-5 py-3.5 focus:ring-2 focus:ring-primary/30 outline-none transition-all text-sm">
+      </div>
+
+      <!-- Coordonnées (cliquer sur la carte OU GPS) -->
+      <div class="space-y-1.5 flex-1">
+        <label class="text-[10px] font-black uppercase text-outline ml-1">Coordonnées GPS *</label>
+        <div class="flex gap-1">
+          <input [(ngModel)]="newVerger.localisation" type="text" placeholder="Cliquez sur la carte..."
+                 class="flex-1 bg-white border border-outline-variant/20 rounded-l-2xl px-4 py-3.5 focus:ring-2 focus:ring-primary/30 outline-none transition-all text-sm border-r-0">
+          <button (click)="getGeolocation()"
+                  class="bg-primary/10 text-primary px-4 rounded-r-2xl border border-outline-variant/20 border-l-0 hover:bg-primary/20 transition-colors"
+                  title="Utiliser ma position GPS">
+            <span class="material-symbols-outlined text-[20px]">my_location</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Propriétaire (Hidden for Growers) -->
+      <div *ngIf="!isGrower" class="space-y-1.5">
+        <label class="text-[10px] font-black uppercase text-outline ml-1">Propriétaire (Oléiculteur) *</label>
+        <select [(ngModel)]="newVerger.proprietaireId"
+                class="w-full bg-white border border-outline-variant/20 rounded-2xl px-5 py-3.5 focus:ring-2 focus:ring-primary/30 outline-none transition-all text-sm appearance-none cursor-pointer">
+          <option value="" disabled>Sélectionner un oléiculteur</option>
+          <option *ngFor="let o of oleiculteurs" [value]="o.id">{{ o.fullName }}</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="flex justify-end gap-3">
+      <button (click)="toggleForm()" class="px-6 py-3 rounded-2xl border border-outline-variant/20 text-on-surface-variant font-bold text-sm hover:bg-surface-container transition-colors">
+        Annuler
+      </button>
+      <button (click)="onCreateVerger()" [disabled]="loading"
+              class="bg-primary text-on-primary px-10 py-3.5 rounded-2xl font-black uppercase tracking-widest text-xs shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all disabled:opacity-50 flex items-center gap-2 min-w-[200px] justify-center">
+        <span *ngIf="loading" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+        {{ loading ? 'Traitement...' : (isEditing ? 'Confirmer Modification' : 'Confirmer Enregistrement') }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Orchard Table -->
+  <div class="bg-surface-container-lowest rounded-[28px] border border-outline-variant/5 shadow-sm overflow-hidden mb-8">
+    <!-- Table Header -->
+    <div class="grid grid-cols-12 gap-4 px-8 py-5 bg-surface-container-low border-b border-outline-variant/10 text-[10px] font-black uppercase tracking-widest text-outline">
+      <div class="col-span-3 flex items-center gap-2">
+        <span class="material-symbols-outlined text-[14px]">potted_plant</span>
+        Verger
+      </div>
+      <div class="col-span-2">Olive / Maturité</div>
+      <div class="col-span-2 text-center flex items-center justify-center gap-2">
+        <span class="material-symbols-outlined text-[14px]">forest</span>
+        Arbres
+      </div>
+      <div class="col-span-3 text-center">Statut Récolte</div>
+      <div class="col-span-2 text-right">Actions</div>
+    </div>
+
+    <!-- Rows -->
+    <div class="divide-y divide-outline-variant/5">
+      <div *ngFor="let verger of vergers"
+           class="grid grid-cols-12 gap-4 px-8 py-5 items-center hover:bg-surface-container-low/40 transition-colors group">
+
+        <!-- Identity -->
+        <div class="col-span-3 flex items-center gap-3">
+          <div class="w-11 h-11 rounded-2xl bg-primary/10 border border-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform flex-shrink-0">
+            <span class="material-symbols-outlined">potted_plant</span>
+          </div>
+          <div class="min-w-0">
+            <p class="font-bold text-on-surface text-sm truncate">{{ verger.nom }}</p>
+            <p class="text-[10px] text-outline font-mono truncate" title="{{ verger.localisation }}">{{ verger.localisation }}</p>
+          </div>
+        </div>
+
+        <!-- Olive Type & Maturity -->
+        <div class="col-span-2">
+          <p class="font-bold text-on-surface text-sm">{{ verger.typeOlive }}</p>
+          <div class="flex items-center gap-2 mt-1.5">
+            <div class="h-1.5 w-16 bg-surface-container-high rounded-full overflow-hidden">
+              <div class="h-full bg-secondary rounded-full" [style.width.%]="verger.niveauMaturite"></div>
+            </div>
+            <span class="text-[10px] font-black text-secondary">{{ verger.niveauMaturite }}%</span>
+          </div>
+        </div>
+
+        <div class="col-span-2 text-center">
+          <span class="inline-flex items-center gap-1.5 bg-primary/5 text-primary border border-primary/10 rounded-xl px-3 py-1.5 text-xs font-black">
+            <span class="material-symbols-outlined text-[16px]">forest</span>
+            {{ verger.nombreArbres | number }}
+          </span>
+        </div>
+
+        <!-- Harvest Status -->
+        <div class="col-span-3 flex justify-center">
+          <select [ngModel]="verger.statut" (ngModelChange)="onStatutChange(verger, $event)"
+                  class="bg-surface-container-high/50 border border-outline-variant/10 rounded-xl px-3 py-2 text-[11px] font-bold text-on-surface focus:ring-2 focus:ring-primary/20 outline-none w-full appearance-none cursor-pointer transition-all hover:bg-white">
+            <option *ngFor="let s of statuts" [value]="s">{{ s.replace(/_/g, ' ') }}</option>
+          </select>
+        </div>
+
+        <!-- Actions -->
+        <div class="col-span-2 flex justify-end gap-2">
+          <button (click)="onEdit(verger)"
+                  class="w-9 h-9 rounded-full border border-primary/20 bg-primary/5 text-primary flex items-center justify-center hover:bg-primary hover:text-white transition-colors"
+                  title="Modifier">
+            <span class="material-symbols-outlined text-[17px]">edit</span>
+          </button>
+          <button *ngIf="!isGrower" (click)="onDelete(verger.id)"
+                  class="w-9 h-9 rounded-full border border-error/20 bg-error/5 text-error flex items-center justify-center hover:bg-error hover:text-white transition-colors"
+                  title="Supprimer">
+            <span class="material-symbols-outlined text-[17px]">delete</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="p-16 text-center space-y-4">
+      <div class="w-10 h-10 border-4 border-primary/10 border-t-primary rounded-full animate-spin mx-auto"></div>
+      <p class="text-xs font-bold text-outline uppercase tracking-widest">Chargement des vergers...</p>
+    </div>
+
+    <!-- Empty -->
+    <div *ngIf="!loading && vergers.length === 0" class="p-16 text-center">
+      <div class="text-5xl mb-4"></div>
+      <p class="text-outline font-medium">Aucun verger enregistré dans la base de données.</p>
+      <p class="text-xs text-outline/60 mt-1">Cliquez sur la carte ci-dessous pour en ajouter un.</p>
+    </div>
+  </div>
+
+  <!-- Map Section -->
+  <div class="mb-8">
+    <div class="bg-surface-container-low rounded-t-[28px] border border-b-0 border-outline-variant/10 px-8 py-5 flex items-center gap-3">
+      <span class="material-symbols-outlined text-primary">map</span>
+      <div>
+        <h3 class="text-sm font-black uppercase tracking-widest text-primary">Carte de Tunisie</h3>
+        <p class="text-[11px] text-outline">Cliquez pour sélectionner · Molette pour zoomer · <kbd class="bg-surface-container px-1 rounded text-[10px]">Z</kbd> zoom+ &nbsp;<kbd class="bg-surface-container px-1 rounded text-[10px]">S</kbd> zoom- · Flèches pour naviguer</p>
+      </div>
+    </div>
+    <div id="verger-map"
+         style="width:100%; height:550px; display:block; position:relative; z-index:1; border:1px solid rgba(0,0,0,0.08); border-top:none; border-radius:0 0 28px 28px; outline:none;"
+         tabindex="0"></div>
+  </div>
+</div>
