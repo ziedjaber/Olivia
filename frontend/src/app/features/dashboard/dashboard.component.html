@@ -1,0 +1,199 @@
+<div class="max-w-7xl mx-auto py-6">
+  <!-- En-tête -->
+  <header class="mb-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+    <div>
+      <h1 class="text-4xl font-extrabold text-on-surface font-headline tracking-tight mb-2">
+        Tableau de bord global
+      </h1>
+      <p class="text-on-surface-variant">
+        Données en temps réel pour la saison de récolte 2024.
+      </p>
+    </div>
+    <div class="flex gap-4">
+      <div
+        class="bg-surface-container-low px-4 py-2 rounded-xl flex items-center gap-3 border border-outline-variant/10">
+        <span class="material-symbols-outlined text-secondary">calendar_today</span>
+        <span class="font-label text-sm font-semibold">12 Octobre - 28 Novembre</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Indicateurs KPI -->
+  <section class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-12">
+
+    <!-- Récoltes -->
+    <div
+      class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/5 shadow-sm hover:bg-surface-container-high transition-all">
+      <div class="flex justify-between items-start mb-4">
+        <div class="p-2 bg-primary-container/10 rounded-lg text-primary">
+          <span class="material-symbols-outlined">analytics</span>
+        </div>
+        <span class="text-secondary font-semibold text-xs">+12.4%</span>
+      </div>
+      <p class="text-outline text-xs uppercase tracking-widest font-bold mb-1">
+        Récoltes totales
+      </p>
+      <h3 class="text-3xl font-extrabold text-on-surface font-headline">
+        1 284 <span class="text-lg font-medium text-outline">tonnes</span>
+      </h3>
+    </div>
+
+    <!-- Maturité -->
+    <div
+      class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/5 shadow-sm hover:bg-surface-container-high transition-all">
+      <div class="flex justify-between items-start mb-4">
+        <div class="p-2 bg-secondary-container/30 rounded-lg text-secondary">
+          <span class="material-symbols-outlined">shutter_speed</span>
+        </div>
+        <span class="text-secondary font-semibold text-xs">Optimale</span>
+      </div>
+      <p class="text-outline text-xs uppercase tracking-widest font-bold mb-1">
+        Maturité moyenne
+      </p>
+      <h3 class="text-3xl font-extrabold text-on-surface font-headline">
+        84.2 <span class="text-lg font-medium text-outline">%</span>
+      </h3>
+    </div>
+
+    <!-- Alertes -->
+    <div
+      class="bg-tertiary-container/10 p-6 rounded-xl border border-outline-variant/5 shadow-sm hover:bg-tertiary-container/20 transition-all">
+      <div class="flex justify-between items-start mb-4">
+        <div class="p-2 bg-tertiary/10 rounded-lg text-tertiary">
+          <span class="material-symbols-outlined">warning</span>
+        </div>
+        <span class="text-tertiary font-semibold text-xs">Attention</span>
+      </div>
+      <p class="text-outline text-xs uppercase tracking-widest font-bold mb-1">
+        Alertes actives
+      </p>
+      <h3 class="text-3xl font-extrabold text-on-surface font-headline">07</h3>
+    </div>
+
+    <!-- Ressources -->
+    <div
+      class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/5 shadow-sm hover:bg-surface-container-high transition-all">
+      <div class="flex justify-between items-start mb-4">
+        <div class="p-2 bg-outline-variant/20 rounded-lg text-primary">
+          <span class="material-symbols-outlined">inventory_2</span>
+        </div>
+        <span class="text-on-surface-variant font-semibold text-xs">
+          Capacité utilisée : 92%
+        </span>
+      </div>
+      <p class="text-outline text-xs uppercase tracking-widest font-bold mb-1">
+        Utilisation des ressources
+      </p>
+      <h3 class="text-3xl font-extrabold text-on-surface font-headline">
+        312 <span class="text-lg font-medium text-outline">unités</span>
+      </h3>
+    </div>
+
+  </section>
+
+  <!-- Performance -->
+  <section class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+    <div class="lg:col-span-2 bg-surface-container-lowest rounded-xl p-8 shadow-sm relative overflow-hidden">
+      <h4 class="text-xl font-bold font-headline mb-10">
+        Évolution des performances de récolte
+      </h4>
+
+      <div class="h-64 flex items-end gap-3 justify-between">
+        <div class="w-full bg-surface-container-low rounded-t-lg h-[40%] group relative">
+          <div class="absolute inset-x-0 bottom-0 bg-primary-container/40 h-[60%] rounded-t-lg"></div>
+        </div>
+        <div class="w-full bg-surface-container-low rounded-t-lg h-[60%] group relative">
+          <div class="absolute inset-x-0 bottom-0 bg-primary-container/40 h-[70%] rounded-t-lg"></div>
+        </div>
+        <div class="w-full bg-surface-container-low rounded-t-lg h-[85%] group relative">
+          <div class="absolute inset-x-0 bottom-0 bg-secondary h-[95%] rounded-t-lg"></div>
+        </div>
+        <div class="w-full bg-surface-container-low rounded-t-lg h-[65%] group relative">
+          <div class="absolute inset-x-0 bottom-0 bg-primary-container/40 h-[50%] rounded-t-lg"></div>
+        </div>
+      </div>
+
+      <div class="flex justify-between mt-4 px-1 text-[10px] uppercase font-bold text-outline tracking-widest">
+        <span>Lun</span><span>Mar</span><span>Mer</span><span>Jeu</span><span>Ven</span><span>Sam</span><span>Dim</span>
+      </div>
+    </div>
+
+    <!-- Carte domaine -->
+    <div class="lg:col-span-1">
+      <div class="bg-primary text-on-primary p-8 rounded-xl shadow-lg h-full flex flex-col justify-between">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-widest opacity-80 mb-2 block">
+            Focus sur le domaine
+          </span>
+          <h4 class="text-2xl font-bold font-headline mb-4">
+            Pente nord - Secteur A
+          </h4>
+        </div>
+
+        <div class="space-y-4">
+          <div class="flex justify-between items-center bg-white/10 p-3 rounded-lg">
+            <span class="text-sm">pH du sol</span>
+            <span class="text-sm font-bold">6.8</span>
+          </div>
+          <div class="flex justify-between items-center bg-white/10 p-3 rounded-lg">
+            <span class="text-sm">Humidité</span>
+            <span class="text-sm font-bold">22.4%</span>
+          </div>
+        </div>
+
+        <button class="mt-6 w-full py-3 bg-white text-primary font-bold rounded-lg">
+          Voir la carte satellite
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Activités -->
+  <section class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+    <!-- Activité récente -->
+    <div class="lg:col-span-2 bg-surface-container-low rounded-xl p-8">
+      <h4 class="text-xl font-bold font-headline mb-8">
+        Activités récentes
+      </h4>
+
+      <div class="space-y-4">
+        <div class="flex items-center gap-6 p-4 bg-surface-container-lowest rounded-xl">
+          <div class="flex-grow">
+            <p class="text-sm font-bold">
+              Nouvelle récolte enregistrée - Secteur B-12
+            </p>
+            <p class="text-xs text-outline">
+              Variété Chemlali premium
+            </p>
+          </div>
+          <div class="text-right">
+            <p class="text-sm font-bold text-secondary">+420 kg</p>
+            <p class="text-xs text-outline">Il y a 14 minutes</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ressources -->
+    <div class="lg:col-span-1 bg-surface-container-highest rounded-xl p-8">
+      <h4 class="text-xl font-bold font-headline mb-2">
+        Flotte de ressources
+      </h4>
+      <p class="text-sm text-on-surface-variant mb-8">
+        État actuel de déploiement
+      </p>
+
+      <div>
+        <div class="flex justify-between text-xs font-bold mb-2">
+          <span>Moissonneuses</span>
+          <span>80%</span>
+        </div>
+        <div class="w-full bg-surface-container-low h-1.5 rounded-full">
+          <div class="bg-secondary h-full w-[80%]"></div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+</div>
