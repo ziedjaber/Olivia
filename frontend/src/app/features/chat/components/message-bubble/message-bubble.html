@@ -1,0 +1,22 @@
+<div class="msg-wrapper" [class.own]="isOwn">
+
+  <div *ngIf="!isOwn" class="msg-sender-name">
+    {{ message.senderName }}
+  </div>
+
+  <div class="msg-row">
+    <div class="msg-bubble">
+      {{ message.content }}
+    </div>
+  </div>
+
+  <div class="msg-meta">
+    <span class="msg-time">{{ formattedTime }}</span>
+    <ng-container *ngIf="isOwn && showReadStatus">
+      <span class="check-icon" [class.read]="message.read">
+        {{ message.read ? '✓✓' : '✓' }}
+      </span>
+    </ng-container>
+  </div>
+
+</div>
