@@ -31,7 +31,5 @@ build/
 
 ### VS Code ###
 .vscode/
-
-# secrets
+backend/src/main/resources/firebase-key.json
 firebase-key.json
-.env

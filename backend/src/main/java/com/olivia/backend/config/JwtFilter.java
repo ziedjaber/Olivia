@@ -38,6 +38,13 @@ public class JwtFilter extends OncePerRequestFilter {
 
             try {
                 log.info("[JwtFilter] Decoding token for URI: {}", request.getRequestURI());
+                
+                if (token == null || token.isEmpty() || token.equals("undefined") || token.equals("null")) {
+                    log.warn("[JwtFilter] Invalid token string detected: '{}'. Skipping auth.", token);
+                    filterChain.doFilter(request, response);
+                    return;
+                }
+
                 FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdToken(token);
                 String email = decodedToken.getEmail();
                 String uid = decodedToken.getUid();

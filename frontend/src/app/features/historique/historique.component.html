@@ -1,0 +1,84 @@
+<div class="historique max-w-6xl mx-auto py-8 px-4">
+  <header class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-10">
+    <div class="space-y-2">
+      <h1 class="text-4xl font-black text-primary font-headline tracking-tighter uppercase">Journal d'Audit</h1>
+      <p class="text-on-surface-variant font-medium italic">Historique complet des actions effectuées par les directeurs et chefs d'équipe.</p>
+    </div>
+    <button (click)="exportPDF()" 
+            class="bg-surface-container-high text-on-surface px-6 py-3 rounded-2xl font-bold flex items-center gap-2 shadow-sm hover:bg-surface-dim transition-all no-print">
+      <span class="material-symbols-outlined">picture_as_pdf</span>
+      Exporter en PDF
+    </button>
+  </header>
+
+  <!-- Filter Bar -->
+  <div class="historique__filter-bar bg-surface-container-low p-6 rounded-[24px] border border-outline-variant/10 mb-8 flex flex-wrap gap-4 items-end no-print">
+    <div class="flex flex-col gap-1.5 flex-grow min-w-[200px]">
+      <label class="text-[10px] font-black uppercase text-outline ml-4">Filtrer par entité</label>
+      <select [(ngModel)]="filterEntity" (change)="applyFilter()"
+              class="bg-white border border-outline-variant/10 rounded-xl px-4 py-3 text-sm font-bold outline-none focus:ring-2 focus:ring-primary/20 transition-all appearance-none cursor-pointer">
+        <option value="">Toutes les entités</option>
+        <option *ngFor="let e of entities" [value]="e">{{ e }}</option>
+      </select>
+    </div>
+
+    <div class="flex flex-col gap-1.5 flex-grow min-w-[200px]">
+      <label class="text-[10px] font-black uppercase text-outline ml-4">Filtrer par action</label>
+      <select [(ngModel)]="filterAction" (change)="applyFilter()"
+              class="bg-white border border-outline-variant/10 rounded-xl px-4 py-3 text-sm font-bold outline-none focus:ring-2 focus:ring-primary/20 transition-all appearance-none cursor-pointer">
+        <option value="">Toutes les actions</option>
+        <option *ngFor="let a of actions" [value]="a">{{ a }}</option>
+      </select>
+    </div>
+
+    <button (click)="resetFilters()" class="p-3 text-outline hover:text-primary transition-colors hover:rotate-[-45deg] duration-300">
+      <span class="material-symbols-outlined">restart_alt</span>
+    </button>
+  </div>
+
+  <!-- Timeline Content -->
+  <div class="space-y-4">
+    <div *ngIf="isLoading" class="p-20 text-center space-y-4">
+      <div class="w-12 h-12 border-4 border-primary/10 border-t-primary rounded-full animate-spin mx-auto"></div>
+      <p class="text-xs font-bold text-outline uppercase tracking-widest">Chargement...</p>
+    </div>
+
+    <div *ngIf="errorMessage" class="p-8 bg-error/10 text-error rounded-2xl border border-error/20 text-center font-bold">
+      {{ errorMessage }}
+    </div>
+
+    <div *ngIf="!isLoading && filteredLogs.length === 0" class="p-20 text-center bg-surface-container rounded-[32px] border border-dashed border-outline-variant/20">
+      <span class="material-symbols-outlined text-outline opacity-20 text-6xl mb-4">search_off</span>
+      <p class="text-outline font-medium italic">Aucune action enregistrée pour ces filtres.</p>
+    </div>
+
+    <!-- Cards -->
+    <div *ngFor="let log of filteredLogs" class="historique__card bg-white p-6 rounded-[24px] border border-outline-variant/5 shadow-sm hover:shadow-md transition-all flex gap-6 items-start animate-fade-in">
+      <div class="w-12 h-12 rounded-2xl bg-surface-container flex items-center justify-center flex-shrink-0">
+        <span class="material-symbols-outlined text-2xl" [ngClass]="getIconColor(log.entite)">
+          {{ getIconForEntity(log.entite) }}
+        </span>
+      </div>
+
+      <div class="flex-grow space-y-2">
+        <div class="flex justify-between items-start gap-4">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="historique__badge px-3 py-1 bg-surface-container-high rounded-full text-[10px] font-black uppercase tracking-wider text-on-surface">
+              {{ log.action }}
+            </span>
+            <span class="text-xs font-bold text-outline uppercase tracking-widest opacity-50">{{ log.entite }}</span>
+          </div>
+          <span class="text-xs font-medium text-outline-variant whitespace-nowrap">{{ getRelativeTime(log.timestamp) }}</span>
+        </div>
+
+        <p class="text-on-surface font-medium leading-relaxed">{{ log.details }}</p>
+
+        <div class="pt-2 flex items-center gap-2 text-xs font-bold text-outline">
+          <span class="material-symbols-outlined text-sm opacity-40">person</span>
+          {{ log.acteurNom }} 
+          <span class="opacity-40 font-medium italic">({{ log.acteurRole }})</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

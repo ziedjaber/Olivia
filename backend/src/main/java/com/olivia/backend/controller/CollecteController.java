@@ -6,6 +6,7 @@ import com.olivia.backend.model.User;
 import com.olivia.backend.service.CollecteService;
 import com.olivia.backend.service.ParticipationService;
 import com.olivia.backend.service.UserService;
+import com.olivia.backend.service.AuditService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +33,8 @@ public class CollecteController {
     private ParticipationService participationService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private AuditService auditService;
 
     private String currentUid() {
         return SecurityContextHolder.getContext().getAuthentication().getName();
@@ -57,9 +60,9 @@ public class CollecteController {
     @PreAuthorize("hasAnyAuthority('ROLE_DIRECTEUR', 'ROLE_CHEF_EQUIPE_RECOLTE')")
     public ResponseEntity<?> createCollecte(@RequestBody Collecte collecte) {
         try {
-            log.info("[CollecteController] Creating mission: {}. Provided Chef UID: {}", 
+            log.info("[CollecteController] Creating mission: {}. Provided Chef UID: {}",
                     collecte.getDescription(), collecte.getChefUid());
-            
+
             // If the frontend provided a chefUid (Director selecting a chef), keep it.
             // If not (Chef creating their own mission), use the current user's UID.
             if (collecte.getChefUid() == null || collecte.getChefUid().isEmpty()) {
@@ -72,11 +75,21 @@ public class CollecteController {
                 User chef = userService.getUserById(collecte.getChefUid());
                 collecte.setChefName(chef.getFullName());
             }
-            
-            log.info("[CollecteController] Finalizing mission with Chef: {} ({})", 
+
+            log.info("[CollecteController] Finalizing mission with Chef: {} ({})",
                     collecte.getChefName(), collecte.getChefUid());
-            
-            return ResponseEntity.ok(collecteService.createCollecte(collecte));
+
+            Collecte result = collecteService.createCollecte(collecte);
+            try {
+                String uid = currentUid();
+                String nom = userService.getUserById(uid).getFullName();
+                String role = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+                        .map(a -> a.getAuthority()).findFirst().orElse("ROLE_UNKNOWN");
+                auditService.log(uid, nom, role, "COLLECTE_CRÉÉE", "Collecte", result.getId(),
+                        "Collecte '" + collecte.getDescription() + "' créée");
+            } catch (Exception auditEx) {
+            }
+            return ResponseEntity.ok(result);
         } catch (Exception e) {
             log.error("[CollecteController] Failed to create mission: {}", e.getMessage());
             return ResponseEntity.badRequest().body("Failed to create collecte: " + e.getMessage());
@@ -102,6 +115,14 @@ public class CollecteController {
     public ResponseEntity<?> startCollecte(@PathVariable String id) {
         try {
             collecteService.startCollecte(id);
+            try {
+                String uid = currentUid();
+                String nom = userService.getUserById(uid).getFullName();
+                String role = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+                        .map(a -> a.getAuthority()).findFirst().orElse("ROLE_UNKNOWN");
+                auditService.log(uid, nom, role, "COLLECTE_DÉMARRÉE", "Collecte", id, "Collecte démarrée");
+            } catch (Exception auditEx) {
+            }
             return ResponseEntity.ok("Collecte started. All accepted workers are now ASSIGNED.");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Failed to start collecte: " + e.getMessage());
@@ -113,6 +134,14 @@ public class CollecteController {
     public ResponseEntity<?> endCollecte(@PathVariable String id) {
         try {
             collecteService.endCollecte(id);
+            try {
+                String uid = currentUid();
+                String nom = userService.getUserById(uid).getFullName();
+                String role = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+                        .map(a -> a.getAuthority()).findFirst().orElse("ROLE_UNKNOWN");
+                auditService.log(uid, nom, role, "COLLECTE_TERMINÉE", "Collecte", id, "Collecte terminée");
+            } catch (Exception auditEx) {
+            }
             return ResponseEntity.ok("Collecte ended. All assigned workers are now COMPLETED.");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Failed to end collecte: " + e.getMessage());
@@ -162,6 +191,15 @@ public class CollecteController {
                     currentUid(),
                     inviter.getFullName(),
                     dailySalary);
+            try {
+                String uid = currentUid();
+                String nom = userService.getUserById(uid).getFullName();
+                String role = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+                        .map(a -> a.getAuthority()).findFirst().orElse("ROLE_UNKNOWN");
+                auditService.log(uid, nom, role, "OUVRIER_INVITÉ", "Participation", ouvrierUid,
+                        "Ouvrier invité à la collecte " + id);
+            } catch (Exception auditEx) {
+            }
             return ResponseEntity.ok(participation);
         } catch (IllegalStateException ise) {
             return ResponseEntity.status(409).body(ise.getMessage());

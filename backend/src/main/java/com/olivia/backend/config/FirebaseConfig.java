@@ -11,17 +11,18 @@ import org.springframework.context.annotation.Configuration;
 
 import java.io.InputStream;
 import com.google.firebase.cloud.FirestoreClient;
+
 @Configuration
 public class FirebaseConfig {
-@Bean
-public Firestore firestore() {
-    return FirestoreClient.getFirestore();
-}
+    @Bean
+    public Firestore firestore() {
+        return FirestoreClient.getFirestore();
+    }
+
     @PostConstruct
     public void init() {
         try {
-            InputStream serviceAccount =
-                    getClass().getClassLoader().getResourceAsStream("firebase-key.json");
+            InputStream serviceAccount = getClass().getClassLoader().getResourceAsStream("firebase-key.json");
 
             if (serviceAccount == null) {
                 throw new RuntimeException("Firebase key not found");

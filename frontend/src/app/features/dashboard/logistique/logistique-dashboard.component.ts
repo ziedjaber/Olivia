@@ -590,7 +590,7 @@ export class LogistiqueDashboardComponent implements OnInit {
   ngOnInit() {
     this.loadResources();
     this.loadOrders();
-    
+
     // Handle fragment navigation (Provisioning Gate shortcut)
     this.route.fragment.subscribe(fragment => {
       if (fragment === 'provisioning') {
@@ -620,9 +620,9 @@ export class LogistiqueDashboardComponent implements OnInit {
   loadResources() {
     this.loading = true;
     this.logistiqueService.getAllResources().subscribe({
-      next: (data) => { 
-        this.resources = data; 
-        this.loading = false; 
+      next: (data) => {
+        this.resources = data;
+        this.loading = false;
         this.cdr.detectChanges();
       },
       error: () => { this.loading = false; }
@@ -649,7 +649,7 @@ export class LogistiqueDashboardComponent implements OnInit {
   }
 
   rejectOrder(id: string) {
-    if(!confirm("Are you sure you want to reject this demand?")) return;
+    if (!confirm("Are you sure you want to reject this demand?")) return;
     this.resourceOrderService.rejectOrder(id).subscribe({
       next: () => {
         this.toastService.show('Order rejected.', 'success');

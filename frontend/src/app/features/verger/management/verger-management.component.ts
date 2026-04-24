@@ -32,7 +32,7 @@ export class VergerManagementComponent implements OnInit, AfterViewInit {
   loading = false;
   showCreateForm = false;
   isEditing = false;
-  
+
   // --- Search & Pagination ---
   searchTerm = '';
   currentPage = 1;
@@ -45,6 +45,7 @@ export class VergerManagementComponent implements OnInit, AfterViewInit {
   newVerger: Verger = this.emptyVerger();
 
   statuts = ['EN_ATTENTE', 'RECOLTE_EN_COURS', 'RECOLTE_TERMINEE'];
+  varietes = ['CHEMLALI', 'CHETOUI', 'OUESLATI', 'ZALMATI', 'MESKI'];
 
   private map: any;
   private markersLayer: any;
@@ -52,7 +53,18 @@ export class VergerManagementComponent implements OnInit, AfterViewInit {
   private L: any;
 
   private emptyVerger(): Verger {
-    return { nom: '', typeOlive: '', niveauMaturite: 0, localisation: '', proprietaireId: '', responsableUid: '', nombreArbres: 0, statut: 'EN_ATTENTE' };
+    return {
+      nom: '',
+      typeOlive: 'Olive', // Valeur par défaut pour l'ancien champ
+      varieteOlive: 'CHEMLALI',
+      niveauMaturite: 0,
+      localisation: '',
+      proprietaireId: '',
+      responsableUid: '',
+      nombreArbres: 0,
+      statut: 'EN_ATTENTE',
+      dateReferenceCalculGDD: new Date().toISOString().split('T')[0] // Date du jour par défaut
+    };
   }
 
   ngOnInit() {
@@ -199,24 +211,28 @@ export class VergerManagementComponent implements OnInit, AfterViewInit {
           if (!isNaN(lat) && !isNaN(lng)) {
             this.L.marker([lat, lng], { icon: treeIcon })
               .bindPopup(`
-                <div style="font-family:sans-serif;min-width:160px;padding:4px;">
+                <div style="font-family:sans-serif;min-width:180px;padding:4px;">
                   <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
                     <span class="material-symbols-outlined text-primary text-[18px]">potted_plant</span>
                     <b style="font-size:14px;color:#1a1c1e;">${v.nom}</b>
                   </div>
-                  <span style="color:#666;font-size:12px;font-weight:500;">${v.typeOlive}</span><br>
+                  <div style="color:#666;font-size:11px;font-weight:bold;margin-bottom:8px;">
+                    Variété: ${v.varieteOlive || v.typeOlive}
+                  </div>
                   <hr style="margin:8px 0;border-color:#eee;">
-                  <div style="display:flex;flex-direction:column;gap:4px;font-size:12px;">
+                  <div style="display:flex;flex-direction:column;gap:5px;font-size:12px;">
                     <div style="display:flex;justify-content:between;align-items:center;">
-                      <span style="display:flex;align-items:center;gap:4px;color:#444;"><span class="material-symbols-outlined text-[14px]">forest</span> Arbres:</span>
-                      <b style="margin-left:auto;">${v.nombreArbres}</b>
+                      <span style="color:#444;">Prédiction GDD:</span>
+                      <b style="margin-left:auto;color:#3e5219;">${v.pourcentageMaturite ? v.pourcentageMaturite.toFixed(1) : v.niveauMaturite}%</b>
                     </div>
                     <div style="display:flex;justify-content:between;align-items:center;">
-                      <span style="display:flex;align-items:center;gap:4px;color:#444;"><span class="material-symbols-outlined text-[14px]">monitoring</span> Maturité:</span>
-                      <b style="margin-left:auto;">${v.niveauMaturite}%</b>
+                      <span style="color:#444;">Date Récolte:</span>
+                      <b style="margin-left:auto;">${v.dateMaturitePrevue || 'N/A'}</b>
                     </div>
                     <div style="display:flex;justify-content:between;align-items:center;margin-top:4px;">
-                      <span style="padding:2px 8px;background:#f0f4f8;border-radius:6px;font-size:10px;font-weight:bold;color:#444;text-transform:uppercase;">${v.statut.replace(/_/g, ' ')}</span>
+                      <span style="padding:2px 8px;background:${v.pourcentageMaturite && v.pourcentageMaturite >= 85 ? '#fff1f0' : '#f0f4f8'};border-radius:6px;font-size:10px;font-weight:bold;color:${v.pourcentageMaturite && v.pourcentageMaturite >= 85 ? '#cf222e' : '#444'};text-transform:uppercase;">
+                        ${v.pourcentageMaturite && v.pourcentageMaturite >= 95 ? 'MATURITÉ IMMINENTE' : v.statut.replace(/_/g, ' ')}
+                      </span>
                     </div>
                   </div>
                 </div>`)
@@ -394,9 +410,9 @@ export class VergerManagementComponent implements OnInit, AfterViewInit {
   get filteredVergers() {
     if (!this.searchTerm) return this.vergers;
     const s = this.searchTerm.toLowerCase();
-    return this.vergers.filter(v => 
-      v.nom.toLowerCase().includes(s) || 
-      v.typeOlive.toLowerCase().includes(s) || 
+    return this.vergers.filter(v =>
+      v.nom.toLowerCase().includes(s) ||
+      v.typeOlive.toLowerCase().includes(s) ||
       v.localisation.toLowerCase().includes(s) ||
       (v.responsableName && v.responsableName.toLowerCase().includes(s))
     );
@@ -430,5 +446,20 @@ export class VergerManagementComponent implements OnInit, AfterViewInit {
     this.showTelemetryModal = false;
     this.selectedVergerForTelemetry = null;
     this.cdr.markForCheck();
+  }
+  syncPredictions() {
+    this.loading = true;
+    this.cdr.markForCheck();
+    this.vergerService.syncPredictions().subscribe({
+      next: (res) => {
+        this.toastService.show(res.message || 'Mise à jour des prédictions lancée.', 'success');
+        this.loadVergers();
+      },
+      error: (err) => {
+        this.toastService.show('Erreur lors de la synchronisation.', 'error');
+        this.loading = false;
+        this.cdr.markForCheck();
+      }
+    });
   }
 }

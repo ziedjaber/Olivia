@@ -16,6 +16,15 @@ export interface Verger {
   dateDerniereMaturite?: string;
   nombreArbres: number;
   statut: string;
+  // Prediction de maturite
+  varieteOlive?: string;
+  datePlantation?: string;
+  dateReferenceCalculGDD?: string;
+  gddCumules?: number;
+  gddSeuilMaturite?: number;
+  pourcentageMaturite?: number;
+  dateMaturitePrevue?: string;
+  derniereMeteoJson?: string;
 }
 
 @Injectable({
@@ -24,7 +33,7 @@ export interface Verger {
 export class VergerService {
   private apiUrl = 'http://localhost:8080/api/vergers';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getAllVergers(): Observable<Verger[]> {
     return this.http.get<Verger[]>(this.apiUrl);
@@ -56,5 +65,9 @@ export class VergerService {
 
   deleteVerger(id: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`, { responseType: 'text' });
+  }
+
+  syncPredictions(): Observable<any> {
+    return this.http.post('http://localhost:8080/api/prediction/sync', {});
   }
 }

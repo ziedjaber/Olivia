@@ -128,7 +128,7 @@ export class LogisticsAnalyticsComponent implements OnInit {
 
   resources: LogisticResource[] = [];
   orders: ResourceOrder[] = [];
-  
+
   pendingOrdersCount = 0;
   utilizationRate = 0;
   criticalStockCount = 0;
@@ -155,7 +155,7 @@ export class LogisticsAnalyticsComponent implements OnInit {
     this.pendingOrdersCount = this.orders.filter(o => !o.status || o.status === 'PENDING').length;
     this.recentOrders = this.orders.slice(-5).reverse();
     this.criticalStockCount = this.resources.filter(r => r.stockLevel <= 2).length;
-    
+
     // Utilization rate (rough estimate based on total ordered items vs total items)
     const totalOrdered = this.orders.filter(o => o.status === 'APPROVED').length;
     this.utilizationRate = this.orders.length > 0 ? Math.round((totalOrdered / this.orders.length) * 100) : 0;
@@ -163,7 +163,7 @@ export class LogisticsAnalyticsComponent implements OnInit {
     // Distibution by Category
     const cats: { [key: string]: number } = {};
     const colorClasses = ['bg-gradient-cat1', 'bg-gradient-cat2', 'bg-gradient-cat3', 'bg-gradient-cat4', 'bg-gradient-cat5'];
-    
+
     this.resources.forEach(r => {
       cats[r.type] = (cats[r.type] || 0) + 1;
     });

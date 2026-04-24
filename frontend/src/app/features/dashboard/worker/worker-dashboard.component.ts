@@ -2,6 +2,7 @@ import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ParticipationService, Participation } from '../../../core/services/participation.service';
 import { RouterModule } from '@angular/router';
+
 @Component({
    selector: 'app-ouvrier-dashboard',
    standalone: true,
@@ -24,7 +25,6 @@ import { RouterModule } from '@angular/router';
              <span class="text-xs font-black text-on-surface">En service</span>
            </div>
         </div>
-
       </header>
 
       <!-- Personal Pulse (Statistics) -->
@@ -215,7 +215,7 @@ import { RouterModule } from '@angular/router';
 
       </section>
     </div>
-  `,
+   `,
    styles: [`
     :host { display: block; animation: fade-in 0.8s ease-out; }
     @keyframes fade-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }

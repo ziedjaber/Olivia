@@ -24,7 +24,7 @@ public class AlerteService {
                 alerte.setId(UUID.randomUUID().toString());
             }
             if (alerte.getDate() == null) {
-                alerte.setDate(new Date());
+                alerte.setDate(java.time.Instant.now().toString());
             }
             if (alerte.getStatut() == null || alerte.getStatut().isEmpty()) {
                 alerte.setStatut("NON_TRAITEE");
@@ -39,22 +39,32 @@ public class AlerteService {
         }
     }
 
-    public List<Alerte> getAll() throws Exception {
+    public List<Alerte> getAll() {
         try {
             Firestore db = FirestoreClient.getFirestore();
             QuerySnapshot query = db.collection(COLLECTION_NAME).get().get(30, TimeUnit.SECONDS);
             List<Alerte> list = new ArrayList<>();
             for (QueryDocumentSnapshot document : query.getDocuments()) {
-                list.add(document.toObject(Alerte.class));
+                try {
+                    Alerte alerte = document.toObject(Alerte.class);
+                    if (alerte != null) {
+                        alerte.setId(document.getId());
+                        list.add(alerte);
+                    }
+                } catch (Exception docEx) {
+                    log.error("Erreur de désérialisation d'une alerte (ID: {}). Ignorée.", document.getId());
+                }
             }
+            list.sort((a, b) -> (b.getDate() != null ? b.getDate() : "")
+                    .compareTo(a.getDate() != null ? a.getDate() : ""));
             return list;
         } catch (Exception e) {
             log.error("Error fetching all alertes: {}", e.getMessage());
-            throw e;
+            return new ArrayList<>();
         }
     }
 
-    public List<Alerte> getBySender(String uid) throws Exception {
+    public List<Alerte> getBySender(String uid) {
         try {
             Firestore db = FirestoreClient.getFirestore();
             QuerySnapshot query = db.collection(COLLECTION_NAME)
@@ -62,12 +72,22 @@ public class AlerteService {
                     .get().get(30, TimeUnit.SECONDS);
             List<Alerte> list = new ArrayList<>();
             for (QueryDocumentSnapshot document : query.getDocuments()) {
-                list.add(document.toObject(Alerte.class));
+                try {
+                    Alerte alerte = document.toObject(Alerte.class);
+                    if (alerte != null) {
+                        alerte.setId(document.getId());
+                        list.add(alerte);
+                    }
+                } catch (Exception docEx) {
+                    log.error("Erreur de désérialisation d'une alerte (ID: {}). Ignorée.", document.getId());
+                }
             }
+            list.sort((a, b) -> (b.getDate() != null ? b.getDate() : "")
+                    .compareTo(a.getDate() != null ? a.getDate() : ""));
             return list;
         } catch (Exception e) {
             log.error("Error fetching alertes for sender {}: {}", uid, e.getMessage());
-            throw e;
+            return new ArrayList<>();
         }
     }
 

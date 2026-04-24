@@ -94,4 +94,4 @@ import { RouterModule } from '@angular/router';
     </div>
   `
 })
-export class OleiculteurDashboardComponent {}
+export class OleiculteurDashboardComponent { }

@@ -7,10 +7,10 @@ import { CollecteService, Collecte } from '../../../core/services/collecte.servi
 import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
-  selector: 'app-director-logistics',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  template: `
+   selector: 'app-director-logistics',
+   standalone: true,
+   imports: [CommonModule, FormsModule],
+   template: `
     <div class="min-h-screen bg-[#fffcf5] pb-20">
       <!-- HEADER SECTION -->
       <div class="bg-surface-container-low/40 backdrop-blur-3xl border-b border-outline-variant/10 sticky top-0 z-40 px-8 py-6">
@@ -276,7 +276,7 @@ import { ToastService } from '../../../core/services/toast.service';
          </div>
       </div>
   `,
-  styles: [`
+   styles: [`
     :host { display: block; }
     .custom-scrollbar::-webkit-scrollbar { width: 4px; }
     .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
@@ -285,145 +285,145 @@ import { ToastService } from '../../../core/services/toast.service';
   `]
 })
 export class DirectorLogisticsComponent implements OnInit, AfterViewChecked {
-  private logistiqueService = inject(LogistiqueService);
-  private collecteService = inject(CollecteService);
-  private resourceOrderService = inject(ResourceOrderService);
-  private toastService = inject(ToastService);
-  private cdr = inject(ChangeDetectorRef);
+   private logistiqueService = inject(LogistiqueService);
+   private collecteService = inject(CollecteService);
+   private resourceOrderService = inject(ResourceOrderService);
+   private toastService = inject(ToastService);
+   private cdr = inject(ChangeDetectorRef);
 
-  resources: LogisticResource[] = [];
-  collectes: Collecte[] = [];
-  searchQuery = '';
-  categoryFilter = '';
-  
-  targetCollecteId = '';
-  targetCollecte: Collecte | null = null;
-  cart: { resourceId: string, resourceName: string, quantity: number, image?: string, price: number, resourceName_raw?: string }[] = [];
-  submitting = false;
-  selectedResource: LogisticResource | null = null;
+   resources: LogisticResource[] = [];
+   collectes: Collecte[] = [];
+   searchQuery = '';
+   categoryFilter = '';
 
-  ngOnInit() {
-    this.loadData();
-  }
+   targetCollecteId = '';
+   targetCollecte: Collecte | null = null;
+   cart: { resourceId: string, resourceName: string, quantity: number, image?: string, price: number, resourceName_raw?: string }[] = [];
+   submitting = false;
+   selectedResource: LogisticResource | null = null;
 
-  loadData() {
-    this.logistiqueService.getAllResources().subscribe({
-      next: (r) => {
-        this.resources = (r || []).map(item => ({...item, status: item.status?.toLowerCase() || 'active'}));
-      },
-      error: () => this.toastService.show('Erreur de connexion au système. Catalogue indisponible.', 'error')
-    });
-    this.collecteService.getCollectes().subscribe(c => this.collectes = c || []);
-  }
+   ngOnInit() {
+      this.loadData();
+   }
 
-  ngAfterViewChecked() {
-    this.cdr.detectChanges();
-  }
+   loadData() {
+      this.logistiqueService.getAllResources().subscribe({
+         next: (r) => {
+            this.resources = (r || []).map(item => ({ ...item, status: item.status?.toLowerCase() || 'active' }));
+         },
+         error: () => this.toastService.show('Erreur de connexion au système. Catalogue indisponible.', 'error')
+      });
+      this.collecteService.getCollectes().subscribe(c => this.collectes = c || []);
+   }
 
-  get filteredResources() {
-    let list = this.resources.filter(r => r.status !== 'inactive');
-    if (this.categoryFilter) {
-      list = list.filter(r => r.type === this.categoryFilter);
-    }
-    if (this.searchQuery) {
-      const q = this.searchQuery.toLowerCase();
-      list = list.filter(r => r.name.toLowerCase().includes(q) || r.type.toLowerCase().includes(q));
-    }
-    return list;
-  }
+   ngAfterViewChecked() {
+      this.cdr.detectChanges();
+   }
 
-  get plannedCollectes() {
-    return this.collectes.filter(c => c.statut === 'PLANNED' || c.statut === 'en_attente');
-  }
+   get filteredResources() {
+      let list = this.resources.filter(r => r.status !== 'inactive');
+      if (this.categoryFilter) {
+         list = list.filter(r => r.type === this.categoryFilter);
+      }
+      if (this.searchQuery) {
+         const q = this.searchQuery.toLowerCase();
+         list = list.filter(r => r.name.toLowerCase().includes(q) || r.type.toLowerCase().includes(q));
+      }
+      return list;
+   }
 
-  get totalCartValue(): number {
-     return this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  }
+   get plannedCollectes() {
+      return this.collectes.filter(c => c.statut === 'PLANNED' || c.statut === 'en_attente');
+   }
 
-  get canSubmit(): boolean {
-    return this.cart.length > 0 && !!this.targetCollecteId && !this.submitting;
-  }
+   get totalCartValue(): number {
+      return this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+   }
 
-  getImageUrl(path: string | undefined): string {
-    if (!path) return 'https://images.unsplash.com/photo-1589923188900-85dae5233ea8?q=80&w=400&auto=format&fit=crop'; 
-    if (path.startsWith('http')) return path;
-    const baseUrl = 'http://localhost:8080';
-    const cleanPath = path.startsWith('/') ? path : '/' + path;
-    return `${baseUrl}${cleanPath}`;
-  }
+   get canSubmit(): boolean {
+      return this.cart.length > 0 && !!this.targetCollecteId && !this.submitting;
+   }
 
-  onCollecteChange() {
-    this.targetCollecte = this.collectes.find(c => c.id === this.targetCollecteId) || null;
-  }
+   getImageUrl(path: string | undefined): string {
+      if (!path) return 'https://images.unsplash.com/photo-1589923188900-85dae5233ea8?q=80&w=400&auto=format&fit=crop';
+      if (path.startsWith('http')) return path;
+      const baseUrl = 'http://localhost:8080';
+      const cleanPath = path.startsWith('/') ? path : '/' + path;
+      return `${baseUrl}${cleanPath}`;
+   }
 
-  addToCart(res: LogisticResource) {
-    const existing = this.cart.find(r => r.resourceId === res.id);
-    if (existing) {
-       if (existing.quantity >= res.stockLevel) {
-          this.toastService.show(`Limite logistique : Seulement ${res.stockLevel} unités actuellement en stock.`, 'info');
-          return;
-       }
-       existing.quantity++;
-    } else {
-       this.cart.push({ 
-         resourceId: res.id!, 
-         resourceName: res.name, 
-         quantity: 1,
-         image: res.images?.[0],
-         price: res.pricePerHour
-       });
-    }
-    this.toastService.show(`${res.name} ajouté au brouillon d'envoi.`, 'success');
-  }
+   onCollecteChange() {
+      this.targetCollecte = this.collectes.find(c => c.id === this.targetCollecteId) || null;
+   }
 
-  updateQuantity(index: number, delta: number) {
-     const item = this.cart[index];
-     const resource = this.resources.find(r => r.id === item.resourceId);
-     if (delta > 0 && resource && item.quantity >= resource.stockLevel) {
-        this.toastService.show(`Niveau de stock maximum atteint.`, 'info');
-        return;
-     }
-     item.quantity += delta;
-     if (item.quantity <= 0) {
-        this.removeFromCart(index);
-     }
-  }
+   addToCart(res: LogisticResource) {
+      const existing = this.cart.find(r => r.resourceId === res.id);
+      if (existing) {
+         if (existing.quantity >= res.stockLevel) {
+            this.toastService.show(`Limite logistique : Seulement ${res.stockLevel} unités actuellement en stock.`, 'info');
+            return;
+         }
+         existing.quantity++;
+      } else {
+         this.cart.push({
+            resourceId: res.id!,
+            resourceName: res.name,
+            quantity: 1,
+            image: res.images?.[0],
+            price: res.pricePerHour
+         });
+      }
+      this.toastService.show(`${res.name} ajouté au brouillon d'envoi.`, 'success');
+   }
 
-  removeFromCart(index: number) {
-    this.cart.splice(index, 1);
-  }
+   updateQuantity(index: number, delta: number) {
+      const item = this.cart[index];
+      const resource = this.resources.find(r => r.id === item.resourceId);
+      if (delta > 0 && resource && item.quantity >= resource.stockLevel) {
+         this.toastService.show(`Niveau de stock maximum atteint.`, 'info');
+         return;
+      }
+      item.quantity += delta;
+      if (item.quantity <= 0) {
+         this.removeFromCart(index);
+      }
+   }
 
-  submitOrder() {
-    if (!this.canSubmit) return;
-    this.submitting = true;
+   removeFromCart(index: number) {
+      this.cart.splice(index, 1);
+   }
 
-    const payload: ResourceOrder = {
-       collecteId: this.targetCollecteId,
-       startDate: this.targetCollecte?.startDate || new Date(),
-       endDate: this.targetCollecte?.endDate || new Date(),
-       resources: this.cart.map(i => ({
-          resourceId: i.resourceId,
-          resourceName: i.resourceName,
-          quantity: i.quantity
-       }))
-    };
+   submitOrder() {
+      if (!this.canSubmit) return;
+      this.submitting = true;
 
-    this.resourceOrderService.createOrder(payload).subscribe({
-       next: () => {
-          this.toastService.show('Demande logistique envoyée ! En attente d\'approbation.', 'success');
-          this.submitting = false;
-          this.cart = [];
-          this.targetCollecteId = '';
-          this.targetCollecte = null;
-       },
-       error: (err) => {
-          console.error('Provisioning Error:', err);
-          const msg = err.status === 403 
-             ? 'Blocage de sécurité : Veuillez vous assurer que votre compte dispose des privilèges de Directeur.' 
-             : 'Échec de l\'initialisation de l\'approvisionnement. Veuillez vérifier la connexion réseau.';
-          this.toastService.show(msg, 'error');
-          this.submitting = false;
-       }
-    });
-  }
+      const payload: ResourceOrder = {
+         collecteId: this.targetCollecteId,
+         startDate: this.targetCollecte?.startDate || new Date(),
+         endDate: this.targetCollecte?.endDate || new Date(),
+         resources: this.cart.map(i => ({
+            resourceId: i.resourceId,
+            resourceName: i.resourceName,
+            quantity: i.quantity
+         }))
+      };
+
+      this.resourceOrderService.createOrder(payload).subscribe({
+         next: () => {
+            this.toastService.show('Demande logistique envoyée ! En attente d\'approbation.', 'success');
+            this.submitting = false;
+            this.cart = [];
+            this.targetCollecteId = '';
+            this.targetCollecte = null;
+         },
+         error: (err) => {
+            console.error('Provisioning Error:', err);
+            const msg = err.status === 403
+               ? 'Blocage de sécurité : Veuillez vous assurer que votre compte dispose des privilèges de Directeur.'
+               : 'Échec de l\'initialisation de l\'approvisionnement. Veuillez vérifier la connexion réseau.';
+            this.toastService.show(msg, 'error');
+            this.submitting = false;
+         }
+      });
+   }
 }

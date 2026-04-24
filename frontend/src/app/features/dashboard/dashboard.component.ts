@@ -14,7 +14,7 @@ import { effect } from '@angular/core';
   selector: 'app-dashboard',
   standalone: true,
   imports: [
-    CommonModule, 
+    CommonModule,
     RouterModule,
     DirecteurDashboardComponent,      // OK ici (c'est le parent qui importe l'enfant)
     ChefEquipeDashboardComponent,

@@ -1,32 +1,32 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { ActivatedRoute, RouterModule } from '@angular/router';  
-
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import { CollecteService, Collecte } from '../../../core/services/collecte.service';
 import { UserService } from '../../../core/services/user.service';
 import { User } from '../../../core/services/auth.service';
 import { ResourceOrderService, ResourceOrder } from '../../../core/services/resource-order.service';
 
 import { DirectorLogisticsComponent } from './director-logistics.component';
+import { DirecteurAnalyticsComponent } from './directeur-analytics.component';
 
 @Component({
   selector: 'app-directeur-dashboard',
   standalone: true,
   imports: [
-    CommonModule, 
-    RouterModule, 
-    DirectorLogisticsComponent
+    CommonModule,
+    RouterModule,
+    DirectorLogisticsComponent,
+    DirecteurAnalyticsComponent
   ],
-  templateUrl: './directeur-dashboard.component.html'   // ← On garde uniquement ça
+  templateUrl: './directeur-dashboard.component.html'
 })
 export class DirecteurDashboardComponent implements OnInit {
-
   private collecteService = inject(CollecteService);
   private userService = inject(UserService);
   private http = inject(HttpClient);
   private resourceOrderService = inject(ResourceOrderService);
-  private route = inject(ActivatedRoute);   // tu peux le garder même si pas utilisé pour l'instant
+  private route = inject(ActivatedRoute);
   private cdr = inject(ChangeDetectorRef);
 
   recentCollectes: Collecte[] = [];

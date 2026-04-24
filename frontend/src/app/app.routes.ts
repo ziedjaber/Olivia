@@ -43,7 +43,8 @@ export const routes: Routes = [
       // EMERGENCY SYSTEM ROUTES
       { path: 'emergency-report', loadComponent: () => import('./features/alerte/alerte-report.component').then(m => m.AlerteReportComponent) },
       { path: 'emergency-intel', loadComponent: () => import('./features/alerte/alerte-management.component').then(m => m.AlerteManagementComponent) },
-      { path: 'emergency-history', loadComponent: () => import('./features/dashboard/team-lead/alerte-history.component').then(m => m.AlerteHistoryComponent) }
+      { path: 'emergency-history', loadComponent: () => import('./features/dashboard/team-lead/alerte-history.component').then(m => m.AlerteHistoryComponent) },
+      { path: 'historique', loadComponent: () => import('./features/historique/historique.component').then(m => m.HistoriqueComponent) }
     ]
-  }
+  },
 ];

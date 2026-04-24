@@ -2,6 +2,8 @@ package com.olivia.backend.controller;
 
 import com.olivia.backend.model.Verger;
 import com.olivia.backend.service.VergerService;
+import com.olivia.backend.service.AuditService;
+import com.olivia.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,6 +18,12 @@ public class VergerController {
 
     @Autowired
     private VergerService vergerService;
+
+    @Autowired
+    private AuditService auditService;
+
+    @Autowired
+    private UserService userService;
 
     private String getCurrentUserUid() {
         return SecurityContextHolder.getContext().getAuthentication().getName();
@@ -48,7 +56,17 @@ public class VergerController {
             // If grower, force the owner ID to be the current user
             // We can't use simple role check alone if we want to be strict, but for now we
             // follow the requirement.
-            return ResponseEntity.ok(vergerService.createVerger(verger));
+            Verger res = vergerService.createVerger(verger);
+            try {
+                String uid = getCurrentUserUid();
+                String nom = userService.getUserById(uid).getFullName();
+                String role = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+                        .map(a -> a.getAuthority()).findFirst().orElse("ROLE_DIRECTEUR");
+                auditService.log(uid, nom, role, "VERGER_CRÉÉ", "Verger", verger.getId(),
+                        "Verger '" + verger.getNom() + "' créé");
+            } catch (Exception auditEx) {
+            }
+            return ResponseEntity.ok(res);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Failed to create Verger: " + e.getMessage());
         }
@@ -70,7 +88,16 @@ public class VergerController {
                 return ResponseEntity.status(403).body("You can only update your own orchards.");
             }
 
-            return ResponseEntity.ok(vergerService.updateVerger(id, verger));
+            Verger res = vergerService.updateVerger(id, verger);
+            try {
+                String uid = getCurrentUserUid();
+                String nom = userService.getUserById(uid).getFullName();
+                String role = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+                        .map(a -> a.getAuthority()).findFirst().orElse("ROLE_DIRECTEUR");
+                auditService.log(uid, nom, role, "VERGER_MODIFIÉ", "Verger", id, "Verger modifié");
+            } catch (Exception auditEx) {
+            }
+            return ResponseEntity.ok(res);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Failed to update Verger: " + e.getMessage());
         }
@@ -106,7 +133,16 @@ public class VergerController {
 
             verger.setDateDerniereMaturite(new java.util.Date().toString());
 
-            return ResponseEntity.ok(vergerService.updateVerger(id, verger));
+            Verger res = vergerService.updateVerger(id, verger);
+            try {
+                String uid = getCurrentUserUid();
+                String nom = userService.getUserById(uid).getFullName();
+                String role = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+                        .map(a -> a.getAuthority()).findFirst().orElse("CHEF_EQUIPE_RECOLTE");
+                auditService.log(uid, nom, role, "MATURITÉ_MISE_À_JOUR", "Verger", id, "Maturité mise à jour");
+            } catch (Exception auditEx) {
+            }
+            return ResponseEntity.ok(res);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Failed to update maturity: " + e.getMessage());
         }
@@ -117,6 +153,14 @@ public class VergerController {
     public ResponseEntity<?> deleteVerger(@PathVariable String id) {
         try {
             vergerService.deleteVerger(id);
+            try {
+                String uid = getCurrentUserUid();
+                String nom = userService.getUserById(uid).getFullName();
+                String role = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+                        .map(a -> a.getAuthority()).findFirst().orElse("ROLE_DIRECTEUR");
+                auditService.log(uid, nom, role, "VERGER_SUPPRIMÉ", "Verger", id, "Verger supprimé");
+            } catch (Exception auditEx) {
+            }
             return ResponseEntity.ok("Verger deleted successfully");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Failed to delete Verger: " + e.getMessage());

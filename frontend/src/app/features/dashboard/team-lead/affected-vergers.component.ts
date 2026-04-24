@@ -213,178 +213,178 @@ import { ToastService } from '../../../core/services/toast.service';
       </div>
     </div>
   `,
-//   template: ` 
-//   <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-//     <!-- Premium Header -->
-//     <header class="mb-10 animate-in">
-//       <div class="flex items-center gap-2 text-primary font-black text-[10px] uppercase tracking-[0.25em] mb-3 opacity-70">
-//         <span class="w-12 h-[1px] bg-primary"></span>
-//         Intelligence Opérationnelle
-//       </div>
-//       <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
-//         <div>
-//           <h1 class="text-4xl font-black text-on-surface tracking-tighter" style="font-family: Manrope, sans-serif;">
-//             Vergers <span class="text-primary italic">Assignés</span>
-//           </h1>
-//           <p class="text-on-surface-variant text-sm font-medium mt-1">
-//             Suivi en temps réel de la maturité et de l’état de préparation à la récolte.
-//           </p>
-//         </div>
-        
-//         <!-- SEARCH & FILTER BAR -->
-//         <div class="w-full md:w-96 relative group animate-up">
-//           <span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline/30 group-focus-within:text-primary transition-colors">search</span>
-//           <input [(ngModel)]="searchTerm" (ngModelChange)="currentPage = 1" type="text" 
-//                  placeholder="Rechercher des secteurs ou types..."
-//                  class="w-full bg-white/60 backdrop-blur-xl border border-outline-variant/10 rounded-2xl pl-12 pr-6 py-4 focus:border-primary/40 focus:bg-white outline-none transition-all text-sm font-bold text-on-surface shadow-sm shadow-inner">
-//         </div>
-//       </div>
-//     </header>
+  //   template: ` 
+  //   <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+  //     <!-- Premium Header -->
+  //     <header class="mb-10 animate-in">
+  //       <div class="flex items-center gap-2 text-primary font-black text-[10px] uppercase tracking-[0.25em] mb-3 opacity-70">
+  //         <span class="w-12 h-[1px] bg-primary"></span>
+  //         Intelligence Opérationnelle
+  //       </div>
+  //       <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+  //         <div>
+  //           <h1 class="text-4xl font-black text-on-surface tracking-tighter" style="font-family: Manrope, sans-serif;">
+  //             Vergers <span class="text-primary italic">Assignés</span>
+  //           </h1>
+  //           <p class="text-on-surface-variant text-sm font-medium mt-1">
+  //             Suivi en temps réel de la maturité et de l’état de préparation à la récolte.
+  //           </p>
+  //         </div>
 
-//     <div class="grid grid-cols-1 xl:grid-cols-12 gap-10 items-start">
-//       <!-- Orchard Registry Table -->
-//       <div class="xl:col-span-8 space-y-6">
-//         <div class="glass-panel overflow-hidden border-white/40 shadow-xl animate-up">
-//           <div class="overflow-x-auto">
-//             <table class="w-full text-left border-collapse">
-//               <thead>
-//                 <tr class="bg-surface-container-low/50 border-b border-outline-variant/10">
-//                   <th class="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-outline">Domaine / Type</th>
-//                   <th class="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-outline">Niveau de maturité</th>
-//                   <th class="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-outline">Dernière mise à jour</th>
-//                   <th class="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-outline text-right">Action</th>
-//                 </tr>
-//               </thead>
-//               <tbody class="divide-y divide-outline-variant/5">
-//                 <tr *ngFor="let v of pagedVergers" 
-//                     (click)="selectVerger(v)"
-//                     class="cursor-pointer transition-all group"
-//                     [ngClass]="selectedVerger?.id === v.id ? 'bg-primary/[0.04]' : 'hover:bg-primary/[0.02]'">
-//                   <td class="px-6 py-5">
-//                     <div class="flex items-center gap-4">
-//                       <div class="w-10 h-10 rounded-xl bg-surface border border-outline-variant/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform shadow-sm">
-//                         <span class="material-symbols-outlined text-[20px]">landscape</span>
-//                       </div>
-//                       <div>
-//                         <p class="font-black text-on-surface tracking-tight">{{ v.nom }}</p>
-//                         <p class="text-[10px] text-outline font-bold uppercase tracking-wider">
-//                           {{ v.localisation }} • {{ v.typeOlive }}
-//                         </p>
-//                       </div>
-//                     </div>
-//                   </td>
-//                   <td class="px-6 py-5">
-//                     <div class="w-48">
-//                        <div class="flex justify-between items-center mb-1.5">
-//                           <span class="text-[9px] font-black text-outline uppercase tracking-widest">Préparation</span>
-//                           <span class="text-xs font-black text-on-surface">{{ v.niveauMaturite || 0 }}%</span>
-//                        </div>
-//                        <div class="h-1.5 w-full bg-surface-container rounded-full overflow-hidden">
-//                           <div class="h-full bg-gradient-to-r transition-all duration-1000 shadow-[0_0_8px_rgba(var(--primary-rgb),0.3)]"
-//                                [style.width.%]="v.niveauMaturite"
-//                                [ngClass]="(v.niveauMaturite || 0) >= 100 ? 'from-emerald-400 to-emerald-600' : 'from-primary/40 to-primary'"></div>
-//                        </div>
-//                     </div>
-//                   </td>
-//                   <td class="px-6 py-5">
-//                      <div class="flex flex-col">
-//                         <span class="text-xs font-bold text-on-surface">
-//                           {{ v.dateDerniereMaturite ? (v.dateDerniereMaturite | date:'MMM d, HH:mm') : 'En attente' }}
-//                         </span>
-//                         <span class="text-[9px] font-bold text-outline-variant uppercase tracking-tighter">
-//                           {{ v.dateDerniereMaturite ? 'Mise à jour vérifiée' : 'Aucune donnée disponible' }}
-//                         </span>
-//                      </div>
-//                   </td>
-//                   <td class="px-6 py-5 text-right">
-//                      <button class="w-8 h-8 rounded-lg flex items-center justify-center text-outline hover:text-primary transition-colors">
-//                         <span class="material-symbols-outlined text-[20px]">
-//                           {{ selectedVerger?.id === v.id ? 'analytics' : 'chevron_right' }}
-//                         </span>
-//                      </button>
-//                   </td>
-//                 </tr>
-//               </tbody>
-//             </table>
-//             <div *ngIf="filteredVergers.length === 0" class="py-20 text-center opacity-30">
-//                <span class="material-symbols-outlined text-5xl mb-3">radar</span>
-//                <p class="text-[10px] font-black uppercase tracking-[0.2em]">
-//                  Aucun secteur assigné ne correspond aux critères.
-//                </p>
-//             </div>
-//           </div>
+  //         <!-- SEARCH & FILTER BAR -->
+  //         <div class="w-full md:w-96 relative group animate-up">
+  //           <span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline/30 group-focus-within:text-primary transition-colors">search</span>
+  //           <input [(ngModel)]="searchTerm" (ngModelChange)="currentPage = 1" type="text" 
+  //                  placeholder="Rechercher des secteurs ou types..."
+  //                  class="w-full bg-white/60 backdrop-blur-xl border border-outline-variant/10 rounded-2xl pl-12 pr-6 py-4 focus:border-primary/40 focus:bg-white outline-none transition-all text-sm font-bold text-on-surface shadow-sm shadow-inner">
+  //         </div>
+  //       </div>
+  //     </header>
 
-//           <!-- Pagination Footer -->
-//           <div *ngIf="totalPages > 1" class="px-8 py-5 bg-surface-container-low/50 border-t border-outline-variant/10 flex items-center justify-between">
-//              <span class="text-[10px] font-black text-outline uppercase tracking-widest">
-//                Page {{ currentPage }} sur {{ totalPages }}
-//              </span>
-//              <div class="flex gap-2">
-//                 <button (click)="prevPage()" [disabled]="currentPage === 1" 
-//                         class="p-2 rounded-lg bg-surface border border-outline-variant/10 text-outline hover:text-primary disabled:opacity-30 transition-all">
-//                    <span class="material-symbols-outlined">chevron_left</span>
-//                 </button>
-//                 <button (click)="nextPage()" [disabled]="currentPage === totalPages" 
-//                         class="p-2 rounded-lg bg-surface border border-outline-variant/10 text-outline hover:text-primary disabled:opacity-30 transition-all">
-//                    <span class="material-symbols-outlined">chevron_right</span>
-//                 </button>
-//              </div>
-//           </div>
-//         </div>
-//       </div>
+  //     <div class="grid grid-cols-1 xl:grid-cols-12 gap-10 items-start">
+  //       <!-- Orchard Registry Table -->
+  //       <div class="xl:col-span-8 space-y-6">
+  //         <div class="glass-panel overflow-hidden border-white/40 shadow-xl animate-up">
+  //           <div class="overflow-x-auto">
+  //             <table class="w-full text-left border-collapse">
+  //               <thead>
+  //                 <tr class="bg-surface-container-low/50 border-b border-outline-variant/10">
+  //                   <th class="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-outline">Domaine / Type</th>
+  //                   <th class="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-outline">Niveau de maturité</th>
+  //                   <th class="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-outline">Dernière mise à jour</th>
+  //                   <th class="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-outline text-right">Action</th>
+  //                 </tr>
+  //               </thead>
+  //               <tbody class="divide-y divide-outline-variant/5">
+  //                 <tr *ngFor="let v of pagedVergers" 
+  //                     (click)="selectVerger(v)"
+  //                     class="cursor-pointer transition-all group"
+  //                     [ngClass]="selectedVerger?.id === v.id ? 'bg-primary/[0.04]' : 'hover:bg-primary/[0.02]'">
+  //                   <td class="px-6 py-5">
+  //                     <div class="flex items-center gap-4">
+  //                       <div class="w-10 h-10 rounded-xl bg-surface border border-outline-variant/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform shadow-sm">
+  //                         <span class="material-symbols-outlined text-[20px]">landscape</span>
+  //                       </div>
+  //                       <div>
+  //                         <p class="font-black text-on-surface tracking-tight">{{ v.nom }}</p>
+  //                         <p class="text-[10px] text-outline font-bold uppercase tracking-wider">
+  //                           {{ v.localisation }} • {{ v.typeOlive }}
+  //                         </p>
+  //                       </div>
+  //                     </div>
+  //                   </td>
+  //                   <td class="px-6 py-5">
+  //                     <div class="w-48">
+  //                        <div class="flex justify-between items-center mb-1.5">
+  //                           <span class="text-[9px] font-black text-outline uppercase tracking-widest">Préparation</span>
+  //                           <span class="text-xs font-black text-on-surface">{{ v.niveauMaturite || 0 }}%</span>
+  //                        </div>
+  //                        <div class="h-1.5 w-full bg-surface-container rounded-full overflow-hidden">
+  //                           <div class="h-full bg-gradient-to-r transition-all duration-1000 shadow-[0_0_8px_rgba(var(--primary-rgb),0.3)]"
+  //                                [style.width.%]="v.niveauMaturite"
+  //                                [ngClass]="(v.niveauMaturite || 0) >= 100 ? 'from-emerald-400 to-emerald-600' : 'from-primary/40 to-primary'"></div>
+  //                        </div>
+  //                     </div>
+  //                   </td>
+  //                   <td class="px-6 py-5">
+  //                      <div class="flex flex-col">
+  //                         <span class="text-xs font-bold text-on-surface">
+  //                           {{ v.dateDerniereMaturite ? (v.dateDerniereMaturite | date:'MMM d, HH:mm') : 'En attente' }}
+  //                         </span>
+  //                         <span class="text-[9px] font-bold text-outline-variant uppercase tracking-tighter">
+  //                           {{ v.dateDerniereMaturite ? 'Mise à jour vérifiée' : 'Aucune donnée disponible' }}
+  //                         </span>
+  //                      </div>
+  //                   </td>
+  //                   <td class="px-6 py-5 text-right">
+  //                      <button class="w-8 h-8 rounded-lg flex items-center justify-center text-outline hover:text-primary transition-colors">
+  //                         <span class="material-symbols-outlined text-[20px]">
+  //                           {{ selectedVerger?.id === v.id ? 'analytics' : 'chevron_right' }}
+  //                         </span>
+  //                      </button>
+  //                   </td>
+  //                 </tr>
+  //               </tbody>
+  //             </table>
+  //             <div *ngIf="filteredVergers.length === 0" class="py-20 text-center opacity-30">
+  //                <span class="material-symbols-outlined text-5xl mb-3">radar</span>
+  //                <p class="text-[10px] font-black uppercase tracking-[0.2em]">
+  //                  Aucun secteur assigné ne correspond aux critères.
+  //                </p>
+  //             </div>
+  //           </div>
 
-//       <!-- Maturity Command Center -->
-//       <div class="xl:col-span-4 sticky top-28 animate-up" style="animation-delay: 0.1s">
-//         <div *ngIf="selectedVerger" class="glass-panel p-8 border-white bg-white/40 shadow-2xl space-y-8 overflow-hidden relative">
-          
-//           <div class="relative z-10">
-//             <header class="mb-8">
-//               <span class="text-[9px] font-black text-primary uppercase tracking-[0.3em] mb-2 block">
-//                 Centre de contrôle
-//               </span>
-//               <h3 class="text-2xl font-black text-on-surface tracking-tighter flex items-center gap-2">
-//                 <span class="material-symbols-outlined text-primary">monitoring</span>
-//                 {{ selectedVerger.nom }}
-//               </h3>
-//             </header>
+  //           <!-- Pagination Footer -->
+  //           <div *ngIf="totalPages > 1" class="px-8 py-5 bg-surface-container-low/50 border-t border-outline-variant/10 flex items-center justify-between">
+  //              <span class="text-[10px] font-black text-outline uppercase tracking-widest">
+  //                Page {{ currentPage }} sur {{ totalPages }}
+  //              </span>
+  //              <div class="flex gap-2">
+  //                 <button (click)="prevPage()" [disabled]="currentPage === 1" 
+  //                         class="p-2 rounded-lg bg-surface border border-outline-variant/10 text-outline hover:text-primary disabled:opacity-30 transition-all">
+  //                    <span class="material-symbols-outlined">chevron_left</span>
+  //                 </button>
+  //                 <button (click)="nextPage()" [disabled]="currentPage === totalPages" 
+  //                         class="p-2 rounded-lg bg-surface border border-outline-variant/10 text-outline hover:text-primary disabled:opacity-30 transition-all">
+  //                    <span class="material-symbols-outlined">chevron_right</span>
+  //                 </button>
+  //              </div>
+  //           </div>
+  //         </div>
+  //       </div>
 
-//             <form (ngSubmit)="onUpdateMaturity()" class="space-y-8">
+  //       <!-- Maturity Command Center -->
+  //       <div class="xl:col-span-4 sticky top-28 animate-up" style="animation-delay: 0.1s">
+  //         <div *ngIf="selectedVerger" class="glass-panel p-8 border-white bg-white/40 shadow-2xl space-y-8 overflow-hidden relative">
 
-//               <!-- Maturity -->
-//               <div class="space-y-4">
-//                 <div class="flex justify-between items-end">
-//                   <label class="text-[10px] font-black text-outline uppercase tracking-widest">
-//                     Niveau de maturité
-//                   </label>
-//                   <span class="text-3xl font-black text-primary">
-//                     {{ maturityData.niveauMaturite }}%
-//                   </span>
-//                 </div>
-//               </div>
+  //           <div class="relative z-10">
+  //             <header class="mb-8">
+  //               <span class="text-[9px] font-black text-primary uppercase tracking-[0.3em] mb-2 block">
+  //                 Centre de contrôle
+  //               </span>
+  //               <h3 class="text-2xl font-black text-on-surface tracking-tighter flex items-center gap-2">
+  //                 <span class="material-symbols-outlined text-primary">monitoring</span>
+  //                 {{ selectedVerger.nom }}
+  //               </h3>
+  //             </header>
 
-//               <!-- Observations -->
-//               <div class="space-y-4">
-//                 <label class="text-[10px] font-black text-outline uppercase tracking-widest">
-//                   Observations terrain
-//                 </label>
-//                 <textarea name="desc" [(ngModel)]="maturityData.descriptionMaturite" rows="4" 
-//                           class="w-full bg-surface-container-low border border-outline-variant/10 rounded-[1.5rem] px-6 py-4 text-xs font-bold text-on-surface outline-none transition-all shadow-inner"
-//                           placeholder="Décrivez l’état des olives, les parasites ou les conditions météo...">
-//                 </textarea>
-//               </div>
+  //             <form (ngSubmit)="onUpdateMaturity()" class="space-y-8">
 
-//               <button type="submit"
-//                       class="w-full py-4 bg-primary text-on-primary font-black rounded-2xl text-xs uppercase tracking-[0.2em]">
-//                 Mettre à jour la maturité
-//               </button>
+  //               <!-- Maturity -->
+  //               <div class="space-y-4">
+  //                 <div class="flex justify-between items-end">
+  //                   <label class="text-[10px] font-black text-outline uppercase tracking-widest">
+  //                     Niveau de maturité
+  //                   </label>
+  //                   <span class="text-3xl font-black text-primary">
+  //                     {{ maturityData.niveauMaturite }}%
+  //                   </span>
+  //                 </div>
+  //               </div>
 
-//             </form>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   </div>
-// `,
+  //               <!-- Observations -->
+  //               <div class="space-y-4">
+  //                 <label class="text-[10px] font-black text-outline uppercase tracking-widest">
+  //                   Observations terrain
+  //                 </label>
+  //                 <textarea name="desc" [(ngModel)]="maturityData.descriptionMaturite" rows="4" 
+  //                           class="w-full bg-surface-container-low border border-outline-variant/10 rounded-[1.5rem] px-6 py-4 text-xs font-bold text-on-surface outline-none transition-all shadow-inner"
+  //                           placeholder="Décrivez l’état des olives, les parasites ou les conditions météo...">
+  //                 </textarea>
+  //               </div>
+
+  //               <button type="submit"
+  //                       class="w-full py-4 bg-primary text-on-primary font-black rounded-2xl text-xs uppercase tracking-[0.2em]">
+  //                 Mettre à jour la maturité
+  //               </button>
+
+  //             </form>
+  //           </div>
+  //         </div>
+  //       </div>
+  //     </div>
+  //   </div>
+  // `,
   styles: [`
     :host { display: block; }
     input[type="range"] {
@@ -401,7 +401,7 @@ export class AffectedVergersComponent implements OnInit {
   selectedVerger: Verger | null = null;
   loading = false;
   isDragging = false;
-  
+
   // --- Search & Pagination ---
   searchTerm = '';
   currentPage = 1;
@@ -499,9 +499,9 @@ export class AffectedVergersComponent implements OnInit {
   get filteredVergers() {
     if (!this.searchTerm) return this.vergers;
     const s = this.searchTerm.toLowerCase();
-    return this.vergers.filter(v => 
-      v.nom.toLowerCase().includes(s) || 
-      v.localisation.toLowerCase().includes(s) || 
+    return this.vergers.filter(v =>
+      v.nom.toLowerCase().includes(s) ||
+      v.localisation.toLowerCase().includes(s) ||
       v.typeOlive.toLowerCase().includes(s)
     );
   }

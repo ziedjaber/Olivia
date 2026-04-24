@@ -23,6 +23,12 @@
       <span class="material-symbols-outlined text-outline">refresh</span>
     </button>
 
+    <button *ngIf="!isGrower" (click)="syncPredictions()" [disabled]="loading"
+      class="p-3 bg-primary/10 text-primary rounded-2xl border border-primary/20 hover:bg-primary/20 transition-colors shadow-sm flex items-center gap-2 px-6" title="Déclencher manuellement le moteur de prédiction GDD">
+      <span class="material-symbols-outlined" [class.animate-spin]="loading">psychology</span>
+      <span class="text-[10px] font-black uppercase tracking-widest">Mettre à jour les prédictions</span>
+    </button>
+
     <button *ngIf="!isGrower" (click)="toggleForm()"
       class="bg-primary text-on-primary px-8 py-3.5 font-black rounded-2xl shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-3 text-xs uppercase tracking-widest">
       
@@ -42,6 +48,7 @@
 
     <h3 class="text-xs font-black uppercase tracking-[0.3em] text-primary mb-8 flex items-center gap-3">
       <span class="material-symbols-outlined">{{ isEditing ? 'edit_square' : 'add_location_alt' }}</span>
+      {{ isEditing ? 'Protocole de Modification' : 'Protocole d’Enregistrement Initial' }}
     </h3>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 relative z-10">
@@ -51,9 +58,17 @@
           class="w-full bg-surface-container-low border border-outline-variant/10 rounded-2xl px-6 py-4 focus:border-primary/40 focus:bg-white outline-none transition-all text-sm font-bold text-on-surface shadow-inner">
       </div>
 
+      <div class="space-y-1.5 flex flex-col">
+        <label class="text-[10px] font-black uppercase text-outline tracking-widest ml-1">Variété d'Olive</label>
+        <select [(ngModel)]="newVerger.varieteOlive"
+          class="w-full bg-surface-container-low border border-outline-variant/10 rounded-2xl px-6 py-4 focus:border-primary/40 focus:bg-white outline-none transition-all text-sm font-bold text-on-surface shadow-inner appearance-none cursor-pointer">
+          <option *ngFor="let v of varietes" [value]="v">{{ v }}</option>
+        </select>
+      </div>
+
       <div class="space-y-1.5">
-        <label class="text-[10px] font-black uppercase text-outline tracking-widest ml-1">Taxonomie des Olives</label>
-        <input [(ngModel)]="newVerger.typeOlive" type="text" placeholder="Chemlali, Chetoui..."
+        <label class="text-[10px] font-black uppercase text-outline tracking-widest ml-1">Début Cycle (Réf GDD)</label>
+        <input [(ngModel)]="newVerger.dateReferenceCalculGDD" type="date"
           class="w-full bg-surface-container-low border border-outline-variant/10 rounded-2xl px-6 py-4 focus:border-primary/40 focus:bg-white outline-none transition-all text-sm font-bold text-on-surface shadow-inner">
       </div>
 
@@ -91,7 +106,7 @@
             class="flex-1 bg-surface-container-low border border-outline-variant/10 rounded-2xl px-6 py-4 focus:border-primary/40 focus:bg-white outline-none transition-all text-sm font-bold text-on-surface shadow-inner">
           <button (click)="getGeolocation()"
             class="w-14 h-14 bg-primary/10 text-primary rounded-2xl border border-primary/20 hover:bg-primary hover:text-white transition-all flex items-center justify-center shadow-sm">
-            <span class="material-symbols-outlined">Ma-</span>
+            <span class="material-symbols-outlined">my_location</span>
           </button>
         </div>
       </div>
@@ -100,7 +115,7 @@
     <div class="flex justify-end gap-6 mt-12 pt-8 border-t border-outline-variant/10 relative z-10">
       <button (click)="toggleForm()" class="px-8 py-3 font-black text-[10px] text-outline hover:text-on-surface transition-all tracking-widest uppercase">Ignorer l'Enregistrement</button>
       <button (click)="onCreateVerger()" [disabled]="loading" class="bg-primary text-on-primary px-12 py-4 rounded-2xl font-black uppercase tracking-[0.2em] text-xs shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-3 min-w-[280px]">
-        {{ isEditing ? 'Confirmer la Modification' : 'Autoriser l'Enregistrement' }}
+        {{ isEditing ? 'Confirmer la Modification' : 'Autoriser l’Enregistrement' }}
       </button>
     </div>
   </div>
@@ -141,15 +156,22 @@
                 </div>
                 <div>
                   <p class="font-black text-on-surface text-lg tracking-tight">{{ verger.nom }}</p>
-                  <p class="text-[10px] text-outline font-black uppercase tracking-widest">{{ verger.typeOlive }} • GPS Actif</p>
+                  <p class="text-[10px] text-outline font-black uppercase tracking-widest">
+                    {{ verger.varieteOlive }} • 
+                    <span *ngIf="verger.dateMaturitePrevue">Prévu: {{ verger.dateMaturitePrevue | date:'dd MMM' }}</span>
+                    <span *ngIf="!verger.dateMaturitePrevue" class="text-error italic">Prédiction en attente</span>
+                  </p>
                 </div>
               </div>
             </td>
             <td class="px-8 py-5">
               <div class="w-40 mx-auto">
                 <div class="flex justify-between items-center mb-1.5">
-                  <span class="text-[9px] font-black text-outline uppercase">Préparation</span>
-                  <span class="text-xs font-black text-on-surface">{{ verger.niveauMaturite }}%</span>
+                  <span class="text-[9px] font-black text-outline uppercase">
+                    Prédiction GDD 
+                    <span *ngIf="!verger.dateReferenceCalculGDD" class="text-error">(Réf Manquante)</span>
+                  </span>
+                  <span class="text-xs font-black text-on-surface">{{ verger.pourcentageMaturite || verger.niveauMaturite | number:'1.0-1' }}%</span>
                 </div>
                 <div class="h-1.5 w-full bg-surface-container rounded-full overflow-hidden">
                   <div class="h-full bg-primary transition-all duration-1000" [style.width.%]="verger.niveauMaturite"></div>

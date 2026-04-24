@@ -291,7 +291,7 @@ export class HarvestPlanningComponent implements OnInit {
 
   collectes: Collecte[] = [];
   chefs: User[] = [];
-  allVergers: Verger[] = []; 
+  allVergers: Verger[] = [];
   vergerMap: Map<string, Verger> = new Map();
   Math = Math;
 
@@ -318,14 +318,14 @@ export class HarvestPlanningComponent implements OnInit {
       this.cdr.detectChanges();
     });
     this.userService.getAllUsers().subscribe(users => {
-       this.chefs = users.filter(u => u.role === 'CHEF_EQUIPE_RECOLTE');
-       this.cdr.detectChanges();
+      this.chefs = users.filter(u => u.role === 'CHEF_EQUIPE_RECOLTE');
+      this.cdr.detectChanges();
     });
     this.http.get<Verger[]>('http://localhost:8080/api/vergers').subscribe(v => {
-       this.allVergers = v;
-       this.vergerMap.clear();
-       v.forEach(v => this.vergerMap.set(v.id, v));
-       this.cdr.detectChanges();
+      this.allVergers = v;
+      this.vergerMap.clear();
+      v.forEach(v => this.vergerMap.set(v.id, v));
+      this.cdr.detectChanges();
     });
   }
 
@@ -336,8 +336,8 @@ export class HarvestPlanningComponent implements OnInit {
   openIntelligence(vergerId: string) {
     const verger = this.vergerMap.get(vergerId);
     if (!verger) {
-       alert("Synchronisation de l'intelligence du verger... veuillez patienter.");
-       return;
+      alert("Synchronisation de l'intelligence du verger... veuillez patienter.");
+      return;
     }
     this.selectedVergerForTelemetry = verger;
     this.showTelemetryModal = true;
@@ -370,7 +370,7 @@ export class HarvestPlanningComponent implements OnInit {
       alert("Veuillez vous assurer que le titre de la mission, le verger et le chef sont correctement spécifiés.");
       return;
     }
-    
+
     const chefObj = this.chefs.find(c => c.id === this.newCollecte.chefUid);
     const vergerObj = this.vergerMap.get(this.newCollecte.vergerId as string);
 
@@ -381,16 +381,16 @@ export class HarvestPlanningComponent implements OnInit {
       statut: this.isEditing ? this.newCollecte.statut : 'PLANNED'
     } as Collecte;
 
-    const request = this.isEditing && this.newCollecte.id 
+    const request = this.isEditing && this.newCollecte.id
       ? this.collecteService.updateCollecte(this.newCollecte.id, payload)
       : this.collecteService.createCollecte(payload);
 
     request.subscribe({
-       next: () => {
-         this.closeCreateModal();
-         this.loadData();
-       },
-       error: (err) => alert("L'opération de la mission a échoué : " + (err.error || err.message))
+      next: () => {
+        this.closeCreateModal();
+        this.loadData();
+      },
+      error: (err) => alert("L'opération de la mission a échoué : " + (err.error || err.message))
     });
   }
 
@@ -408,7 +408,7 @@ export class HarvestPlanningComponent implements OnInit {
   get filteredCollectes() {
     if (!this.searchTerm) return this.collectes;
     const s = this.searchTerm.toLowerCase();
-    return this.collectes.filter(c => 
+    return this.collectes.filter(c =>
       (c.description && c.description.toLowerCase().includes(s)) ||
       (c.vergerName && c.vergerName.toLowerCase().includes(s)) ||
       (c.chefName && c.chefName.toLowerCase().includes(s))

@@ -35,12 +35,10 @@ public class JwtUtil {
     }
 
     public String extractUserId(String token) {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'extractUserId'");
     }
 
     public String extractRole(String token) {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'extractRole'");
     }
 }

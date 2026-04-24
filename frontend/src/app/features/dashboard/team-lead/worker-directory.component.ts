@@ -275,13 +275,13 @@ export class WorkerDirectoryComponent implements OnInit {
     this.collecteService.getCollectes().subscribe({
       next: (data) => {
         console.log('[WorkerDir] All collectes from backend:', data.length);
-        
+
         // ROBUST FILTER: Matches by UID (Primary) OR Full Name (Recovery fallback)
         this.activeMissions = data.filter(c => {
           const isNotTerminated = c.statut !== 'termine' && c.statut !== 'TERMINATED';
           const matchesUid = c.chefUid === currentUid;
           const matchesName = c.chefName?.toLowerCase() === user.fullName?.toLowerCase();
-          
+
           return isNotTerminated && (matchesUid || matchesName);
         });
 

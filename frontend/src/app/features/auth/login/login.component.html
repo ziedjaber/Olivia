@@ -18,30 +18,22 @@
       <form (ngSubmit)="onLogin()" class="space-y-6">
         <!-- Adresse e-mail -->
         <div class="space-y-2">
-          <label class="block text-xs font-bold uppercase tracking-widest text-on-surface-variant" for="email">Adresse e-mail</label>
+          <label class="block text-xs font-bold uppercase tracking-widest text-on-surface-variant" for="email">Adresse
+            e-mail</label>
           <input
             class="w-full px-4 py-3 bg-surface-container-highest border-none rounded-xl focus:ring-1 focus:ring-primary focus:bg-surface-container-lowest transition-all duration-200 placeholder:text-outline/50"
-            id="email"
-            name="email"
-            [(ngModel)]="credentials.email"
-            placeholder="mohamed@harvest.tn"
-            required
-            type="email"
-          />
+            id="email" name="email" [(ngModel)]="credentials.email" placeholder="mohamed@harvest.tn" required
+            type="email" />
         </div>
 
         <!-- Mot de passe -->
         <div class="space-y-2">
-          <label class="block text-xs font-bold uppercase tracking-widest text-on-surface-variant" for="password">Mot de passe</label>
+          <label class="block text-xs font-bold uppercase tracking-widest text-on-surface-variant" for="password">Mot de
+            passe</label>
           <input
             class="w-full px-4 py-3 bg-surface-container-highest border-none rounded-xl focus:ring-1 focus:ring-primary focus:bg-surface-container-lowest transition-all duration-200 placeholder:text-outline/50"
-            id="password"
-            name="password"
-            [(ngModel)]="credentials.password"
-            placeholder="••••••••"
-            required
-            type="password"
-          />
+            id="password" name="password" [(ngModel)]="credentials.password" placeholder="••••••••" required
+            type="password" />
         </div>
 
         <div *ngIf="error" class="text-error text-sm font-medium">
@@ -83,13 +75,12 @@
   </section>
 
   <!-- Right Side: Narrative Image & Branding -->
-  <section class="hidden md:flex md:w-1/2 relative bg-surface-container-high items-center justify-center overflow-hidden">
+  <section
+    class="hidden md:flex md:w-1/2 relative bg-surface-container-high items-center justify-center overflow-hidden">
     <div class="absolute inset-0 z-0">
-      <img
-        class="w-full h-full object-cover"
+      <img class="w-full h-full object-cover"
         src="https://us.123rf.com/450wm/vejaa/vejaa2307/vejaa230700180/209069022-espagne-olives-sur-une-branche-d-olivier-libre-de-fruits-olives-vertes-en-journ%C3%A9e-ensoleill%C3%A9e.jpg?ver=6"
-        alt="Tunisian olive groves"
-      />
+        alt="Tunisian olive groves" />
       <div class="absolute inset-0 bg-primary/20 backdrop-brightness-75 mix-blend-multiply"></div>
       <div class="absolute inset-0 bg-gradient-to-t from-on-surface/60 via-transparent to-transparent"></div>
     </div>

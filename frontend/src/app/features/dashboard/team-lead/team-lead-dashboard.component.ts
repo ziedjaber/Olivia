@@ -9,10 +9,10 @@ import { UserService } from '../../../core/services/user.service';
 import { AuthService, User } from '../../../core/services/auth.service';
 
 @Component({
-  selector: 'app-team-lead-dashboard',
-  standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
-  template: `
+   selector: 'app-team-lead-dashboard',
+   standalone: true,
+   imports: [CommonModule, FormsModule, RouterModule],
+   template: `
     <div class="max-w-7xl mx-auto py-6 pb-24 px-4 space-y-12">
       <!-- Branded Header -->
       <header class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
@@ -300,292 +300,292 @@ import { AuthService, User } from '../../../core/services/auth.service';
       </div>
     </div>
   `,
-// template: `
-//   <div class="max-w-7xl mx-auto py-6 pb-24 px-4 space-y-12">
-    
-//     <!-- Header -->
-//     <header class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
-//       <div>
-//         <span class="text-[10px] font-black text-primary uppercase tracking-[0.3em] mb-2 block">
-//           Centre de contrôle
-//         </span>
+   // template: `
+   //   <div class="max-w-7xl mx-auto py-6 pb-24 px-4 space-y-12">
 
-//         <h1 class="text-5xl font-extrabold text-on-surface font-headline tracking-tighter leading-none">
-//           Opérations de l’équipe
-//         </h1>
+   //     <!-- Header -->
+   //     <header class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+   //       <div>
+   //         <span class="text-[10px] font-black text-primary uppercase tracking-[0.3em] mb-2 block">
+   //           Centre de contrôle
+   //         </span>
 
-//         <p class="text-on-surface-variant font-medium mt-2 opacity-60 italic">
-//           Organisation précise des opérations de récolte.
-//         </p>
-//       </div>
+   //         <h1 class="text-5xl font-extrabold text-on-surface font-headline tracking-tighter leading-none">
+   //           Opérations de l’équipe
+   //         </h1>
 
-//       <div class="flex gap-4">
-//         <div class="bg-white/50 backdrop-blur-sm px-6 py-4 rounded-2xl border border-stone-100 shadow-sm flex items-center gap-4">
-//           <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-//             <span class="material-symbols-outlined">groups</span>
-//           </div>
-//           <div>
-//             <span class="text-[9px] font-black text-outline uppercase tracking-wider block">
-//               Équipe active
-//             </span>
-//             <span class="text-lg font-black text-on-surface">
-//               {{ totalCrewCount }} Personnel
-//             </span>
-//           </div>
-//         </div>
-//       </div>
-//     </header>
+   //         <p class="text-on-surface-variant font-medium mt-2 opacity-60 italic">
+   //           Organisation précise des opérations de récolte.
+   //         </p>
+   //       </div>
 
-//     <!-- Agenda -->
-//     <section class="space-y-6">
-//       <h4 class="text-xs font-black text-outline uppercase tracking-[0.2em] flex items-center gap-3">
-//         <span class="material-symbols-outlined text-sm">calendar_month</span>
-//         Agenda de récolte
-//       </h4>
-//     </section>
+   //       <div class="flex gap-4">
+   //         <div class="bg-white/50 backdrop-blur-sm px-6 py-4 rounded-2xl border border-stone-100 shadow-sm flex items-center gap-4">
+   //           <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+   //             <span class="material-symbols-outlined">groups</span>
+   //           </div>
+   //           <div>
+   //             <span class="text-[9px] font-black text-outline uppercase tracking-wider block">
+   //               Équipe active
+   //             </span>
+   //             <span class="text-lg font-black text-on-surface">
+   //               {{ totalCrewCount }} Personnel
+   //             </span>
+   //           </div>
+   //         </div>
+   //       </div>
+   //     </header>
 
-//     <!-- Missions -->
-//     <h4 class="text-2xl font-extrabold font-headline tracking-tight text-on-surface">
-//       Liste des missions
-//     </h4>
+   //     <!-- Agenda -->
+   //     <section class="space-y-6">
+   //       <h4 class="text-xs font-black text-outline uppercase tracking-[0.2em] flex items-center gap-3">
+   //         <span class="material-symbols-outlined text-sm">calendar_month</span>
+   //         Agenda de récolte
+   //       </h4>
+   //     </section>
 
-//     <div *ngIf="myCollectes.length === 0" class="py-20 text-center border-2 border-dashed border-stone-100 rounded-[2rem] text-outline italic">
-//       Aucune mission assignée par la direction. Veuillez rester en attente.
-//     </div>
+   //     <!-- Missions -->
+   //     <h4 class="text-2xl font-extrabold font-headline tracking-tight text-on-surface">
+   //       Liste des missions
+   //     </h4>
 
-//     <!-- Boutons -->
-//     <button>
-//       Recruter
-//     </button>
+   //     <div *ngIf="myCollectes.length === 0" class="py-20 text-center border-2 border-dashed border-stone-100 rounded-[2rem] text-outline italic">
+   //       Aucune mission assignée par la direction. Veuillez rester en attente.
+   //     </div>
 
-//     <button>
-//       Terminer
-//     </button>
+   //     <!-- Boutons -->
+   //     <button>
+   //       Recruter
+   //     </button>
 
-//     <!-- Stats -->
-//     <h5 class="text-sm font-black text-on-surface uppercase tracking-widest">
-//       Capacité de l’équipe
-//     </h5>
+   //     <button>
+   //       Terminer
+   //     </button>
 
-//     <span class="text-[9px] text-outline font-black uppercase">
-//       Affecté
-//     </span>
+   //     <!-- Stats -->
+   //     <h5 class="text-sm font-black text-on-surface uppercase tracking-widest">
+   //       Capacité de l’équipe
+   //     </h5>
 
-//     <h5 class="text-sm font-black text-white uppercase tracking-widest">
-//       Évolution du rendement
-//     </h5>
+   //     <span class="text-[9px] text-outline font-black uppercase">
+   //       Affecté
+   //     </span>
 
-//     <!-- Workers -->
-//     <h4 class="text-xl font-black font-headline text-on-surface">
-//       Liste des ouvriers
-//     </h4>
+   //     <h5 class="text-sm font-black text-white uppercase tracking-widest">
+   //       Évolution du rendement
+   //     </h5>
 
-//     <p class="text-[10px] font-black text-outline uppercase">
-//       Ouvriers disponibles
-//     </p>
+   //     <!-- Workers -->
+   //     <h4 class="text-xl font-black font-headline text-on-surface">
+   //       Liste des ouvriers
+   //     </h4>
 
-//     <!-- Modal -->
-//     <span>
-//       Gestion des équipes
-//     </span>
+   //     <p class="text-[10px] font-black text-outline uppercase">
+   //       Ouvriers disponibles
+   //     </p>
 
-//     <h5>
-//       Personnel actuel
-//     </h5>
+   //     <!-- Modal -->
+   //     <span>
+   //       Gestion des équipes
+   //     </span>
 
-//     <span>
-//       Recrutés
-//     </span>
+   //     <h5>
+   //       Personnel actuel
+   //     </h5>
 
-//     <span>
-//       Progression
-//     </span>
+   //     <span>
+   //       Recrutés
+   //     </span>
 
-//     <th>Ouvrier</th>
-//     <th>Statut</th>
-//     <th>Finances</th>
+   //     <span>
+   //       Progression
+   //     </span>
 
-//     <span>
-//       Non payé
-//     </span>
+   //     <th>Ouvrier</th>
+   //     <th>Statut</th>
+   //     <th>Finances</th>
 
-//     <button>
-//       Payer
-//     </button>
+   //     <span>
+   //       Non payé
+   //     </span>
 
-//     <button>
-//       Payé
-//     </button>
+   //     <button>
+   //       Payer
+   //     </button>
 
-//     <td>
-//       Aucun personnel assigné.
-//     </td>
+   //     <button>
+   //       Payé
+   //     </button>
 
-//     <!-- Catalogue -->
-//     <h5>
-//       Catalogue des ouvriers disponibles
-//     </h5>
+   //     <td>
+   //       Aucun personnel assigné.
+   //     </td>
 
-//     <th>Nom de l’ouvrier</th>
-//     <th>Salaire journalier</th>
-//     <th>Action</th>
+   //     <!-- Catalogue -->
+   //     <h5>
+   //       Catalogue des ouvriers disponibles
+   //     </h5>
 
-//     <button>
-//       Envoyer une offre
-//     </button>
+   //     <th>Nom de l’ouvrier</th>
+   //     <th>Salaire journalier</th>
+   //     <th>Action</th>
 
-//     <button>
-//       Invité
-//     </button>
+   //     <button>
+   //       Envoyer une offre
+   //     </button>
 
-//     <td>
-//       Aucun ouvrier disponible.
-//     </td>
+   //     <button>
+   //       Invité
+   //     </button>
 
-//   </div>`,
-styles: [`
+   //     <td>
+   //       Aucun ouvrier disponible.
+   //     </td>
+
+   //   </div>`,
+   styles: [`
     :host { display: block; }
     .custom-scrollbar::-webkit-scrollbar { height: 4px; }
     .custom-scrollbar::-webkit-scrollbar-thumb { background: #e7e5e4; border-radius: 10px; }
   `]
 })
 export class ChefEquipeDashboardComponent implements OnInit {
-  private collecteService = inject(CollecteService);
-  private participationService = inject(ParticipationService);
-  private userService = inject(UserService);
-  private authService = inject(AuthService);
-  private http = inject(HttpClient);
-  private cdr = inject(ChangeDetectorRef);
+   private collecteService = inject(CollecteService);
+   private participationService = inject(ParticipationService);
+   private userService = inject(UserService);
+   private authService = inject(AuthService);
+   private http = inject(HttpClient);
+   private cdr = inject(ChangeDetectorRef);
 
-  myCollectes: Collecte[] = [];
-  availableWorkers: User[] = [];
-  loading = false;
-  
-  // Custom View State
-  totalCrewCount = 0;
-  crewCapacityPercent = 0;
-  yieldHistory = [30, 45, 60, 55, 80, 75, 90, 85]; // Mock evolution data
+   myCollectes: Collecte[] = [];
+   availableWorkers: User[] = [];
+   loading = false;
 
-  agendaDays = [
-     { dayNum: '12', dayName: 'Mon', isActive: true, hasMission: true },
-     { dayNum: '13', dayName: 'Tue', isActive: false, hasMission: true },
-     { dayNum: '14', dayName: 'Wed', isActive: false, hasMission: false },
-     { dayNum: '15', dayName: 'Thu', isActive: false, hasMission: true },
-     { dayNum: '16', dayName: 'Fri', isActive: false, hasMission: false },
-     { dayNum: '17', dayName: 'Sat', isActive: false, hasMission: false },
-     { dayNum: '18', dayName: 'Sun', isActive: false, hasMission: false }
-  ];
+   // Custom View State
+   totalCrewCount = 0;
+   crewCapacityPercent = 0;
+   yieldHistory = [30, 45, 60, 55, 80, 75, 90, 85]; // Mock evolution data
 
-  showWorkerModal = false;
-  selectedCollecte: Collecte | null = null;
-  participations: Participation[] = [];
-  salaryInputs: { [uid: string]: number } = {};
+   agendaDays = [
+      { dayNum: '12', dayName: 'Mon', isActive: true, hasMission: true },
+      { dayNum: '13', dayName: 'Tue', isActive: false, hasMission: true },
+      { dayNum: '14', dayName: 'Wed', isActive: false, hasMission: false },
+      { dayNum: '15', dayName: 'Thu', isActive: false, hasMission: true },
+      { dayNum: '16', dayName: 'Fri', isActive: false, hasMission: false },
+      { dayNum: '17', dayName: 'Sat', isActive: false, hasMission: false },
+      { dayNum: '18', dayName: 'Sun', isActive: false, hasMission: false }
+   ];
 
-  getRecruitmentProgress(): number {
-    if(!this.selectedCollecte || !this.selectedCollecte.numberOfWorkers) return 0;
-    const count = this.participations.filter(p => ['ACCEPTED', 'ASSIGNED', 'COMPLETED', 'INVITED'].includes(p.status)).length;
-    return Math.min(Math.round((count / this.selectedCollecte.numberOfWorkers) * 100), 100);
-  }
+   showWorkerModal = false;
+   selectedCollecte: Collecte | null = null;
+   participations: Participation[] = [];
+   salaryInputs: { [uid: string]: number } = {};
 
-  ngOnInit() {
-    this.loadData();
-  }
+   getRecruitmentProgress(): number {
+      if (!this.selectedCollecte || !this.selectedCollecte.numberOfWorkers) return 0;
+      const count = this.participations.filter(p => ['ACCEPTED', 'ASSIGNED', 'COMPLETED', 'INVITED'].includes(p.status)).length;
+      return Math.min(Math.round((count / this.selectedCollecte.numberOfWorkers) * 100), 100);
+   }
 
-  loadData() {
-    this.loading = true;
-    const uid = this.authService.currentUser()?.id;
+   ngOnInit() {
+      this.loadData();
+   }
 
-    this.collecteService.getCollectes().subscribe({
-      next: (data) => {
-        this.myCollectes = (data || []).filter(c => c.chefUid === uid);
-        this.loading = false;
-        this.calculateStats();
-        this.cdr.detectChanges();
-      },
-      error: () => this.loading = false
-    });
+   loadData() {
+      this.loading = true;
+      const uid = this.authService.currentUser()?.id;
 
-    this.userService.getAllUsers().subscribe({
-      next: (users) => {
-        this.availableWorkers = users.filter(u => u.role === 'OUVRIER_RECOLTE');
-        this.cdr.detectChanges();
-      }
-    });
-
-    // Count all active participations across all missions for the lead
-    this.http.get<Participation[]>('http://localhost:8080/api/participations/mine').subscribe(all => {
-       // This endpoint in backend currently returns by Ouvrier. 
-       // We might need a "By Chef" endpoint or filter client side after fetching all.
-       // For now, we simulate a global crew count.
-    });
-  }
-
-  calculateStats() {
-    let assigned = 0;
-    let target = 0;
-    this.myCollectes.forEach(c => {
-       target += c.numberOfWorkers || 0;
-    });
-    this.totalCrewCount = assigned; // Simplified
-    this.crewCapacityPercent = target > 0 ? Math.round((assigned / target) * 100) : 0;
-  }
-
-  openManageWorkersModal(c: Collecte) {
-    this.selectedCollecte = c;
-    this.showWorkerModal = true;
-    this.loadParticipations(c.id!);
-  }
-
-  loadParticipations(colId: string) {
-    this.collecteService.getParticipations(colId).subscribe({
-      next: (data) => {
-         this.participations = data || [];
-         this.totalCrewCount = this.participations.filter(p => p.status === 'ACCEPTED' || p.status === 'ASSIGNED').length;
-         this.calculateStats();
-         this.cdr.detectChanges();
-      }
-    });
-  }
-
-  isAlreadyInvited(workerUid: string): boolean {
-    return this.participations.some(p => p.ouvrierUid === workerUid && p.status !== 'REJECTED' && p.status !== 'REMOVED');
-  }
-
-  inviteWorker(workerUid: string) {
-    if (!this.selectedCollecte || !this.selectedCollecte.id) return;
-    const salary = this.salaryInputs[workerUid] || 0;
-    this.collecteService.inviteOuvrier(this.selectedCollecte.id, workerUid, salary).subscribe({
-      next: () => {
-         this.loadParticipations(this.selectedCollecte!.id!);
-         this.salaryInputs[workerUid] = 0; // reset
-      },
-      error: () => alert("Échec de l'invitation de l'ouvrier.")
-    });
-  }
-
-  payWorker(participationId: string) {
-    this.participationService.payWorker(participationId).subscribe({
-      next: () => this.loadParticipations(this.selectedCollecte!.id!),
-      error: (err: any) => alert("Échec du marquage du salaire comme payé.")
-    });
-  }
-
-  removeWorker(participationId: string) {
-    if(confirm("Confirmer le retrait de l'ouvrier de la liste de mission ?")) {
-      this.participationService.removeWorker(participationId).subscribe({
-        next: () => this.loadParticipations(this.selectedCollecte!.id!),
-        error: (err: any) => alert("Échec du retrait de l'ouvrier.")
+      this.collecteService.getCollectes().subscribe({
+         next: (data) => {
+            this.myCollectes = (data || []).filter(c => c.chefUid === uid);
+            this.loading = false;
+            this.calculateStats();
+            this.cdr.detectChanges();
+         },
+         error: () => this.loading = false
       });
-    }
-  }
 
-  startCollecte(col: Collecte) {
-    if (!col.id) return;
-    this.collecteService.startCollecte(col.id).subscribe(() => this.loadData());
-  }
+      this.userService.getAllUsers().subscribe({
+         next: (users) => {
+            this.availableWorkers = users.filter(u => u.role === 'OUVRIER_RECOLTE');
+            this.cdr.detectChanges();
+         }
+      });
 
-  endCollecte(col: Collecte) {
-    if (!col.id) return;
-    this.collecteService.endCollecte(col.id).subscribe(() => this.loadData());
-  }
+      // Count all active participations across all missions for the lead
+      this.http.get<Participation[]>('http://localhost:8080/api/participations/mine').subscribe(all => {
+         // This endpoint in backend currently returns by Ouvrier. 
+         // We might need a "By Chef" endpoint or filter client side after fetching all.
+         // For now, we simulate a global crew count.
+      });
+   }
+
+   calculateStats() {
+      let assigned = 0;
+      let target = 0;
+      this.myCollectes.forEach(c => {
+         target += c.numberOfWorkers || 0;
+      });
+      this.totalCrewCount = assigned; // Simplified
+      this.crewCapacityPercent = target > 0 ? Math.round((assigned / target) * 100) : 0;
+   }
+
+   openManageWorkersModal(c: Collecte) {
+      this.selectedCollecte = c;
+      this.showWorkerModal = true;
+      this.loadParticipations(c.id!);
+   }
+
+   loadParticipations(colId: string) {
+      this.collecteService.getParticipations(colId).subscribe({
+         next: (data) => {
+            this.participations = data || [];
+            this.totalCrewCount = this.participations.filter(p => p.status === 'ACCEPTED' || p.status === 'ASSIGNED').length;
+            this.calculateStats();
+            this.cdr.detectChanges();
+         }
+      });
+   }
+
+   isAlreadyInvited(workerUid: string): boolean {
+      return this.participations.some(p => p.ouvrierUid === workerUid && p.status !== 'REJECTED' && p.status !== 'REMOVED');
+   }
+
+   inviteWorker(workerUid: string) {
+      if (!this.selectedCollecte || !this.selectedCollecte.id) return;
+      const salary = this.salaryInputs[workerUid] || 0;
+      this.collecteService.inviteOuvrier(this.selectedCollecte.id, workerUid, salary).subscribe({
+         next: () => {
+            this.loadParticipations(this.selectedCollecte!.id!);
+            this.salaryInputs[workerUid] = 0; // reset
+         },
+         error: () => alert("Échec de l'invitation de l'ouvrier.")
+      });
+   }
+
+   payWorker(participationId: string) {
+      this.participationService.payWorker(participationId).subscribe({
+         next: () => this.loadParticipations(this.selectedCollecte!.id!),
+         error: (err: any) => alert("Échec du marquage du salaire comme payé.")
+      });
+   }
+
+   removeWorker(participationId: string) {
+      if (confirm("Confirmer le retrait de l'ouvrier de la liste de mission ?")) {
+         this.participationService.removeWorker(participationId).subscribe({
+            next: () => this.loadParticipations(this.selectedCollecte!.id!),
+            error: (err: any) => alert("Échec du retrait de l'ouvrier.")
+         });
+      }
+   }
+
+   startCollecte(col: Collecte) {
+      if (!col.id) return;
+      this.collecteService.startCollecte(col.id).subscribe(() => this.loadData());
+   }
+
+   endCollecte(col: Collecte) {
+      if (!col.id) return;
+      this.collecteService.endCollecte(col.id).subscribe(() => this.loadData());
+   }
 }

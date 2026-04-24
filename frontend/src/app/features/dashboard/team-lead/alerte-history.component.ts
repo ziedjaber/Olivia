@@ -367,7 +367,7 @@ export class AlerteHistoryComponent implements OnInit, OnDestroy {
   alerts: Alerte[] = [];
   filteredAlerts: Alerte[] = [];
   pagedAlerts: Alerte[] = [];
-  
+
   selectedDetail: Alerte | null = null;
   currentPreviewImage: string | null = null;
   activeCount = 0;
@@ -378,7 +378,7 @@ export class AlerteHistoryComponent implements OnInit, OnDestroy {
   searchTerm = '';
   statusFilter = 'ALL';
   typeFilter = 'ALL';
-  
+
   // Pagination System
   currentPage = 1;
   pageSize = 5;
@@ -405,7 +405,7 @@ export class AlerteHistoryComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.initAutoRefresh();
     this.loadAssigned();
-    
+
     const user = this.authService.currentUser();
     if (user) {
       this.report.senderUid = user.id;
@@ -474,13 +474,13 @@ export class AlerteHistoryComponent implements OnInit, OnDestroy {
 
   applyFilters() {
     this.filteredAlerts = this.alerts.filter(a => {
-      const matchesSearch = !this.searchTerm || 
+      const matchesSearch = !this.searchTerm ||
         a.description?.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
         a.id?.toLowerCase().includes(this.searchTerm.toLowerCase());
-      
+
       const matchesStatus = this.statusFilter === 'ALL' || a.statut === this.statusFilter;
       const matchesType = this.typeFilter === 'ALL' || a.type === this.typeFilter;
-      
+
       return matchesSearch && matchesStatus && matchesType;
     });
 
@@ -490,7 +490,7 @@ export class AlerteHistoryComponent implements OnInit, OnDestroy {
   updatePagination() {
     this.totalPages = Math.ceil(this.filteredAlerts.length / this.pageSize);
     this.pages = Array.from({ length: this.totalPages }, (_, i) => i + 1);
-    
+
     if (this.currentPage > this.totalPages && this.totalPages > 0) {
       this.currentPage = this.totalPages;
     }
@@ -516,10 +516,10 @@ export class AlerteHistoryComponent implements OnInit, OnDestroy {
   }
 
   onVergerChange() {
-     const verger = this.assignedVergers.find(v => v.id === this.report.vergerId);
-     if (verger) {
-       this.report.localisation = verger.localisation;
-     }
+    const verger = this.assignedVergers.find(v => v.id === this.report.vergerId);
+    if (verger) {
+      this.report.localisation = verger.localisation;
+    }
   }
 
   onFileSelected(event: any) {
@@ -568,7 +568,7 @@ export class AlerteHistoryComponent implements OnInit, OnDestroy {
         this.loading = false;
         this.showReportForm = false;
         this.resetForm();
-        setTimeout(() => this.loadAlerts(), 500); 
+        setTimeout(() => this.loadAlerts(), 500);
       },
       error: (err) => {
         this.loading = false;
@@ -593,9 +593,9 @@ export class AlerteHistoryComponent implements OnInit, OnDestroy {
   }
 
   viewDetails(a: Alerte) {
-     this.selectedDetail = a;
-     this.currentPreviewImage = (a.imageUrls && a.imageUrls.length > 0) ? a.imageUrls[0] : (a.imageUrl || null);
-     this.cdr.detectChanges();
+    this.selectedDetail = a;
+    this.currentPreviewImage = (a.imageUrls && a.imageUrls.length > 0) ? a.imageUrls[0] : (a.imageUrl || null);
+    this.cdr.detectChanges();
   }
 
   confirmDelete(a: Alerte) {
@@ -611,7 +611,7 @@ export class AlerteHistoryComponent implements OnInit, OnDestroy {
   }
 
   getTypeIcon(type: string | undefined): string {
-    switch(type) {
+    switch (type) {
       case 'MACHINE': return 'settings_suggest';
       case 'ACCIDENT': return 'emergency';
       case 'INFRASTRUCTURE': return 'apartment';
@@ -620,9 +620,14 @@ export class AlerteHistoryComponent implements OnInit, OnDestroy {
     }
   }
 
+  getTypeLabel(type: string | undefined): string {
+    if (!type) return 'Incident';
+    return type.replace('_', ' ');
+  }
+
   getImportanceClass(a: Alerte): string {
     if (a.statut !== 'NON_TRAITEE') return 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20';
-    switch(a.importance) {
+    switch (a.importance) {
       case 'URGENT': return 'bg-error text-white shadow-lg shadow-error/20';
       case 'MEDIUM': return 'bg-orange-500/10 text-orange-500 border border-orange-500/20';
       default: return 'bg-blue-500/10 text-blue-500 border border-blue-500/20';

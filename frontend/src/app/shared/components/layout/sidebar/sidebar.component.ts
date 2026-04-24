@@ -108,7 +108,7 @@ import { AuthService } from '../../../../core/services/auth.service';
           <!-- WORKER -->
           <ng-container *ngSwitchCase="'OUVRIER_RECOLTE'">
             <a class="nav-item" routerLink="/work-offers" routerLinkActive="active">
-              <span class="material-symbols-outlined">travail</span>
+              <span class="material-symbols-outlined">work</span>
               <span class="font-medium text-sm">Offres de travail</span>
             </a>
             <a class="nav-item" href="javascript:void(0)">

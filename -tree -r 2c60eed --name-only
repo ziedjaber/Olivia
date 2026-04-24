@@ -1,0 +1,46 @@
+[33mcommit 2c60eede0207749f9f9dc93968dee70cabbc6441[m[33m ([m[1;31morigin/main[m[33m, [m[1;32mmain[m[33m)[m
+Author: ziedjaber <ziedjaber18@gmail.com>
+Date:   Thu Apr 9 16:51:04 2026 +0100
+
+    chore: improve .gitignore and clean Angular cache files
+
+[1mdiff --git a/.gitignore b/.gitignore[m
+[1mindex e5bcb8a..5818679 100644[m
+[1m--- a/.gitignore[m
+[1m+++ b/.gitignore[m
+[36m@@ -1,19 +1,19 @@[m
+[31m-# Firebase secret[m
+[31m-backend/src/main/resources/firebase-key.json[m
+[31m-backend/src/main/resources/firebase_config.json[m
+[31m-*.json.key[m
+[31m-firebase-key.json[m
+[32m+[m[32m# Frontend Angular[m
+[32m+[m[32mfrontend/node_modules/[m
+[32m+[m[32mfrontend/dist/[m
+[32m+[m[32mfrontend/.angular/[m
+[32m+[m[32mfrontend/.vscode/[m
+[32m+[m[32mfrontend/coverage/[m
+[32m+[m[32mfrontend/*.log[m
+[32m+[m[32mfrontend/.env*[m
+ [m
+[31m-# Dossiers d'uploads (images, fichiers temporaires)[m
+[32m+[m[32m# Backend[m
+[32m+[m[32mbackend/target/[m
+ backend/uploads/[m
+[32m+[m[32mbackend/src/main/resources/firebase-key.json[m
+ [m
+[31m-# Autres classiques pour Spring Boot + React/Vite/Angular[m
+[31m-backend/target/[m
+[31m-backend/.mvn/[m
+[31m-*.log[m
+[32m+[m[32m# Général[m
+ .env[m
+[31m-application-local.properties[m
+[31m-node_modules/[m
+[31m-dist/[m
+[31m-build/[m
+[31m-.DS_Store[m
+\ No newline at end of file[m
+[32m+[m[32m.DS_Store[m
+[32m+[m[32m*.log[m
+[32m+[m[32mThumbs.db[m

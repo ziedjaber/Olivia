@@ -23,7 +23,15 @@ public class LogisticResourceService {
             QuerySnapshot query = db.collection(COLLECTION_NAME).get().get(30, TimeUnit.SECONDS);
             List<LogisticResource> resources = new ArrayList<>();
             for (QueryDocumentSnapshot document : query.getDocuments()) {
-                resources.add(document.toObject(LogisticResource.class));
+                try {
+                    LogisticResource res = document.toObject(LogisticResource.class);
+                    if (res != null) {
+                        res.setId(document.getId());
+                        resources.add(res);
+                    }
+                } catch (Exception docEx) {
+                    log.error("Erreur de lecture de la ressource ID: {}. Ignorée.", document.getId());
+                }
             }
             return resources;
         } catch (Exception e) {
@@ -33,7 +41,8 @@ public class LogisticResourceService {
     }
 
     public Optional<LogisticResource> getResourceById(String id) {
-        if (id == null) return Optional.empty();
+        if (id == null)
+            return Optional.empty();
         try {
             Firestore db = FirestoreClient.getFirestore();
             var doc = db.collection(COLLECTION_NAME).document(id).get().get(30, TimeUnit.SECONDS);
@@ -80,7 +89,8 @@ public class LogisticResourceService {
     }
 
     public LogisticResource updateResource(String id, LogisticResource resource) {
-        if (id == null) throw new IllegalArgumentException("ID cannot be null");
+        if (id == null)
+            throw new IllegalArgumentException("ID cannot be null");
         try {
             Firestore db = FirestoreClient.getFirestore();
             resource.setId(id);
@@ -106,7 +116,8 @@ public class LogisticResourceService {
     }
 
     public void deleteResource(String id) {
-        if (id == null) return;
+        if (id == null)
+            return;
         try {
             Firestore db = FirestoreClient.getFirestore();
             db.collection(COLLECTION_NAME).document(id).delete().get(30, TimeUnit.SECONDS);

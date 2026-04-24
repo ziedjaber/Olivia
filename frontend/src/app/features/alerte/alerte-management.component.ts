@@ -41,6 +41,7 @@ import { ToastService } from '../../core/services/toast.service';
            <div class="flex items-center gap-2">
               <span class="w-3 h-3 rounded-full bg-blue-500"></span>
               <span class="text-[9px] font-black text-outline uppercase tracking-widest">Priorité Basse</span>
+
            </div>
         </div>
       </div>
@@ -236,7 +237,6 @@ export class AlerteManagementComponent implements OnInit, AfterViewInit {
 
   alerts: Alerte[] = [];
   loading = false;
-
   _selectedAlert: Alerte | null = null;
   currentPreviewImage: string | null = null;
 
@@ -252,7 +252,6 @@ export class AlerteManagementComponent implements OnInit, AfterViewInit {
     }
   }
   get selectedAlert() { return this._selectedAlert; }
-
   private map: any;
   private markersLayer: any;
   private L: any;
@@ -318,7 +317,6 @@ export class AlerteManagementComponent implements OnInit, AfterViewInit {
 
   private fitMapToMarkers() {
     if (!this.map || !this.L || this.activeAlerts.length === 0) return;
-
     const bounds: any[] = [];
     this.activeAlerts.forEach(a => {
       if (a.localisation) {
@@ -339,6 +337,8 @@ export class AlerteManagementComponent implements OnInit, AfterViewInit {
   private updateMarkers() {
     if (!this.L || !this.markersLayer || !this.map) return;
     this.markersLayer.clearLayers();
+    const bounds: any[] = [];
+
 
     this.alerts.forEach(a => {
       if (a.localisation && a.statut === 'NON_TRAITEE') {
@@ -346,11 +346,10 @@ export class AlerteManagementComponent implements OnInit, AfterViewInit {
         if (parts.length === 2) {
           const lat = parseFloat(parts[0].trim());
           const lng = parseFloat(parts[1].trim());
-
           if (!isNaN(lat) && !isNaN(lng)) {
+            bounds.push([lat, lng]);
             const pulseClass = a.importance === 'URGENT' ? 'pulse-danger' : '';
             const pinColor = a.importance === 'URGENT' ? '#ef4444' : (a.importance === 'MEDIUM' ? '#f97316' : '#3b82f6');
-
             const customIcon = this.L.divIcon({
               html: `<div style="background:${pinColor};width:16px;height:16px;border-radius:50%;border:4px solid white;box-shadow:0 0 20px ${pinColor}88;" class="${pulseClass}"></div>`,
               className: '',
@@ -370,6 +369,10 @@ export class AlerteManagementComponent implements OnInit, AfterViewInit {
         }
       }
     });
+
+    if (bounds.length > 0 && this.map) {
+      this.map.fitBounds(bounds, { padding: [50, 50], maxZoom: 12 });
+    }
   }
 
   focusOnAlert(a: Alerte) {
@@ -388,7 +391,6 @@ export class AlerteManagementComponent implements OnInit, AfterViewInit {
   onSolve(event: Event, a: Alerte) {
     event.stopPropagation();
     if (!a.id) return;
-
     this.alerteService.solveAlerte(a.id).subscribe({
       next: () => {
         this.toastService.show('Alert processed.', 'success');
@@ -399,6 +401,7 @@ export class AlerteManagementComponent implements OnInit, AfterViewInit {
   }
 
   getTypeIcon(type: string): string {
+
     switch (type) {
       case 'MACHINE': return 'engineering';
       case 'ACCIDENT': return 'urgent';
@@ -423,6 +426,7 @@ export class AlerteManagementComponent implements OnInit, AfterViewInit {
   }
 
   getImportanceTextClass(a: Alerte): string {
+
     if (a.statut !== 'NON_TRAITEE') return 'text-emerald-500';
     switch (a.importance) {
       case 'URGENT': return 'text-error';
