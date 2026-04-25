@@ -50,6 +50,10 @@ import { AuthService } from '../../../../core/services/auth.service';
               <span class="material-symbols-outlined text-error">notification_important</span>
               <span class="font-medium text-sm text-error/90">Hub d'urgence</span>
             </a>
+            <a class="nav-item" routerLink="/historique" routerLinkActive="active">
+              <span class="material-symbols-outlined">history</span>
+              <span class="font-medium text-sm">Historique des activités</span>
+            </a>
           </ng-container>
 
           <!-- LOGISTICS -->

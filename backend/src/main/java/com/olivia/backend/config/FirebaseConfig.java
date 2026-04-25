@@ -4,27 +4,28 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.firestore.Firestore;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
-import jakarta.annotation.PostConstruct;
-
+import com.google.firebase.cloud.FirestoreClient;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.io.InputStream;
-import com.google.firebase.cloud.FirestoreClient;
 
+@Slf4j
 @Configuration
 public class FirebaseConfig {
-    @Bean
-    public Firestore firestore() {
-        return FirestoreClient.getFirestore();
-    }
 
-    @PostConstruct
-    public void init() {
+    @Bean
+    public FirebaseApp firebaseApp() {
         try {
+            if (!FirebaseApp.getApps().isEmpty()) {
+                return FirebaseApp.getInstance();
+            }
+
             InputStream serviceAccount = getClass().getClassLoader().getResourceAsStream("firebase-key.json");
 
             if (serviceAccount == null) {
+                log.error("CRITICAL: firebase-key.json not found in resources!");
                 throw new RuntimeException("Firebase key not found");
             }
 
@@ -32,12 +33,17 @@ public class FirebaseConfig {
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
                     .build();
 
-            if (FirebaseApp.getApps().isEmpty()) {
-                FirebaseApp.initializeApp(options);
-            }
-
+            log.info("Initializing Firebase Application...");
+            return FirebaseApp.initializeApp(options);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Failed to initialize Firebase App", e);
+            throw new RuntimeException(e);
         }
+    }
+
+    @Bean
+    public Firestore firestore(FirebaseApp firebaseApp) {
+        log.info("Providing Firestore bean using FirebaseApp: {}", firebaseApp.getName());
+        return FirestoreClient.getFirestore(firebaseApp);
     }
 }
