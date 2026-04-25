@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body th:replace="~{emails/layout :: body(content=~{:: .production-content})}">
+    <div class="production-content">
+        <div class="badge" style="background-color: rgba(62, 82, 25, 0.1); color: #3e5219;">Production Ready</div>
+        <h2>Liquid Gold Extracted!</h2>
+        <p>The milling session has concluded successfully. A new batch of extra virgin olive oil is ready for logistics extraction and storage.</p>
+        
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-label">Total Volume</div>
+                <div class="stat-value" th:text="${oilVolume + ' Liters'}">500 Liters</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Batch Quality</div>
+                <div class="stat-value" th:text="${qualityGrade}">Extra Virgin</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Origin Orchard</div>
+                <div class="stat-value" th:text="${orchardName}">North Estate</div>
+            </div>
+        </div>
+
+        <p>Logistics staff has been notified for immediate pickup and laboratory analysis.</p>
+        
+        <div style="text-align: center; margin: 40px 0;">
+            <a href="http://localhost:4200/dashboard" class="button">View Production Details</a>
+        </div>
+    </div>
+</body>
+</html>

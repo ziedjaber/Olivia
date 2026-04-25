@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body th:replace="~{emails/layout :: body(content=~{:: .welcome-content})}">
+    <div class="welcome-content">
+        <div class="badge">Personnel Onboarding</div>
+        <h2>Welcome to the Mission, <span th:text="${userName}">User</span>!</h2>
+        <p>Your account has been successfully initialized within the Olivia Cooperative ecosystem. You are now part of a digital-first olive production network.</p>
+        
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-label">Assigned Role</div>
+                <div class="stat-value" th:text="${userRole}">Directeur</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Temporary Password</div>
+                <div class="stat-value" style="font-family: monospace; letter-spacing: 0.2em; color: #3e5219;" th:text="${tempPassword}">OLIVIA-2026</div>
+            </div>
+        </div>
+
+        <p>Please log in immediately to complete your profile synchronization and update your security credentials.</p>
+        
+        <div style="text-align: center; margin: 40px 0;">
+            <a href="http://localhost:4200/login" class="button">Access Command Center</a>
+        </div>
+
+        <p style="font-size: 13px; font-style: italic;">Note: For security reasons, this temporary password will expire in 24 hours.</p>
+    </div>
+</body>
+</html>

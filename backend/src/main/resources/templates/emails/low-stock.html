@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body th:replace="~{emails/layout :: body(content=~{:: .stock-content})}">
+    <div class="stock-content">
+        <div class="badge" style="background-color: rgba(185, 28, 28, 0.1); color: #b91c1c;">Inventory Critical</div>
+        <h2>Supply Threshold Breach</h2>
+        <p>Strategic logistics resources have fallen below the operational safety margin. Immediate replenishment is required to maintain harvest continuity.</p>
+        
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-label">Resource Type</div>
+                <div class="stat-value" th:text="${resourceName}">Harvest Crates</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Remaining Stock</div>
+                <div class="stat-value" style="color: #b91c1c;" th:text="${currentStock}">15 Units</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Minimum Required</div>
+                <div class="stat-value" th:text="${minThreshold}">100 Units</div>
+            </div>
+        </div>
+
+        <p>Automated provisioning suggests immediate procurement from verified vendors to avoid mission stoppage.</p>
+        
+        <div style="text-align: center; margin: 40px 0;">
+            <a href="http://localhost:4200/logistics/inventory" class="button" style="background-color: #b91c1c;">Open Inventory Manager</a>
+        </div>
+    </div>
+</body>
+</html>

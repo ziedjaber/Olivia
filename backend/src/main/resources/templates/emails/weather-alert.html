@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body th:replace="~{emails/layout :: body(content=~{:: .weather-content})}">
+    <div class="weather-content">
+        <div class="badge" style="background-color: rgba(245, 158, 11, 0.1); color: #d97706;">Meteorological Warning</div>
+        <h2>Severe Weather Detected</h2>
+        <p>A significant weather event is approaching the harvest regions. Field operations must be adjusted according to safety protocols.</p>
+        
+        <div class="stats-grid" style="background-color: #fffbeb; border-color: #fef3c7;">
+            <div class="stat-item">
+                <div class="stat-label">Alert Type</div>
+                <div class="stat-value" style="color: #d97706;" th:text="${alertType}">Heavy Thunderstorms</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Expected Impact</div>
+                <div class="stat-value" th:text="${impactLevel}">High - Mission Suspension Likely</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Affected Sectors</div>
+                <div class="stat-value" th:text="${sectors}">Central Basin, North Slope</div>
+            </div>
+        </div>
+
+        <p>All Team Leads are advised to secure equipment and ensure personnel are moved to designated safety zones immediately.</p>
+        
+        <div style="text-align: center; margin: 40px 0;">
+            <a href="http://localhost:4200/dashboard" class="button" style="background-color: #d97706;">View Regional Radar</a>
+        </div>
+    </div>
+</body>
+</html>
