@@ -113,7 +113,7 @@ import { DialogService } from '../../../core/services/dialog.service';
                               <span class="text-sm font-black text-on-surface leading-tight">{{ item.name }}</span>
                               <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-stone-100 uppercase">{{ item.type }}</span>
                            </div>
-                           <p class="text-[10px] font-black text-primary mb-3">€{{ item.costPerHour }}/h</p>
+                           <p class="text-[10px] font-black text-primary mb-3">€{{ item.pricePerHour }}/h</p>
                         </div>
                         <div class="flex items-center justify-between mt-2">
                            <span class="text-[10px] font-black text-outline uppercase tracking-widest"><span [class.text-error]="item.stockLevel === 0" [class.text-primary]="item.stockLevel > 0">{{ item.stockLevel }}</span> Available</span>
@@ -165,7 +165,7 @@ import { DialogService } from '../../../core/services/dialog.service';
 
             <div class="p-6 border-t border-outline-variant/10 bg-surface-container-low/30">
                <button (click)="finalizeProvisioning()" class="w-full py-4 rounded-2xl bg-primary text-on-primary font-black text-[10px] uppercase tracking-[0.3em] shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all">
-                  {{ (activeMission?.requiredResources || []).length > 0 ? 'Update Provisioning' : 'Confirm Provisioning' }}
+                  {{ (activeMission.requiredResources || []).length > 0 ? 'Update Provisioning' : 'Confirm Provisioning' }}
                </button>
             </div>
          </div>

@@ -20,13 +20,13 @@ import { DialogService } from '../../../core/services/dialog.service';
         <div class="space-y-3">
           <div class="flex items-center gap-2">
             <span class="w-8 h-[2px] bg-primary"></span>
-            <span class="text-[10px] font-black text-primary uppercase tracking-[0.4em]">Recruitment Hub</span>
+            <span class="text-[10px] font-black text-primary uppercase tracking-[0.4em]">Centre de recrutement</span>
           </div>
           <h1 class="text-6xl font-black text-on-surface font-headline tracking-tighter leading-none">
-            Harvester <span class="text-primary italic">Personnel</span>
+            Ouvriers <span class="text-primary italic">Agricoles</span>
           </h1>
           <p class="text-on-surface-variant font-medium mt-4 text-lg max-w-xl opacity-70 leading-relaxed font-sans">
-            Optimized workforce management for the olive season. Select a mission below to begin recruitment.
+            Gestion optimisée de la main-d'œuvre pour la saison des olives. Sélectionnez une mission ci-dessous pour commencer le recrutement.
           </p>
         </div>
         
@@ -36,8 +36,8 @@ import { DialogService } from '../../../core/services/dialog.service';
                 <span class="material-symbols-outlined text-2xl">group_add</span>
               </div>
               <div class="pr-4">
-                <span class="text-[10px] font-black text-outline uppercase tracking-widest block opacity-50">Global Availability</span>
-                <span class="text-2xl font-black text-on-surface tracking-tight">{{ filteredWorkers.length }} Verified Staff</span>
+                <span class="text-[10px] font-black text-outline uppercase tracking-widest block opacity-50">Disponibilité globale</span>
+                <span class="text-2xl font-black text-on-surface tracking-tight">{{ filteredWorkers.length }} Employés vérifiés</span>
               </div>
            </div>
         </div>
@@ -55,18 +55,18 @@ import { DialogService } from '../../../core/services/dialog.service';
                   <div class="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
                     <span class="material-symbols-outlined text-primary text-xl">target</span>
                   </div>
-                  <h4 class="text-xs font-black text-white/90 uppercase tracking-[0.3em]">Mission Deployment</h4>
+                  <h4 class="text-xs font-black text-white/90 uppercase tracking-[0.3em]">Déploiement de mission</h4>
                 </div>
-                <span class="px-3 py-1 bg-primary/10 text-primary rounded-full text-[8px] font-black uppercase tracking-widest border border-primary/20">Active Session</span>
+                <span class="px-3 py-1 bg-primary/10 text-primary rounded-full text-[8px] font-black uppercase tracking-widest border border-primary/20">Session active</span>
               </div>
 
               <div class="relative group/select">
-                <label class="block text-[9px] font-black text-white/40 uppercase tracking-widest mb-3 ml-1">Select Target Harvest Mission</label>
+                <label class="block text-[9px] font-black text-white/40 uppercase tracking-widest mb-3 ml-1">Sélectionner la mission de récolte cible</label>
                 <div class="relative">
                   <select [(ngModel)]="selectedMissionId" 
                           (change)="onMissionChange()"
                           class="w-full bg-white/5 border-2 border-white/10 rounded-[1.5rem] py-5 px-8 text-sm font-bold text-white appearance-none outline-none focus:border-primary/50 focus:bg-white/10 transition-all cursor-pointer shadow-inner">
-                    <option value="" class="bg-[#0f0e0a]">Currently unassigned...</option>
+                    <option value="" class="bg-[#0f0e0a]">Actuellement non assigné...</option>
                     <option *ngFor="let m of activeMissions" [value]="m.id" class="bg-[#0f0e0a]">
                       {{ m.description }}
                     </option>
@@ -92,15 +92,14 @@ import { DialogService } from '../../../core/services/dialog.service';
                  <div class="pt-4 border-t border-white/5 flex items-center justify-between">
                     <div class="flex items-center gap-2">
                        <span class="material-symbols-outlined text-sm text-primary">event_note</span>
-                       <span class="text-[10px] font-bold text-white/60 uppercase">Starts {{ selectedMission.startDate | date:'MMM d, y' }}</span>
+                       <span class="text-[10px] font-bold text-white/60 uppercase">Débute le {{ selectedMission.startDate | date:'MMM d, y' }}</span>
                     </div>
                     <span class="text-[9px] font-black text-primary italic uppercase">{{ selectedMission.type }}</span>
                  </div>
               </div>
 
               <p *ngIf="!selectedMissionId" class="text-[10px] font-medium text-white/30 leading-relaxed italic border-l-2 border-primary/50 pl-4 py-1">
-                 You must select an active mission context before you can invite workers to the field.
-              </p>
+Vous devez sélectionner un contexte de mission actif avant de pouvoir inviter des ouvriers sur le terrain.              </p>
 
               <!-- Mark Workers Ready Button -->
               <div *ngIf="selectedMission" class="pt-2">
@@ -119,22 +118,22 @@ import { DialogService } from '../../../core/services/dialog.service';
         <!-- ENHANCED SEARCH & FILTERS -->
         <div class="lg:col-span-12 xl:col-span-7 bg-white p-10 rounded-[3.5rem] border border-stone-100 shadow-sm flex flex-col justify-between space-y-8">
             <div class="space-y-2">
-              <h4 class="text-xs font-black text-on-surface uppercase tracking-[0.3em] opacity-40 italic">Search & Filter</h4>
+              <h4 class="text-xs font-black text-on-surface uppercase tracking-[0.3em] opacity-40 italic">Recherche & Filtre</h4>
               <div class="relative w-full">
                 <span class="material-symbols-outlined absolute left-8 top-1/2 -translate-y-1/2 text-primary text-2xl opacity-40">search</span>
-                <input type="text" [(ngModel)]="searchQuery" (input)="filterWorkers()" placeholder="Find harvesters by name, email or skills..." 
-                       class="w-full pl-20 pr-10 py-7 bg-stone-50 border-2 border-transparent rounded-[2.5rem] outline-none focus:bg-white focus:border-stone-100 shadow-inner transition-all font-black text-lg placeholder:text-stone-300">
+                <input type="text" [(ngModel)]="searchQuery" (input)="filterWorkers()" placeholder="Trouver des moissonneurs par nom, e-mail ou compétences..." 
+                  class="w-full pl-20 pr-10 py-7 bg-stone-50 border-2 border-transparent rounded-[2.5rem] outline-none focus:bg-white focus:border-stone-100 shadow-inner transition-all font-black text-lg placeholder:text-stone-300">
               </div>
             </div>
             
             <div class="flex flex-wrap gap-4">
                <button class="px-8 py-4 bg-black text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl flex items-center gap-3">
                   <span class="material-symbols-outlined text-sm">filter_list</span>
-                  Show Available Only
+                  Afficher uniquement les disponibles
                </button>
                <button class="px-8 py-4 bg-stone-50 border border-stone-100 text-on-surface/60 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center gap-3">
                   <span class="material-symbols-outlined text-sm">history</span>
-                  Recent Collaborators
+                  Collaborateurs récents
                </button>
             </div>
         </div>
@@ -145,9 +144,9 @@ import { DialogService } from '../../../core/services/dialog.service';
         <table class="w-full text-left">
           <thead>
             <tr class="bg-stone-50/50 border-b border-stone-100">
-              <th class="px-10 py-8 text-[11px] font-black text-outline uppercase tracking-widest opacity-60">Personnel Info</th>
-              <th class="px-10 py-8 text-[11px] font-black text-outline uppercase tracking-widest text-center opacity-60">Status</th>
-              <th class="px-10 py-8 text-[11px] font-black text-outline uppercase tracking-widest opacity-60">Daily Compensation</th>
+              <th class="px-10 py-8 text-[11px] font-black text-outline uppercase tracking-widest opacity-60">Infos du personnel</th>
+              <th class="px-10 py-8 text-[11px] font-black text-outline uppercase tracking-widest text-center opacity-60">Statut</th>
+              <th class="px-10 py-8 text-[11px] font-black text-outline uppercase tracking-widest opacity-60">Rémunération journalière</th>
               <th class="px-10 py-8 text-[11px] font-black text-outline uppercase tracking-widest text-right opacity-60">Action</th>
             </tr>
           </thead>
@@ -170,7 +169,7 @@ import { DialogService } from '../../../core/services/dialog.service';
               <td class="px-10 py-10 text-center">
                  <div class="inline-flex items-center gap-3 px-6 py-2 rounded-full border border-stone-100 bg-stone-50/50 group-hover/row:border-primary/20 transition-all">
                     <span class="text-[10px] font-black uppercase tracking-widest" [ngClass]="isWorkerBusy(worker.id) ? 'text-amber-700' : 'text-green-700'">
-                       {{ isWorkerBusy(worker.id) ? 'Deployed' : 'On Standby' }}
+                       {{ isWorkerBusy(worker.id) ? 'Déployé' : 'En attente' }}
                     </span>
                  </div>
               </td>
@@ -191,7 +190,7 @@ import { DialogService } from '../../../core/services/dialog.service';
                         [disabled]="!selectedMissionId || isWorkerBusy(worker.id)"
                         class="h-14 px-10 bg-black text-white text-[11px] font-black uppercase tracking-[0.2em] rounded-2xl shadow-[0_15px_30px_rgba(0,0,0,0.1)] hover:shadow-primary/20 hover:bg-primary transition-all active:scale-95 flex items-center gap-4 ml-auto disabled:opacity-5 disabled:cursor-not-allowed">
                   <span class="material-symbols-outlined text-xl">ios_share</span>
-                  Invite to Field
+                  Inviter sur le terrain
                 </button>
               </td>
             </tr>
@@ -204,10 +203,10 @@ import { DialogService } from '../../../core/services/dialog.service';
               <span class="material-symbols-outlined text-6xl">person_off</span>
            </div>
            <div>
-              <h4 class="text-xl font-black text-on-surface uppercase tracking-widest">Database Clean</h4>
-              <p class="text-sm font-medium text-outline opacity-50 italic">No matches discovered for "{{ searchQuery }}"</p>
+              <h4 class="text-xl font-black text-on-surface uppercase tracking-widest">Base de données vide</h4>
+              <p class="text-sm font-medium text-outline opacity-50 italic">Aucune correspondance trouvée pour "{{ searchQuery }}"</p>
            </div>
-           <button (click)="searchQuery = ''; filterWorkers()" class="text-[10px] font-black text-primary uppercase tracking-widest underline underline-offset-8 decoration-2">Clear Parameters</button>
+           <button (click)="searchQuery = ''; filterWorkers()" class="text-[10px] font-black text-primary uppercase tracking-widest underline underline-offset-8 decoration-2">Effacer les paramètres</button>
         </div>
       </div>
     </div>
@@ -289,13 +288,12 @@ export class WorkerDirectoryComponent implements OnInit {
     this.collecteService.getCollectes().subscribe({
       next: (data) => {
         console.log('[WorkerDir] All collectes from backend:', data.length);
-        
+
         // ROBUST FILTER: Matches by UID (Primary) OR Full Name (Recovery fallback)
         this.activeMissions = data.filter(c => {
           const isNotTerminated = c.statut !== 'termine' && c.statut !== 'TERMINATED';
           const matchesUid = c.chefUid === currentUid;
           const matchesName = c.chefName?.toLowerCase() === user.fullName?.toLowerCase();
-          
           return isNotTerminated && (matchesUid || matchesName);
         });
 
@@ -310,7 +308,7 @@ export class WorkerDirectoryComponent implements OnInit {
       error: (err) => {
         console.error('[WorkerDir] MISSION_LOAD_FAILED:', err);
         this.activeMissions = [];
-        this.toastService.show('Failed to load missions.', 'error');
+        this.toastService.show('Échec du chargement des missions.', 'error');
       }
     });
   }
@@ -337,23 +335,23 @@ export class WorkerDirectoryComponent implements OnInit {
 
   sendOffer(worker: User) {
     if (!this.selectedMissionId) {
-      this.toastService.show("Please select an active mission first.", "error");
+      this.toastService.show("Veuillez d'abord sélectionner une mission active.", "error");
       return;
     }
     const salary = this.salaryInputs[worker.id];
     if (!salary || salary <= 0) {
-      this.toastService.show("Please enter a valid daily compensation rate.", "error");
+      this.toastService.show("Veuillez entrer un taux de rémunération journalière valide.", "error");
       return;
     }
 
     this.collecteService.inviteOuvrier(this.selectedMissionId, worker.id, salary).subscribe({
       next: () => {
-        this.toastService.show(`Offer successfully sent to ${worker.fullName}`, "success");
+        this.toastService.show(`Offre envoyée avec succès à ${worker.fullName}`, "success");
         this.salaryInputs[worker.id] = 0;
         this.cdr.detectChanges();
       },
       error: (err) => {
-        this.toastService.show(err.error || "Failed to send work proposition.", "error");
+        this.toastService.show(err.error || "Échec de l'envoi de la proposition de travail.", "error");
       }
     });
   }

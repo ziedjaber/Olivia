@@ -61,7 +61,7 @@ ${JSON.stringify(inventory.map(item => ({
    id: item.id,
    name: item.name,
    type: item.type,
-   costPerHour: item.costPerHour,
+   costPerHour: item.pricePerHour,
    stockLevel: item.stockLevel
 })), null, 2)}
 

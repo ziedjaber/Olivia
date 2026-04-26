@@ -3,7 +3,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { HttpClient, HttpBackend, HttpHeaders } from '@angular/common/http';
 import { Observable, tap, from, switchMap, of } from 'rxjs';
 import { auth, googleProvider } from '../config/firebase.config';
-import { signInWithEmailAndPassword, signOut, User as FirebaseUser, signInWithPopup } from 'firebase/auth';
+import { signInWithEmailAndPassword, signOut, User as FirebaseUser, signInWithPopup,getAuth } from 'firebase/auth';
 
 export interface User {
   id: string;

@@ -52,7 +52,7 @@ public class ResourceOrderService {
                 order.setId(UUID.randomUUID().toString());
             }
             order.setStatus("PENDING"); 
-            order.setOrderDate(new Date());
+            order.setOrderDate(java.time.Instant.now().toString());
 
             Map<String, Object> data = toMap(order);
             db.collection(COL).document(order.getId()).set(data).get(30, TimeUnit.SECONDS);

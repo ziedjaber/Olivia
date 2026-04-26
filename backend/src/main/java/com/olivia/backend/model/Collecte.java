@@ -4,8 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+
 import java.util.List;
+import java.util.Map;
 
 @Data
 @NoArgsConstructor
@@ -19,21 +20,17 @@ public class Collecte {
     private String logisticsUid;
     private String logisticsName;
     private String description;
-
-    private Date startDate;
-    private Date endDate;
-
+    private String startDate;
+    private String endDate;
     private String type; // planifiee / urgente
     private String statut; // en_attente, en_cours, termine
-    private Boolean logisticsReady;
-    private Boolean workersReady;
-
-    // Daily verification and tracking
-    private String lastVerificationDate; // YYYY-MM-DD
-    private List<DailyProgress> dailyReports;
-
     private int numberOfWorkers;
     private List<ResourceRequirement> requiredResources;
+    private boolean logisticsReady;
+    private boolean workersReady;
+    private List<DailyProgress> dailyReports;
+    private String lastVerificationDate;
+
 
     @Data
     @NoArgsConstructor

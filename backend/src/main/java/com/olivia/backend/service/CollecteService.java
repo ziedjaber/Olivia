@@ -253,10 +253,12 @@ public class CollecteService {
         m.put("statut",          c.getStatut());
         m.put("numberOfWorkers", c.getNumberOfWorkers());
         m.put("requiredResources", c.getRequiredResources());
-        m.put("logisticsReady", c.getLogisticsReady());
-        m.put("workersReady", c.getWorkersReady());
+
+        m.put("logisticsReady", c.isLogisticsReady());
+        m.put("workersReady", c.isWorkersReady());
         m.put("lastVerificationDate", c.getLastVerificationDate());
         m.put("dailyReports", c.getDailyReports() != null ? c.getDailyReports() : new ArrayList<>());
+
         return m;
     }
 }

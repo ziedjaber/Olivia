@@ -17,13 +17,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
 import java.util.Arrays;
 import java.util.List;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity // Permits @PreAuthorize
+@EnableMethodSecurity // Permet d'utiliser @PreAuthorize
 public class SecurityConfig {
 
     private final JwtFilter firebaseFilter;
@@ -45,10 +44,12 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())
+                .csrf(csrf -> csrf
+                        // On ignore le CSRF pour les WebSockets (Nécessaire pour le Chat)
+                        .ignoringRequestMatchers("/ws/**", "/ws/info/**")
+                        .disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                // EXPLICITLY DISABLE DEFAULT AUTH MECHANISMS TO PREVENT CONFLICTS
                 .formLogin(f -> f.disable())
                 .httpBasic(b -> b.disable())
                 .exceptionHandling(ex -> ex
@@ -66,6 +67,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/test/**").permitAll()
+                        .requestMatchers("/api/prediction/**").permitAll()
+                        // Autorisation des routes WebSocket pour ton Chat
+                        .requestMatchers("/ws/**", "/ws/info/**", "/ws/iframe.html", "/ws/jsonp/**").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
                         .anyRequest().authenticated()
                 )
@@ -77,10 +82,30 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:4200"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With"));
+        
+        // On garde les deux ports (Angular par défaut + un autre si besoin)
+        configuration.setAllowedOriginPatterns(List.of(
+                "http://localhost:4200",
+                "http://localhost:4201"));
+        
+        // On ajoute PATCH (version collègue)
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+        
+        // CONFIGURATION CRUCIALE POUR LE CHAT (WebSockets)
+        configuration.setAllowedHeaders(Arrays.asList(
+                "Authorization", "Content-Type", "X-Requested-With",
+                "Accept", "Origin", "Access-Control-Request-Method",
+                "Access-Control-Request-Headers",
+                "Sec-WebSocket-Key", "Sec-WebSocket-Version",
+                "Sec-WebSocket-Extensions", "Upgrade", "Connection"));
+        
+        configuration.setExposedHeaders(Arrays.asList(
+                "Authorization", "Access-Control-Allow-Origin",
+                "Access-Control-Allow-Credentials"));
+        
         configuration.setAllowCredentials(true);
+        configuration.setMaxAge(3600L);
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

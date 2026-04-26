@@ -13,8 +13,8 @@ export const routes: Routes = [
   { path: 'auth/login', component: LoginComponent },
   { path: 'auth/register', component: RegisterComponent },
   { path: 'auth/select-role', loadComponent: () => import('./features/auth/registration-role/registration-role.component').then(m => m.RegistrationRoleComponent) },
-  {
-    path: '',
+  { 
+    path: '', 
     component: MainLayoutComponent,
     canActivate: [authGuard],
     children: [
@@ -22,15 +22,14 @@ export const routes: Routes = [
       { path: 'profile', component: ProfileComponent },
       { path: 'users', component: UserManagementComponent },
       { path: 'vergers', component: VergerManagementComponent },
-
+      
       // LOGISTICS MODULAR ROUTES
-      {
+      { 
         path: 'logistics',
         children: [
           { path: 'analytics', loadComponent: () => import('./features/dashboard/logistique/analytics/logistics-analytics.component').then(m => m.LogisticsAnalyticsComponent) },
           { path: 'inventory', loadComponent: () => import('./features/dashboard/logistique/inventory/inventory-management.component').then(m => m.InventoryManagementComponent) },
-          { path: 'provisioning', loadComponent: () => import('./features/dashboard/logistique/provisioning/provisioning-demands.component').then(m => m.ProvisioningDemandsComponent) },
-          { path: 'missions', loadComponent: () => import('./features/dashboard/logistique/mission-assignments.component').then(m => m.MissionAssignmentsComponent) }
+          { path: 'provisioning', loadComponent: () => import('./features/dashboard/logistique/provisioning/provisioning-demands.component').then(m => m.ProvisioningDemandsComponent) }
         ]
       },
 
@@ -48,7 +47,8 @@ export const routes: Routes = [
       // EMERGENCY SYSTEM ROUTES
       { path: 'emergency-report', loadComponent: () => import('./features/alerte/alerte-report.component').then(m => m.AlerteReportComponent) },
       { path: 'emergency-intel', loadComponent: () => import('./features/alerte/alerte-management.component').then(m => m.AlerteManagementComponent) },
-      { path: 'emergency-history', loadComponent: () => import('./features/dashboard/team-lead/alerte-history.component').then(m => m.AlerteHistoryComponent) }
+      { path: 'emergency-history', loadComponent: () => import('./features/dashboard/team-lead/alerte-history.component').then(m => m.AlerteHistoryComponent) },
+      { path: 'historique', loadComponent: () => import('./features/historique/historique.component').then(m => m.HistoriqueComponent) }
     ]
   },
 ];

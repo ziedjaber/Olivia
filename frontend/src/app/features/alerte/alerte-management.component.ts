@@ -22,8 +22,8 @@ import { ToastService } from '../../core/services/toast.service';
               <span class="material-symbols-outlined">radar</span>
             </div>
             <div>
-              <h2 class="text-sm font-black text-on-surface tracking-tight uppercase">Strike Intel Radar</h2>
-              <p class="text-[10px] text-outline font-bold uppercase tracking-widest opacity-60">Real-time estate monitoring</p>
+              <h2 class="text-sm font-black text-on-surface tracking-tight uppercase">Radar d'Urgence Terrain</h2>
+              <p class="text-[10px] text-outline font-bold uppercase tracking-widest opacity-60">Surveillance en temps réel</p>
             </div>
           </div>
         </div>
@@ -32,15 +32,15 @@ import { ToastService } from '../../core/services/toast.service';
         <div class="absolute bottom-6 left-6 z-[1000] glass-panel p-4 border-white/40 shadow-xl flex gap-6 animate-up">
            <div class="flex items-center gap-2">
               <span class="w-3 h-3 rounded-full bg-error pulse-danger"></span>
-              <span class="text-[9px] font-black text-outline uppercase tracking-widest">Urgent Strike</span>
+              <span class="text-[9px] font-black text-outline uppercase tracking-widest">Alerte Critique</span>
            </div>
            <div class="flex items-center gap-2">
               <span class="w-3 h-3 rounded-full bg-orange-500"></span>
-              <span class="text-[9px] font-black text-outline uppercase tracking-widest">Standard Intel</span>
+              <span class="text-[9px] font-black text-outline uppercase tracking-widest">Alerte Prioritaire</span>
            </div>
            <div class="flex items-center gap-2">
               <span class="w-3 h-3 rounded-full bg-blue-500"></span>
-              <span class="text-[9px] font-black text-outline uppercase tracking-widest">Low Priority</span>
+              <span class="text-[9px] font-black text-outline uppercase tracking-widest">Priorité Basse</span>
            </div>
         </div>
       </div>
@@ -49,10 +49,10 @@ import { ToastService } from '../../core/services/toast.service';
       <div class="w-full md:w-[450px] bg-white/40 backdrop-blur-3xl flex flex-col border-l border-white/20 shadow-[-20px_0_50px_rgba(0,0,0,0.05)]">
         <header class="p-8 border-b border-outline-variant/10">
           <div class="flex justify-between items-center mb-2">
-            <h3 class="text-xl font-black text-on-surface tracking-tighter" style="font-family: Manrope, sans-serif;">Intel <span class="text-primary italic">Stream</span></h3>
+            <h3 class="text-xl font-black text-on-surface tracking-tighter" style="font-family: Manrope, sans-serif;">Flux <span class="text-primary italic">de données</span></h3>
             <span class="px-3 py-1 rounded-full bg-surface-container text-[10px] font-black text-outline uppercase tracking-widest">{{ activeAlerts.length }} Active</span>
           </div>
-          <p class="text-xs text-on-surface-variant font-medium">Monitoring incoming field signals across the estate.</p>
+          <p class="text-xs text-on-surface-variant font-medium">Surveillance des signaux terrain sur l'ensemble du domaine</p>
         </header>
 
         <!-- ALERTS LIST -->
@@ -68,7 +68,7 @@ import { ToastService } from '../../core/services/toast.service';
             
             <!-- Solve Indicator for Solved Alerts -->
             <div *ngIf="a.statut !== 'NON_TRAITEE'" class="absolute inset-0 bg-emerald-500/5 backdrop-blur-[1px] flex items-center justify-center z-10">
-               <span class="px-4 py-2 rounded-full bg-emerald-500 text-white text-[10px] font-black uppercase tracking-[0.2em] shadow-lg animate-in zoom-in">Issue Resolved</span>
+               <span class="px-4 py-2 rounded-full bg-emerald-500 text-white text-[10px] font-black uppercase tracking-[0.2em] shadow-lg animate-in zoom-in">Problème réglé</span>
             </div>
 
             <div class="flex gap-5 relative z-0">
@@ -97,7 +97,7 @@ import { ToastService } from '../../core/services/toast.service';
                      <button *ngIf="a.statut === 'NON_TRAITEE'" 
                              (click)="onSolve($event, a)" 
                              class="ml-auto text-[10px] font-black text-primary uppercase tracking-widest hover:underline underline-offset-4 decoration-2">
-                        Mark Solved
+                        Marqué résolu
                      </button>
                   </div>
                </div>
@@ -241,18 +241,17 @@ export class AlerteManagementComponent implements OnInit, AfterViewInit {
   currentPreviewImage: string | null = null;
 
   set selectedAlert(val: Alerte | null) {
-     this._selectedAlert = val;
-     if (val) {
-        // Preference: check imageUrls list, fallback to legacy imageUrl
-        this.currentPreviewImage = (val.imageUrls && val.imageUrls.length > 0) 
-            ? val.imageUrls[0] 
-            : (val.imageUrl || null);
-     } else {
-        this.currentPreviewImage = null;
-     }
+    this._selectedAlert = val;
+    if (val) {
+      // Preference: check imageUrls list, fallback to legacy imageUrl
+      this.currentPreviewImage = (val.imageUrls && val.imageUrls.length > 0)
+        ? val.imageUrls[0]
+        : (val.imageUrl || null);
+    } else {
+      this.currentPreviewImage = null;
+    }
   }
   get selectedAlert() { return this._selectedAlert; }
-  
   private map: any;
   private markersLayer: any;
   private L: any;
@@ -291,7 +290,7 @@ export class AlerteManagementComponent implements OnInit, AfterViewInit {
 
     this.markersLayer = this.L.layerGroup().addTo(this.map);
     this.updateMarkers();
-    
+
     setTimeout(() => {
       this.map.invalidateSize();
       this.fitMapToMarkers();
@@ -318,7 +317,7 @@ export class AlerteManagementComponent implements OnInit, AfterViewInit {
 
   private fitMapToMarkers() {
     if (!this.map || !this.L || this.activeAlerts.length === 0) return;
-    
+
     const bounds: any[] = [];
     this.activeAlerts.forEach(a => {
       if (a.localisation) {
@@ -340,6 +339,9 @@ export class AlerteManagementComponent implements OnInit, AfterViewInit {
     if (!this.L || !this.markersLayer || !this.map) return;
     this.markersLayer.clearLayers();
 
+    const bounds: any[] = [];
+
+
     this.alerts.forEach(a => {
       if (a.localisation && a.statut === 'NON_TRAITEE') {
         const parts = a.localisation.split(',');
@@ -348,9 +350,9 @@ export class AlerteManagementComponent implements OnInit, AfterViewInit {
           const lng = parseFloat(parts[1].trim());
           
           if (!isNaN(lat) && !isNaN(lng)) {
+            bounds.push([lat, lng]);
             const pulseClass = a.importance === 'URGENT' ? 'pulse-danger' : '';
             const pinColor = a.importance === 'URGENT' ? '#ef4444' : (a.importance === 'MEDIUM' ? '#f97316' : '#3b82f6');
-            
             const customIcon = this.L.divIcon({
               html: `<div style="background:${pinColor};width:16px;height:16px;border-radius:50%;border:4px solid white;box-shadow:0 0 20px ${pinColor}88;" class="${pulseClass}"></div>`,
               className: '',
@@ -370,6 +372,10 @@ export class AlerteManagementComponent implements OnInit, AfterViewInit {
         }
       }
     });
+
+    if (bounds.length > 0 && this.map) {
+      this.map.fitBounds(bounds, { padding: [50, 50], maxZoom: 12 });
+    }
   }
 
   focusOnAlert(a: Alerte) {
@@ -388,7 +394,7 @@ export class AlerteManagementComponent implements OnInit, AfterViewInit {
   onSolve(event: Event, a: Alerte) {
     event.stopPropagation();
     if (!a.id) return;
-    
+
     this.alerteService.solveAlerte(a.id).subscribe({
       next: () => {
         this.toastService.show('Alert processed.', 'success');
@@ -399,11 +405,11 @@ export class AlerteManagementComponent implements OnInit, AfterViewInit {
   }
 
   getTypeIcon(type: string): string {
-    switch(type) {
+    switch (type) {
       case 'MACHINE': return 'engineering';
       case 'ACCIDENT': return 'urgent';
       case 'INFRASTRUCTURE': return 'foundation';
-      case 'WEATHER': return 'thunderstorm';
+      case 'METEO': return 'thunderstorm';
       default: return 'report';
     }
   }
@@ -415,7 +421,7 @@ export class AlerteManagementComponent implements OnInit, AfterViewInit {
 
   getImportanceClass(a: Alerte): string {
     if (a.statut !== 'NON_TRAITEE') return 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20';
-    switch(a.importance) {
+    switch (a.importance) {
       case 'URGENT': return 'bg-error text-white border-transparent';
       case 'MEDIUM': return 'bg-orange-500/10 text-orange-500 border-orange-500/20';
       default: return 'bg-blue-500/10 text-blue-500 border-blue-500/20';
@@ -423,8 +429,8 @@ export class AlerteManagementComponent implements OnInit, AfterViewInit {
   }
 
   getImportanceTextClass(a: Alerte): string {
-     if (a.statut !== 'NON_TRAITEE') return 'text-emerald-500';
-     switch(a.importance) {
+    if (a.statut !== 'NON_TRAITEE') return 'text-emerald-500';
+    switch (a.importance) {
       case 'URGENT': return 'text-error';
       case 'MEDIUM': return 'text-orange-500';
       default: return 'text-blue-500';

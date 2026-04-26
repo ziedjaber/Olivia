@@ -2,6 +2,8 @@ package com.olivia.backend.controller;
 
 import com.olivia.backend.model.Participation;
 import com.olivia.backend.service.ParticipationService;
+import com.olivia.backend.service.AuditService;
+import com.olivia.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,14 +18,21 @@ public class ParticipationController {
     @Autowired
     private ParticipationService participationService;
 
+    @Autowired
+    private AuditService auditService;
+
+    @Autowired
+    private UserService userService;
+
     private String currentUid() {
         return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 
     // ─── GET WORKER INVITATIONS ────────────────────────────────────────────────
 
+    // Modification par chaima : chef d'equipe et directeur peuvent aussi voir
     @GetMapping("/mine")
-    @PreAuthorize("hasAnyAuthority('ROLE_OUVRIER_RECOLTE')")
+    @PreAuthorize("hasAnyAuthority('ROLE_OUVRIER_RECOLTE', 'ROLE_CHEF_EQUIPE_RECOLTE', 'ROLE_DIRECTEUR', 'ROLE_OLEICULTEUR')")
     public ResponseEntity<?> getMyParticipations() {
         try {
             return ResponseEntity.ok(participationService.getByOuvrier(currentUid()));
@@ -84,6 +93,14 @@ public class ParticipationController {
     public ResponseEntity<?> payWorker(@PathVariable String id) {
         try {
             Participation p = participationService.pay(id);
+            try {
+                String uid = currentUid();
+                String nom = userService.getUserById(uid).getFullName();
+                String role = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+                        .map(auth -> auth.getAuthority()).findFirst().orElse("ROLE_UNKNOWN");
+                auditService.log(uid, nom, role, "OUVRIER_PAYÉ", "Participation", id, "Ouvrier payé");
+            } catch (Exception auditEx) {
+            }
             return ResponseEntity.ok(p);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Failed to pay worker: " + e.getMessage());

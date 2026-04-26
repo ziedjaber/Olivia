@@ -122,8 +122,8 @@ public class ParticipationService {
             String ouvrierEmail,
             String collecteDescription,
             String collecteType,
-            Date   collecteDate,
-            Date   collecteEndDate,
+            String   collecteDate,
+            String   collecteEndDate,
             String collecteLocation,
             String invitedByUid,
             String invitedByName,
@@ -158,7 +158,7 @@ public class ParticipationService {
         p.setCollecteEndDate(collecteEndDate);
         p.setCollecteLocation(collecteLocation);
         p.setStatus(ParticipationStatus.INVITED.name());
-        p.setDateInvitation(new Date());
+        p.setDateInvitation(java.time.Instant.now().toString());
         p.setInvitedByUid(invitedByUid);
         p.setInvitedByName(invitedByName);
         p.setDailySalary(dailySalary);
@@ -211,7 +211,6 @@ public class ParticipationService {
             throw new RuntimeException("Failed to remove participation: " + e.getMessage(), e);
         }
     }
-
     /** Chef d'equipe updates the worker's daily salary. */
     public Participation updateSalary(String participationId, Double newSalary) {
         try {
@@ -230,7 +229,6 @@ public class ParticipationService {
             throw new RuntimeException("Failed to update salary: " + e.getMessage(), e);
         }
     }
-
     /** Chef d'equipe pays the worker's daily salary. */
     public Participation pay(String participationId) {
         try {
@@ -277,7 +275,7 @@ public class ParticipationService {
             }
 
             p.setStatus(newStatus.name());
-            p.setDateReponse(new Date());
+            p.setDateReponse(java.time.Instant.now().toString());
             db.collection(COL).document(participationId).set(toMap(p)).get(30, TimeUnit.SECONDS);
 
             // Notify the chef who sent the invitation
@@ -306,7 +304,7 @@ public class ParticipationService {
             notif.put("type",         type);
             notif.put("referenceId",  referenceId);
             notif.put("read",         false);
-            notif.put("createdAt",    new Date());
+            notif.put("createdAt",    java.time.Instant.now().toString());
             String notifId = (String) notif.get("id");
             db.collection(COL_NOTIF).document(notifId).set(notif);
             log.debug("Notification sent to {}: {}", recipientUid, title);

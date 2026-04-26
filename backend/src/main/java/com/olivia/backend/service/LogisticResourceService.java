@@ -30,6 +30,7 @@ public class LogisticResourceService {
             List<LogisticResource> resources = new ArrayList<>();
             for (QueryDocumentSnapshot document : query.getDocuments()) {
                 resources.add(document.toObject(LogisticResource.class));
+
             }
             return resources;
         } catch (Exception e) {
@@ -39,7 +40,8 @@ public class LogisticResourceService {
     }
 
     public Optional<LogisticResource> getResourceById(String id) {
-        if (id == null) return Optional.empty();
+        if (id == null)
+            return Optional.empty();
         try {
             Firestore db = FirestoreClient.getFirestore();
             var doc = db.collection(COLLECTION_NAME).document(id).get().get(30, TimeUnit.SECONDS);
@@ -69,7 +71,7 @@ public class LogisticResourceService {
             data.put("name", resource.getName());
             data.put("type", resource.getType());
             data.put("description", resource.getDescription());
-            data.put("costPerHour", resource.getCostPerHour());
+            data.put("pricePerHour", resource.getPricePerHour());
             data.put("images", resource.getImages() != null ? resource.getImages() : new ArrayList<>());
             data.put("stockLevel", resource.getStockLevel());
             data.put("location", resource.getLocation());
@@ -97,7 +99,7 @@ public class LogisticResourceService {
             data.put("name", resource.getName());
             data.put("type", resource.getType());
             data.put("description", resource.getDescription());
-            data.put("costPerHour", resource.getCostPerHour());
+            data.put("pricePerHour", resource.getPricePerHour());
             data.put("images", resource.getImages() != null ? resource.getImages() : new ArrayList<>());
             data.put("stockLevel", resource.getStockLevel());
             data.put("location", resource.getLocation());
@@ -122,6 +124,7 @@ public class LogisticResourceService {
                     log.warn("Failed to dispatch low stock email: {}", emailEx.getMessage());
                 }
             }
+
 
             return resource;
         } catch (Exception e) {

@@ -50,8 +50,9 @@ export class ParticipationService {
     return this.http.put(`${this.apiUrl}/${id}/pay`, {}, { responseType: 'text' });
   }
 
+
   updateSalary(id: string, dailySalary: number): Observable<Participation> {
-    return this.http.put<Participation>(`${this.apiUrl}/${id}/salary`, {}, { params: { dailySalary } });
+    return this.http.put<Participation>(`${this.apiUrl}/${id}/salary`, {}, { params: { dailySalary: dailySalary.toString() } });
   }
 
   removeWorker(id: string): Observable<any> {

@@ -64,7 +64,6 @@ export class UserManagementComponent implements OnInit {
       }
     });
   }
-
   toggleCreateForm() {
     this.showCreateForm = !this.showCreateForm;
     if (!this.showCreateForm) {
@@ -93,13 +92,16 @@ export class UserManagementComponent implements OnInit {
 
   onSubmitUser() {
     if (!this.newUser.email || (!this.isEditing && !this.newUser.password) || !this.newUser.fullName) {
-      this.toastService.show('Please fill in all required fields', 'error');
+      this.toastService.show('Please fill in all required fields', 'error');}
+    }
+  onCreateUser() {
+    if (!this.newUser.email || !this.newUser.password || !this.newUser.fullName) {
+      this.toastService.show('Please fill in all fields', 'error');
       return;
     }
 
     this.loading = true;
     this.cdr.markForCheck();
-
     if (this.isEditing && this.selectedUserId) {
       // Update
       const updatedUser: User = { 

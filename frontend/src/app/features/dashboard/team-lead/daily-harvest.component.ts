@@ -300,7 +300,7 @@ import { HarvestMapComponent } from './harvest-map.component';
                       <td class="py-6">
                          <div class="flex items-center gap-4">
                             <div class="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center text-stone-400 font-black text-xs">
-                               {{ p.ouvrierName?.charAt(0) }}
+                               {{ p.ouvrierName.charAt(0) }}
                             </div>
                             <div class="flex flex-col">
                                <span class="text-sm font-black text-on-surface">{{ p.ouvrierName }}</span>

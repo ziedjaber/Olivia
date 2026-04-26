@@ -6,20 +6,22 @@ import com.olivia.backend.model.User;
 import com.olivia.backend.model.Role;
 import org.springframework.stereotype.Service;
 import java.util.List;
+
 import java.util.Map;
 import java.util.HashMap;
+
 import java.util.stream.Collectors;
 
 @Service
 public class UserService {
-
     private final AuthService authService;
-    private final AuditLogService auditLogService;
+    private final AuditService auditService;
 
-    public UserService(AuthService authService, AuditLogService auditLogService) {
+    public UserService(AuthService authService, AuditService auditService) {
         this.authService = authService;
-        this.auditLogService = auditLogService;
+        this.auditService = auditService;
     }
+
 
     public List<User> getAllUsers() throws Exception {
         Firestore db = FirestoreClient.getFirestore();
@@ -64,7 +66,8 @@ public class UserService {
         db.collection("users").document(user.getId()).set(user).get();
         
         String currentUid = authService.extractUserIdFromToken();
-        auditLogService.log(currentUid != null ? currentUid : user.getId(), "UPDATE", "USERS", "Updated profile: " + user.getFullName(), user.getId());
+        auditService.log(currentUid != null ? currentUid : user.getId(), "UPDATE", "USERS", "Updated profile: " + user.getFullName(), user.getId());
+
     }
 
     public void updateRole(String id, Role role) throws Exception {
@@ -72,7 +75,7 @@ public class UserService {
         db.collection("users").document(id).update("role", role).get();
         
         String currentUid = authService.extractUserIdFromToken();
-        auditLogService.log(currentUid, "UPDATE", "USERS", "Changed user role to " + role, id);
+        auditService.log(currentUid, "UPDATE", "USERS", "Changed user role to " + role, id);
     }
 
     public void toggleStatus(String id, boolean active) throws Exception {
@@ -80,13 +83,13 @@ public class UserService {
         db.collection("users").document(id).update("active", active).get();
         
         String currentUid = authService.extractUserIdFromToken();
-        auditLogService.log(currentUid, "UPDATE", "USERS", (active ? "Activated" : "Suspended") + " user account", id);
+        auditService.log(currentUid, "UPDATE", "USERS", (active ? "Activated" : "Suspended") + " user account", id);
     }
 
     public void deleteUser(String id) throws Exception {
         authService.deleteUser(id);
         String currentUid = authService.extractUserIdFromToken();
-        auditLogService.log(currentUid, "DELETE", "USERS", "Permanently deleted user account", id);
+        auditService.log(currentUid, "DELETE", "USERS", "Permanently deleted user account", id);
     }
 
     public void updateUserByAdmin(User user) throws Exception {
@@ -103,6 +106,7 @@ public class UserService {
         com.google.firebase.auth.FirebaseAuth.getInstance().setCustomUserClaims(user.getId(), claims);
         
         String currentUid = authService.extractUserIdFromToken();
-        auditLogService.log(currentUid, "UPDATE", "USERS", "Admin update of user: " + user.getFullName(), user.getId());
+        auditService.log(currentUid, "UPDATE", "USERS", "Admin update of user: " + user.getFullName(), user.getId());
+
     }
 }

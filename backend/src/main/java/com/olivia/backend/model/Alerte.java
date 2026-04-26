@@ -19,6 +19,6 @@ public class Alerte {
     private String localisation; // lat,lng
     private String senderUid;
     private String senderName;
-    private java.util.Date date;
+    private String date;
     private String statut; // NON_TRAITEE, TRAITEE
 }

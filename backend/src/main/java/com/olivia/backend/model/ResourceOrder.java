@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
 import java.util.List;
 
 @Data
@@ -16,13 +15,13 @@ public class ResourceOrder {
     private String requesterUid;
     private String requesterName;
 
-    private Date startDate;
-    private Date endDate;
+    private String startDate;
+    private String endDate;
 
     private List<OrderedResource> resources;
 
     private String status; // "PENDING", "APPROVED", "DELIVERED", "RETURNED"
-    private Date orderDate;
+    private String orderDate;
 
     @Data
     @NoArgsConstructor

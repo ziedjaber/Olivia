@@ -33,4 +33,12 @@ public class JwtUtil {
                 .getBody()
                 .getSubject();
     }
+
+    public String extractUserId(String token) {
+        throw new UnsupportedOperationException("Unimplemented method 'extractUserId'");
+    }
+
+    public String extractRole(String token) {
+        throw new UnsupportedOperationException("Unimplemented method 'extractRole'");
+    }
 }

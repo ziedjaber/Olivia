@@ -9,7 +9,7 @@ export interface LogisticResource {
   name: string;
   type: string;
   description: string;
-  costPerHour: number;
+  pricePerHour: number;
   images: string[];
   stockLevel: number;
   location: string;

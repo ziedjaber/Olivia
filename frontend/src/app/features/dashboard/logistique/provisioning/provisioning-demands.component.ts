@@ -11,8 +11,10 @@ import { ToastService } from '../../../../core/services/toast.service';
     <div class="p-8 min-h-screen animate-fade-in pb-24">
       <!-- Header -->
       <header class="mb-12">
-        <h1 class="text-4xl font-black tracking-tight text-on-surface mb-2">Provisioning Pipeline</h1>
-        <p class="text-on-surface-variant font-medium opacity-60">Review and validate material reservation requests for field operations.</p>
+
+        <h1 class="text-4xl font-black tracking-tight text-on-surface mb-2">Pipeline de provisionnement</h1>
+        <p class="text-on-surface-variant font-medium opacity-60">Examiner et valider les demandes de réservation de matériel pour les opérations sur le terrain.</p>
+
       </header>
 
       <!-- Stats Strip -->
@@ -20,8 +22,10 @@ import { ToastService } from '../../../../core/services/toast.service';
         <div class="bg-white px-8 py-5 rounded-2xl border border-stone-100 flex items-center gap-4 flex-shrink-0 shadow-sm">
            <div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
            <div>
-             <span class="text-[10px] font-black uppercase tracking-widest text-outline block mb-0.5">Awaiting Action</span>
-             <span class="text-lg font-black text-on-surface">{{ pendingOrders.length }} Demands</span>
+
+             <span class="text-[10px] font-black uppercase tracking-widest text-outline block mb-0.5">Demandes en attente</span>
+             <span class="text-lg font-black text-on-surface">{{ pendingOrders.length }} Demandes</span>
+
            </div>
         </div>
       </div>
@@ -32,10 +36,11 @@ import { ToastService } from '../../../../core/services/toast.service';
            <table class="w-full text-left">
              <thead>
                <tr class="bg-stone-50/50">
-                 <th class="px-8 py-6 text-[10px] font-black text-outline uppercase tracking-[0.2em]">Requester</th>
-                 <th class="px-8 py-6 text-[10px] font-black text-outline uppercase tracking-[0.2em]">Deployment</th>
-                 <th class="px-8 py-6 text-[10px] font-black text-outline uppercase tracking-[0.2em]">Manifest</th>
-                 <th class="px-8 py-6 text-[10px] font-black text-outline uppercase tracking-[0.2em]">Status</th>
+
+                 <th class="px-8 py-6 text-[10px] font-black text-outline uppercase tracking-[0.2em]">Demandeur</th>
+                 <th class="px-8 py-6 text-[10px] font-black text-outline uppercase tracking-[0.2em]">Déploiement</th>
+                 <th class="px-8 py-6 text-[10px] font-black text-outline uppercase tracking-[0.2em]">Manifeste</th>
+                 <th class="px-8 py-6 text-[10px] font-black text-outline uppercase tracking-[0.2em]">Statut</th>
                  <th class="px-8 py-6 text-[10px] font-black text-outline uppercase tracking-[0.2em] text-right">Actions</th>
                </tr>
              </thead>
@@ -49,7 +54,8 @@ import { ToastService } from '../../../../core/services/toast.service';
                        </div>
                        <div>
                          <span class="block text-sm font-black text-on-surface">{{ order.requesterName }}</span>
-                         <span class="text-[9px] text-outline font-black uppercase tracking-wider opacity-60">Hectare Specialist</span>
+
+                         <span class="text-[9px] text-outline font-black uppercase tracking-wider opacity-60">Chef d'équipe récolte</span>
                        </div>
                     </div>
                  </td>
@@ -57,7 +63,8 @@ import { ToastService } from '../../../../core/services/toast.service';
                  <!-- Date -->
                  <td class="px-8 py-6">
                     <span class="block text-sm font-black text-on-surface">{{ order.startDate | date:'MMM d' }}</span>
-                    <span class="text-[10px] text-outline font-bold uppercase">To {{ order.endDate | date:'MMM d' }}</span>
+                    <span class="text-[10px] text-outline font-bold uppercase">Au {{ order.endDate | date:'MMM d' }}</span>
+
                  </td>
 
                  <!-- Resources -->
@@ -102,7 +109,9 @@ import { ToastService } from '../../../../core/services/toast.service';
                          <span class="material-symbols-outlined text-lg">close</span>
                        </button>
                     </div>
-                    <span *ngIf="order.status && order.status !== 'PENDING'" class="text-[10px] font-bold text-outline uppercase tracking-widest italic opacity-40">Processed</span>
+
+                    <span *ngIf="order.status && order.status !== 'PENDING'" class="text-[10px] font-bold text-outline uppercase tracking-widest italic opacity-40">Traité</span>
+
                  </td>
                </tr>
                

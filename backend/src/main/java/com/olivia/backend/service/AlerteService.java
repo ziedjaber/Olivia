@@ -1,119 +1,152 @@
 package com.olivia.backend.service;
 
 import com.google.cloud.firestore.Firestore;
+import com.google.cloud.firestore.QueryDocumentSnapshot;
+import com.google.cloud.firestore.QuerySnapshot;
 import com.google.cloud.firestore.SetOptions;
 import com.google.firebase.cloud.FirestoreClient;
 import com.olivia.backend.model.Alerte;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @Service
 public class AlerteService {
 
+    private static final String COLLECTION_NAME = "alertes";
+
     public String create(Alerte alerte) throws Exception {
-        Firestore db = FirestoreClient.getFirestore();
-        System.out.println("[DIAGNOSTIC] AlerteService.create START");
-        System.out.println("[DIAGNOSTIC] Saving Alerte - ID: " + alerte.getId() + ", UID: " + alerte.getSenderUid() + ", Desc: " + alerte.getDescription());
+        try {
+            Firestore db = FirestoreClient.getFirestore();
 
-        if (alerte.getId() == null) {
-            alerte.setId(UUID.randomUUID().toString());
-        }
-        
-        // Use user-preferred status naming
-        if (alerte.getStatut() == null) {
-            alerte.setStatut("NON_TRAITEE");
-        }
-        
-        if (alerte.getDate() == null) {
-            alerte.setDate(new java.util.Date());
-        }
-
-        // Using set with merge to ensure no properties are lost if the doc exists
-        db.collection("alertes").document(alerte.getId()).set(alerte).get();
-
-        System.out.println("[DIAGNOSTIC] Firestore COMMIT SUCCESS for Alerte: " + alerte.getId());
-        return "Alerte créée avec succès";
-    }
-
-    public List<Alerte> getAll() throws Exception {
-        Firestore db = FirestoreClient.getFirestore();
-        List<Alerte> list = new ArrayList<>();
-
-        // DIAGNOSTIC MOCK
-        Alerte mock = new Alerte();
-        mock.setId("diag-mock-001");
-        mock.setType("MACHINE");
-        mock.setDescription("SYSTEM DIAGNOSTIC: This is a mock alert to verify API connectivity.");
-        mock.setImportance("MEDIUM");
-        mock.setStatut("NON_TRAITEE");
-        mock.setDate(new java.util.Date());
-        mock.setSenderName("System Diagnostic");
-        list.add(mock);
-
-        db.collection("alertes").get().get().forEach(doc -> {
-            try {
-                Alerte a = doc.toObject(Alerte.class);
-                if (a != null) {
-                    list.add(a);
-                }
-            } catch (Exception e) {
-                System.err.println("[DIAGNOSTIC] Failed to map alerte doc " + doc.getId() + ": " + e.getMessage());
+            if (alerte.getId() == null || alerte.getId().isEmpty()) {
+                alerte.setId(UUID.randomUUID().toString());
             }
-        });
-        
-        // Sort newest first
-        list.sort((a, b) -> {
-            if (a.getDate() == null || b.getDate() == null) return 0;
-            return b.getDate().compareTo(a.getDate());
-        });
 
-        return list;
-    }
-
-    public List<Alerte> getBySender(String uid) throws Exception {
-        System.out.println("[DIAGNOSTIC] getBySender CALLED for UID: " + uid);
-        Firestore db = FirestoreClient.getFirestore();
-        List<Alerte> list = new ArrayList<>();
-        db.collection("alertes").whereEqualTo("senderUid", uid).get().get().forEach(doc -> {
-            try {
-                System.out.println("[DIAGNOSTIC] Found alerte doc: " + doc.getId());
-                Alerte a = doc.toObject(Alerte.class);
-                if (a != null) {
-                    list.add(a);
-                }
-            } catch (Exception e) {
-                System.err.println("[DIAGNOSTIC] Failed to map alerte doc " + doc.getId() + " for user " + uid + ": " + e.getMessage());
+            // Priorité à la date en String (Chaima) pour la compatibilité Prédiction
+            if (alerte.getDate() == null) {
+                alerte.setDate(java.time.Instant.now().toString());
             }
-        });
-        System.out.println("[DIAGNOSTIC] Total alertes found for " + uid + ": " + list.size());
-        list.sort((a, b) -> {
-            if (a.getDate() == null || b.getDate() == null) return 0;
-            return b.getDate().compareTo(a.getDate());
-        });
-        return list;
+
+            if (alerte.getStatut() == null || alerte.getStatut().isEmpty()) {
+                alerte.setStatut("NON_TRAITEE");
+            }
+
+            // On utilise le timeout de 30s de Chaima pour la robustesse
+            db.collection(COLLECTION_NAME).document(alerte.getId()).set(alerte).get(30, TimeUnit.SECONDS);
+
+            log.info("Alerte created with ID: {}", alerte.getId());
+            return alerte.getId();
+        } catch (Exception e) {
+            log.error("Error creating alerte: {}", e.getMessage());
+            throw e;
+        }
     }
 
-    public String delete(String id) throws Exception {
-        FirestoreClient.getFirestore().collection("alertes").document(id).delete();
-        return "Alerte supprimée";
+    public List<Alerte> getAll() {
+        try {
+            Firestore db = FirestoreClient.getFirestore();
+            QuerySnapshot query = db.collection(COLLECTION_NAME).get().get(30, TimeUnit.SECONDS);
+            List<Alerte> list = new ArrayList<>();
+
+            // Ajout de ton Mock de diagnostic (HEAD) - utile pour le dev
+            Alerte mock = new Alerte();
+            mock.setId("diag-mock-001");
+            mock.setType("MACHINE");
+            mock.setDescription("SYSTEM DIAGNOSTIC: Verify API connectivity.");
+            mock.setImportance("MEDIUM");
+            mock.setStatut("NON_TRAITEE");
+            mock.setDate(java.time.Instant.now().toString());
+            mock.setSenderName("System Diagnostic");
+            list.add(mock);
+
+            for (QueryDocumentSnapshot document : query.getDocuments()) {
+                try {
+                    Alerte alerte = document.toObject(Alerte.class);
+                    if (alerte != null) {
+                        alerte.setId(document.getId());
+                        list.add(alerte);
+                    }
+                } catch (Exception docEx) {
+                    log.error("Erreur de désérialisation d'une alerte (ID: {}).", document.getId());
+                }
+            }
+
+            // Tri décroissant (Plus récent en premier)
+            list.sort((a, b) -> (b.getDate() != null ? b.getDate() : "")
+                    .compareTo(a.getDate() != null ? a.getDate() : ""));
+
+            return list;
+        } catch (Exception e) {
+            log.error("Error fetching all alertes: {}", e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+    public List<Alerte> getBySender(String uid) {
+        try {
+            Firestore db = FirestoreClient.getFirestore();
+            QuerySnapshot query = db.collection(COLLECTION_NAME)
+                    .whereEqualTo("senderUid", uid)
+                    .get().get(30, TimeUnit.SECONDS);
+
+            List<Alerte> list = new ArrayList<>();
+            for (QueryDocumentSnapshot document : query.getDocuments()) {
+                try {
+                    Alerte alerte = document.toObject(Alerte.class);
+                    if (alerte != null) {
+                        alerte.setId(document.getId());
+                        list.add(alerte);
+                    }
+                } catch (Exception docEx) {
+                    log.error("Erreur de désérialisation pour l'user {}", uid);
+                }
+            }
+            list.sort((a, b) -> (b.getDate() != null ? b.getDate() : "")
+                    .compareTo(a.getDate() != null ? a.getDate() : ""));
+            return list;
+        } catch (Exception e) {
+            log.error("Error fetching alertes for sender {}: {}", uid, e.getMessage());
+            return new ArrayList<>();
+        }
     }
 
     public String update(String id, Alerte alerte) throws Exception {
-        alerte.setId(id);
-        FirestoreClient.getFirestore().collection("alertes").document(id).set(alerte, SetOptions.merge());
-        return "Alerte mise à jour";
+        try {
+            Firestore db = FirestoreClient.getFirestore();
+            alerte.setId(id);
+            // On utilise SetOptions.merge() de ta branche pour ne pas écraser les champs
+            // omis
+            db.collection(COLLECTION_NAME).document(id).set(alerte, SetOptions.merge()).get(30, TimeUnit.SECONDS);
+            return id;
+        } catch (Exception e) {
+            log.error("Error updating alerte {}: {}", id, e.getMessage());
+            throw e;
+        }
+    }
+
+    public String delete(String id) throws Exception {
+        try {
+            Firestore db = FirestoreClient.getFirestore();
+            db.collection(COLLECTION_NAME).document(id).delete().get(30, TimeUnit.SECONDS);
+            return id;
+        } catch (Exception e) {
+            log.error("Error deleting alerte {}: {}", id, e.getMessage());
+            throw e;
+        }
     }
 
     public String solve(String id) throws Exception {
-        Firestore db = FirestoreClient.getFirestore();
-        
-        Map<String, Object> updates = new HashMap<>();
-        updates.put("statut", "TRAITEE");
-        
-        db.collection("alertes").document(id).update(updates);
-        
-        return "Alerte résolue";
+        try {
+            Firestore db = FirestoreClient.getFirestore();
+            db.collection(COLLECTION_NAME).document(id).update("statut", "TRAITEE").get(30, TimeUnit.SECONDS);
+            return id;
+        } catch (Exception e) {
+            log.error("Error solving alerte {}: {}", id, e.getMessage());
+            throw e;
+        }
     }
 }

@@ -30,6 +30,15 @@ export interface Verger {
   statut: string;
   boundary?: BoundaryPoint[];
   trees?: OliveTree[];
+  // Prediction de maturite
+  varieteOlive?: string;
+  datePlantation?: string;
+  dateReferenceCalculGDD?: string;
+  gddCumules?: number;
+  gddSeuilMaturite?: number;
+  pourcentageMaturite?: number;
+  dateMaturitePrevue?: string;
+  derniereMeteoJson?: string;
 }
 
 @Injectable({
@@ -38,7 +47,7 @@ export interface Verger {
 export class VergerService {
   private apiUrl = 'http://localhost:8080/api/vergers';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getAllVergers(): Observable<Verger[]> {
     return this.http.get<Verger[]>(this.apiUrl);
@@ -78,5 +87,9 @@ export class VergerService {
 
   updateTreeStatus(id: string, treeId: string, status: string): Observable<Verger> {
     return this.http.put<Verger>(`${this.apiUrl}/${id}/trees/${treeId}/status`, { status });
+  }
+
+  syncPredictions(): Observable<any> {
+    return this.http.post('http://localhost:8080/api/prediction/sync', {});
   }
 }

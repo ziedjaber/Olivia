@@ -7,10 +7,10 @@ import { CollecteService, Collecte } from '../../../core/services/collecte.servi
 import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
-  selector: 'app-director-logistics',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  template: `
+   selector: 'app-director-logistics',
+   standalone: true,
+   imports: [CommonModule, FormsModule],
+   template: `
     <div class="min-h-screen bg-[#fffcf5] pb-20">
       <!-- HEADER SECTION -->
       <div class="bg-surface-container-low/40 backdrop-blur-3xl border-b border-outline-variant/10 sticky top-0 z-40 px-8 py-6">
@@ -18,22 +18,22 @@ import { ToastService } from '../../../core/services/toast.service';
           <div>
             <div class="flex items-center gap-2 mb-1">
               <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-              <span class="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Logistics Hub</span>
+              <span class="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Centre Logistique</span>
             </div>
-            <h1 class="text-4xl font-black text-on-surface tracking-tighter" style="font-family: Manrope, sans-serif;">Equipment <span class="text-primary/40">Market</span></h1>
-            <p class="text-on-surface-variant text-sm font-medium opacity-60">Provision your harvest campaigns with professional hardware.</p>
+            <h1 class="text-4xl font-black text-on-surface tracking-tighter" style="font-family: Manrope, sans-serif;">Marché <span class="text-primary/40">d'Équipement</span></h1>
+            <p class="text-on-surface-variant text-sm font-medium opacity-60">Approvisionnez vos campagnes de récolte avec du matériel professionnel.</p>
           </div>
 
           <!-- Quick Navigation / Stats -->
           <div class="flex items-center gap-4">
              <div class="hidden sm:flex bg-white/60 p-1 rounded-2xl border border-outline-variant/10 shadow-sm">
-                <button (click)="categoryFilter = ''" [class.bg-primary]="categoryFilter === ''" [class.text-on-primary]="categoryFilter === ''" class="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">All</button>
-                <button (click)="categoryFilter = 'TRACTORS'" [class.bg-primary]="categoryFilter === 'TRACTORS'" [class.text-on-primary]="categoryFilter === 'TRACTORS'" class="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">Machinery</button>
-                <button (click)="categoryFilter = 'TOOLS'" [class.bg-primary]="categoryFilter === 'TOOLS'" [class.text-on-primary]="categoryFilter === 'TOOLS'" class="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">Tools</button>
+                <button (click)="categoryFilter = ''" [class.bg-primary]="categoryFilter === ''" [class.text-on-primary]="categoryFilter === ''" class="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">Tout</button>
+                <button (click)="categoryFilter = 'TRACTORS'" [class.bg-primary]="categoryFilter === 'TRACTORS'" [class.text-on-primary]="categoryFilter === 'TRACTORS'" class="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">Machines</button>
+                <button (click)="categoryFilter = 'TOOLS'" [class.bg-primary]="categoryFilter === 'TOOLS'" [class.text-on-primary]="categoryFilter === 'TOOLS'" class="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">Outils</button>
              </div>
              <div class="flex bg-white/80 rounded-full px-4 py-2.5 border border-outline-variant/20 w-64 shadow-inner group focus-within:ring-2 focus-within:ring-primary/20 transition-all">
                <span class="material-symbols-outlined text-outline text-[18px] mr-2">search</span>
-               <input [(ngModel)]="searchQuery" class="bg-transparent border-none outline-none text-xs w-full text-on-surface placeholder:text-outline/50" placeholder="Search the catalog...">
+               <input [(ngModel)]="searchQuery" class="bg-transparent border-none outline-none text-xs w-full text-on-surface placeholder:text-outline/50" placeholder="Rechercher dans le catalogue...">
              </div>
           </div>
         </div>
@@ -47,13 +47,13 @@ import { ToastService } from '../../../core/services/toast.service';
           <div class="lg:col-span-8">
              <div class="flex items-center justify-between mb-8">
                 <div class="flex items-center gap-3">
-                   <h2 class="text-xl font-black text-on-surface">Available Inventory</h2>
-                   <span class="px-2 py-0.5 bg-surface-container rounded-md text-[10px] font-bold text-outline">{{ filteredResources.length }} Items</span>
+                   <h2 class="text-xl font-black text-on-surface">Inventaire Disponible</h2>
+                   <span class="px-2 py-0.5 bg-surface-container rounded-md text-[10px] font-bold text-outline">{{ filteredResources.length }} Articles</span>
                 </div>
                 <div class="h-px flex-grow mx-6 bg-outline-variant/10"></div>
                 <!-- Sort Dropdown placeholder -->
                 <button class="text-[10px] font-black text-outline uppercase tracking-widest flex items-center gap-1 hover:text-primary transition-colors">
-                   Sort By <span class="material-symbols-outlined text-[14px]">expand_more</span>
+                   Trier Par <span class="material-symbols-outlined text-[14px]">expand_more</span>
                 </button>
              </div>
 
@@ -67,18 +67,18 @@ import { ToastService } from '../../../core/services/toast.service';
                          class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Res">
                     <div *ngIf="!res.images || res.images.length === 0" class="flex flex-col items-center gap-2 text-outline/20">
                        <span class="material-symbols-outlined text-5xl">inventory_2</span>
-                       <span class="text-[8px] font-black uppercase tracking-widest">No Visual Hub</span>
+                       <span class="text-[8px] font-black uppercase tracking-widest">Aucun Visuel</span>
                     </div>
 
                     <!-- Overlays -->
                     <div class="absolute top-3 left-3 flex flex-col gap-1.5">
                        <span class="px-3 py-1 bg-black/60 backdrop-blur-md rounded-full text-[9px] font-black text-white uppercase tracking-widest shadow-lg">{{ res.type }}</span>
-                       <span *ngIf="res.stockLevel < 5 && res.stockLevel > 0" class="px-3 py-1 bg-tertiary/80 backdrop-blur-md rounded-full text-[9px] font-black text-white uppercase tracking-widest shadow-lg">Low Stock</span>
-                       <span *ngIf="res.stockLevel === 0" class="px-3 py-1 bg-error/80 backdrop-blur-md rounded-full text-[9px] font-black text-white uppercase tracking-widest shadow-lg">Out of stock</span>
+                       <span *ngIf="res.stockLevel < 5 && res.stockLevel > 0" class="px-3 py-1 bg-tertiary/80 backdrop-blur-md rounded-full text-[9px] font-black text-white uppercase tracking-widest shadow-lg">Stock Faible</span>
+                       <span *ngIf="res.stockLevel === 0" class="px-3 py-1 bg-error/80 backdrop-blur-md rounded-full text-[9px] font-black text-white uppercase tracking-widest shadow-lg">Rupture de stock</span>
                     </div>
 
                     <div class="absolute bottom-3 right-3 px-3 py-1.5 bg-white shadow-xl rounded-xl">
-                       <span class="text-primary font-black text-sm">€{{ res.costPerHour }}</span>
+                       <span class="text-primary font-black text-sm">€{{ res.pricePerHour }}</span>
                        <span class="text-[10px] font-bold text-outline">/h</span>
                     </div>
                   </div>
@@ -91,28 +91,28 @@ import { ToastService } from '../../../core/services/toast.service';
                           <span class="material-symbols-outlined text-[18px]">info</span>
                         </button>
                       </div>
-                      <p class="text-xs text-on-surface-variant line-clamp-2 leading-relaxed opacity-70 mb-4">{{ res.description || 'Professional grade equipment for high-efficiency harvest operations.' }}</p>
+                      <p class="text-xs text-on-surface-variant line-clamp-2 leading-relaxed opacity-70 mb-4">{{ res.description || 'Équipement de qualité professionnelle pour des opérations de récolte à haute efficacité.' }}</p>
                     </div>
 
                     <div class="space-y-4 pt-4 border-t border-outline-variant/10">
                       <div class="flex justify-between items-center text-[10px] font-black uppercase tracking-widest">
-                         <span class="text-outline">Live Availability</span>
+                         <span class="text-outline">Disponibilité en direct</span>
                          <span [class.text-error]="res.stockLevel === 0" [class.text-primary]="res.stockLevel > 0" class="flex items-center gap-1">
                             <span class="w-1.5 h-1.5 rounded-full" [class.bg-error]="res.stockLevel === 0" [class.bg-primary]="res.stockLevel > 0"></span>
-                            {{ res.stockLevel }} Units
+                            {{ res.stockLevel }} Unités
                          </span>
                       </div>
                       
                       <div class="flex gap-2">
                         <button (click)="selectedResource = res" 
                                 class="flex-1 py-4 rounded-xl text-[9px] font-black uppercase tracking-widest border border-outline-variant/20 text-outline hover:bg-surface-container transition-all">
-                          Details
+                          Détails
                         </button>
                         <button [disabled]="res.stockLevel === 0" 
                                 (click)="addToCart(res)" 
                                 class="flex-[2] py-4 rounded-xl text-[9px] font-black uppercase tracking-widest shadow-sm transition-all duration-300"
                                 [ngClass]="res.stockLevel > 0 ? 'bg-primary text-on-primary hover:shadow-lg hover:shadow-primary/30 active:scale-95' : 'bg-surface-container text-outline cursor-not-allowed'">
-                          Add to Dispatch
+                          Ajouter à l'envoi
                         </button>
                       </div>
                     </div>
@@ -123,8 +123,8 @@ import { ToastService } from '../../../core/services/toast.service';
              <!-- EMPTY STATE -->
              <div *ngIf="filteredResources.length === 0" class="text-center py-24 bg-surface-container-low/20 rounded-[3rem] border border-dashed border-outline-variant/20">
                 <span class="material-symbols-outlined text-6xl text-outline/20 mb-4">search_off</span>
-                <h3 class="text-xl font-black text-on-surface/40">No Equipment Found</h3>
-                <p class="text-xs text-outline font-medium max-w-xs mx-auto mt-2">The catalog doesn't match your current selection. Try broadening your criteria or checking with Logistics.</p>
+                <h3 class="text-xl font-black text-on-surface/40">Aucun Équipement Trouvé</h3>
+                <p class="text-xs text-outline font-medium max-w-xs mx-auto mt-2">Le catalogue ne correspond pas à votre sélection actuelle. Essayez d'élargir vos critères ou de vérifier avec la Logistique.</p>
              </div>
           </div>
 
@@ -133,12 +133,12 @@ import { ToastService } from '../../../core/services/toast.service';
              <div class="bg-white rounded-[2.5rem] border border-outline-variant/15 shadow-2xl shadow-primary/5 flex flex-col overflow-hidden">
                 <div class="p-8 bg-surface-container-low/50 border-b border-outline-variant/10">
                    <div class="flex items-center justify-between mb-2">
-                      <h3 class="text-xl font-black text-on-surface tracking-tighter">Dispatch Summary</h3>
+                      <h3 class="text-xl font-black text-on-surface tracking-tighter">Résumé de l'Envoi</h3>
                       <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
                          <span class="text-xs font-black text-primary">{{ cart.length }}</span>
                       </div>
                    </div>
-                   <p class="text-[10px] font-bold text-outline uppercase tracking-widest leading-none">Drafting logistics order</p>
+                   <p class="text-[10px] font-bold text-outline uppercase tracking-widest leading-none">Brouillon de commande logistique</p>
                 </div>
 
                 <div class="p-8 space-y-4 max-h-[400px] overflow-y-auto custom-scrollbar">
@@ -166,18 +166,18 @@ import { ToastService } from '../../../core/services/toast.service';
                    
                    <div *ngIf="cart.length === 0" class="py-12 text-center text-outline/20">
                       <span class="material-symbols-outlined text-4xl mb-2">shopping_bag</span>
-                      <p class="text-[10px] font-black uppercase tracking-widest">Cart is empty</p>
+                      <p class="text-[10px] font-black uppercase tracking-widest">Le panier est vide</p>
                    </div>
                 </div>
 
                 <div class="p-8 bg-surface-container-low/30 border-t border-outline-variant/10 mt-auto">
                    <!-- Mission Selector -->
                    <div class="mb-6">
-                      <label class="block text-[10px] font-black text-outline uppercase tracking-widest mb-3">Target Harvest Mission</label>
+                      <label class="block text-[10px] font-black text-outline uppercase tracking-widest mb-3">Mission de Récolte Cible</label>
                       <div class="relative group">
                          <select [(ngModel)]="targetCollecteId" (change)="onCollecteChange()"
                                  class="w-full bg-white border border-outline-variant/20 rounded-2xl py-3.5 px-4 text-xs font-bold text-on-surface appearance-none outline-none focus:ring-4 focus:ring-primary/5 transition-all cursor-pointer">
-                            <option value="">Select an active mission...</option>
+                            <option value="">Sélectionnez une mission active...</option>
                             <option *ngFor="let c of plannedCollectes" [value]="c.id">
                                {{ c.description }} ({{ c.vergerName }})
                             </option>
@@ -196,7 +196,7 @@ import { ToastService } from '../../../core/services/toast.service';
                    </div>
 
                    <div class="flex items-center justify-between mb-6">
-                      <span class="text-xs font-black text-on-surface capitalize">Estimated Impact</span>
+                      <span class="text-xs font-black text-on-surface capitalize">Impact Estimé</span>
                       <span class="text-lg font-black text-primary">€{{ totalCartValue }}</span>
                    </div>
 
@@ -204,12 +204,14 @@ import { ToastService } from '../../../core/services/toast.service';
                            (click)="submitOrder()" 
                            class="w-full bg-primary text-on-primary py-5 rounded-[1.5rem] font-black text-[10px] uppercase tracking-[0.3em] shadow-xl shadow-primary/20 hover:shadow-primary/40 active:scale-95 transition-all disabled:opacity-40 disabled:shadow-none flex items-center justify-center gap-2">
                       <span *ngIf="submitting" class="w-3 h-3 border-2 border-on-primary/30 border-t-on-primary rounded-full animate-spin"></span>
-                      {{ submitting ? 'Processing Dispatch...' : 'Initialize Provisioning' }}
+                      {{ submitting ? "Traitement de l'envoi..." : "Initialiser l'Approvisionnement" }}
                    </button>
-                   <p class="text-[9px] text-center text-outline font-medium mt-4">Subject to Logistics Manager validation</p>
+                   <p class="text-[9px] text-center text-outline font-medium mt-4">Soumis à la validation du Responsable Logistique</p>
                 </div>
              </div>
           </div>
+        </div>
+      </div>
 
       <!-- MATERIAL DETAILS MODAL -->
       <div *ngIf="selectedResource" class="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 md:p-10 animate-in fade-in duration-300">
@@ -237,8 +239,8 @@ import { ToastService } from '../../../core/services/toast.service';
                   <h2 class="text-4xl font-black text-on-surface tracking-tighter mb-4 leading-none">{{ selectedResource.name }}</h2>
                   <div class="flex items-center gap-4">
                      <div class="px-4 py-2 bg-surface-container rounded-2xl flex items-center gap-2">
-                        <span class="text-lg font-black text-primary">€{{ selectedResource.costPerHour }}</span>
-                        <span class="text-[10px] font-bold text-outline">/ hour</span>
+                        <span class="text-lg font-black text-primary">€{{ selectedResource.pricePerHour }}</span>
+                        <span class="text-[10px] font-bold text-outline">/ heure</span>
                      </div>
                      <span class="text-xs font-bold text-outline tracking-wider uppercase">{{ selectedResource.sku }}</span>
                   </div>
@@ -246,21 +248,21 @@ import { ToastService } from '../../../core/services/toast.service';
 
                <div class="flex-grow space-y-8">
                   <div>
-                     <h5 class="text-[10px] font-black text-outline uppercase tracking-widest mb-3">Specification Manifest</h5>
-                     <p class="text-sm text-on-surface-variant leading-relaxed opacity-80">{{ selectedResource.description || 'This professional-grade equipment is optimized for peak harvest performance, featuring advanced durability and ergonomic design for extended field operations.' }}</p>
+                     <h5 class="text-[10px] font-black text-outline uppercase tracking-widest mb-3">Manifeste de Spécifications</h5>
+                     <p class="text-sm text-on-surface-variant leading-relaxed opacity-80">{{ selectedResource.description || "Cet équipement de qualité professionnelle est optimisé pour des performances de récolte maximales, doté d\'une durabilité avancée et d\'un design ergonomique pour des opérations prolongées sur le terrain." }}</p>
                   </div>
 
                   <div class="grid grid-cols-2 gap-6 bg-surface-container-low/30 p-6 rounded-[2rem] border border-outline-variant/10">
                      <div class="flex flex-col gap-1">
-                        <span class="text-[9px] font-black text-outline uppercase tracking-widest">Inventory State</span>
+                        <span class="text-[9px] font-black text-outline uppercase tracking-widest">État de l'Inventaire</span>
                         <span class="text-xs font-bold text-on-surface flex items-center gap-2">
                            <span class="w-2 h-2 rounded-full" [class.bg-primary]="selectedResource.stockLevel > 0" [class.bg-error]="selectedResource.stockLevel === 0"></span>
-                           {{ selectedResource.stockLevel > 0 ? 'Available for Dispatch' : 'Out of Stock' }}
+                           {{ selectedResource.stockLevel > 0 ? 'Disponible pour l\'envoi' : 'Rupture de Stock' }}
                         </span>
                      </div>
                      <div class="flex flex-col gap-1">
-                        <span class="text-[9px] font-black text-outline uppercase tracking-widest">Units In Store</span>
-                        <span class="text-xs font-bold text-on-surface">{{ selectedResource.stockLevel }} Current Units</span>
+                        <span class="text-[9px] font-black text-outline uppercase tracking-widest">Unités en Stock</span>
+                        <span class="text-xs font-bold text-on-surface">{{ selectedResource.stockLevel }} Unités Actuelles</span>
                      </div>
                   </div>
                </div>
@@ -269,14 +271,14 @@ import { ToastService } from '../../../core/services/toast.service';
                   <button [disabled]="selectedResource.stockLevel === 0" 
                           (click)="addToCart(selectedResource); selectedResource = null" 
                           class="w-full bg-primary text-on-primary py-6 rounded-[2rem] font-black text-xs uppercase tracking-[0.3em] shadow-2xl shadow-primary/20 hover:shadow-primary/40 active:scale-95 transition-all disabled:opacity-40 disabled:grayscale">
-                     Add to Dispatch Draft
+                     Ajouter au Brouillon d'Envoi
                   </button>
                </div>
             </div>
          </div>
       </div>
   `,
-  styles: [`
+   styles: [`
     :host { display: block; }
     .custom-scrollbar::-webkit-scrollbar { width: 4px; }
     .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
@@ -285,145 +287,146 @@ import { ToastService } from '../../../core/services/toast.service';
   `]
 })
 export class DirectorLogisticsComponent implements OnInit, AfterViewChecked {
-  private logistiqueService = inject(LogistiqueService);
-  private collecteService = inject(CollecteService);
-  private resourceOrderService = inject(ResourceOrderService);
-  private toastService = inject(ToastService);
-  private cdr = inject(ChangeDetectorRef);
+   private logistiqueService = inject(LogistiqueService);
+   private collecteService = inject(CollecteService);
+   private resourceOrderService = inject(ResourceOrderService);
+   private toastService = inject(ToastService);
+   private cdr = inject(ChangeDetectorRef);
 
-  resources: LogisticResource[] = [];
-  collectes: Collecte[] = [];
-  searchQuery = '';
-  categoryFilter = '';
-  
-  targetCollecteId = '';
-  targetCollecte: Collecte | null = null;
-  cart: { resourceId: string, resourceName: string, quantity: number, image?: string, price: number, resourceName_raw?: string }[] = [];
-  submitting = false;
-  selectedResource: LogisticResource | null = null;
+   resources: LogisticResource[] = [];
+   collectes: Collecte[] = [];
+   searchQuery = '';
+   categoryFilter = '';
 
-  ngOnInit() {
-    this.loadData();
-  }
+   targetCollecteId = '';
+   targetCollecte: Collecte | null = null;
+   cart: { resourceId: string, resourceName: string, quantity: number, image?: string, price: number, resourceName_raw?: string }[] = [];
+   submitting = false;
+   selectedResource: LogisticResource | null = null;
 
-  loadData() {
-    this.logistiqueService.getAllResources().subscribe({
-      next: (r) => {
-        this.resources = (r || []).map(item => ({...item, status: item.status?.toLowerCase() || 'active'}));
-      },
-      error: () => this.toastService.show('System connection error. Catalog unavailable.', 'error')
-    });
-    this.collecteService.getCollectes().subscribe(c => this.collectes = c || []);
-  }
+   ngOnInit() {
+      this.loadData();
+   }
 
-  ngAfterViewChecked() {
-    this.cdr.detectChanges();
-  }
+   loadData() {
+      this.logistiqueService.getAllResources().subscribe({
+         next: (r) => {
+            this.resources = (r || []).map(item => ({ ...item, status: item.status?.toLowerCase() || 'active' }));
+         },
+         error: () => this.toastService.show('Erreur de connexion au système. Catalogue indisponible.', 'error')
+      });
+      this.collecteService.getCollectes().subscribe(c => this.collectes = c || []);
+   }
 
-  get filteredResources() {
-    let list = this.resources.filter(r => r.status !== 'inactive');
-    if (this.categoryFilter) {
-      list = list.filter(r => r.type === this.categoryFilter);
-    }
-    if (this.searchQuery) {
-      const q = this.searchQuery.toLowerCase();
-      list = list.filter(r => r.name.toLowerCase().includes(q) || r.type.toLowerCase().includes(q));
-    }
-    return list;
-  }
+   ngAfterViewChecked() {
+      this.cdr.detectChanges();
+   }
 
-  get plannedCollectes() {
-    return this.collectes.filter(c => c.statut === 'PLANNED' || c.statut === 'en_attente');
-  }
+   get filteredResources() {
+      let list = this.resources.filter(r => r.status !== 'inactive');
+      if (this.categoryFilter) {
+         list = list.filter(r => r.type === this.categoryFilter);
+      }
+      if (this.searchQuery) {
+         const q = this.searchQuery.toLowerCase();
+         list = list.filter(r => r.name.toLowerCase().includes(q) || r.type.toLowerCase().includes(q));
+      }
+      return list;
+   }
 
-  get totalCartValue(): number {
-     return this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  }
+   get plannedCollectes() {
+      return this.collectes.filter(c => c.statut === 'PLANNED' || c.statut === 'en_attente');
+   }
 
-  get canSubmit(): boolean {
-    return this.cart.length > 0 && !!this.targetCollecteId && !this.submitting;
-  }
+   get totalCartValue(): number {
+      return this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+   }
 
-  getImageUrl(path: string | undefined): string {
-    if (!path) return 'https://images.unsplash.com/photo-1589923188900-85dae5233ea8?q=80&w=400&auto=format&fit=crop'; 
-    if (path.startsWith('http')) return path;
-    const baseUrl = 'http://localhost:8080';
-    const cleanPath = path.startsWith('/') ? path : '/' + path;
-    return `${baseUrl}${cleanPath}`;
-  }
+   get canSubmit(): boolean {
+      return this.cart.length > 0 && !!this.targetCollecteId && !this.submitting;
+   }
 
-  onCollecteChange() {
-    this.targetCollecte = this.collectes.find(c => c.id === this.targetCollecteId) || null;
-  }
+   getImageUrl(path: string | undefined): string {
+      if (!path) return 'https://images.unsplash.com/photo-1589923188900-85dae5233ea8?q=80&w=400&auto=format&fit=crop';
+      if (path.startsWith('http')) return path;
+      const baseUrl = 'http://localhost:8080';
+      const cleanPath = path.startsWith('/') ? path : '/' + path;
+      return `${baseUrl}${cleanPath}`;
+   }
 
-  addToCart(res: LogisticResource) {
-    const existing = this.cart.find(r => r.resourceId === res.id);
-    if (existing) {
-       if (existing.quantity >= res.stockLevel) {
-          this.toastService.show(`Logistics limit: Only ${res.stockLevel} units currently in inventory.`, 'info');
-          return;
-       }
-       existing.quantity++;
-    } else {
-       this.cart.push({ 
-         resourceId: res.id!, 
-         resourceName: res.name, 
-         quantity: 1,
-         image: res.images?.[0],
-         price: res.costPerHour
-       });
-    }
-    this.toastService.show(`${res.name} added to dispatch draft.`, 'success');
-  }
+   onCollecteChange() {
+      this.targetCollecte = this.collectes.find(c => c.id === this.targetCollecteId) || null;
+   }
 
-  updateQuantity(index: number, delta: number) {
-     const item = this.cart[index];
-     const resource = this.resources.find(r => r.id === item.resourceId);
-     if (delta > 0 && resource && item.quantity >= resource.stockLevel) {
-        this.toastService.show(`Maximum stock level reached.`, 'info');
-        return;
-     }
-     item.quantity += delta;
-     if (item.quantity <= 0) {
-        this.removeFromCart(index);
-     }
-  }
+   addToCart(res: LogisticResource) {
+      const existing = this.cart.find(r => r.resourceId === res.id);
+      const price = res.pricePerHour || res.pricePerHour || 0;
+      if (existing) {
+         if (existing.quantity >= res.stockLevel) {
+            this.toastService.show(`Limite logistique : Seulement ${res.stockLevel} unités actuellement en stock.`, 'info');
+            return;
+         }
+         existing.quantity++;
+      } else {
+         this.cart.push({
+            resourceId: res.id!,
+            resourceName: res.name,
+            quantity: 1,
+            image: res.images?.[0],
+            price: res.pricePerHour
+         });
+      }
+      this.toastService.show(`${res.name} ajouté au brouillon d'envoi.`, 'success');
+   }
 
-  removeFromCart(index: number) {
-    this.cart.splice(index, 1);
-  }
+   updateQuantity(index: number, delta: number) {
+      const item = this.cart[index];
+      const resource = this.resources.find(r => r.id === item.resourceId);
+      if (delta > 0 && resource && item.quantity >= resource.stockLevel) {
+         this.toastService.show(`Niveau de stock maximum atteint.`, 'info');
+         return;
+      }
+      item.quantity += delta;
+      if (item.quantity <= 0) {
+         this.removeFromCart(index);
+      }
+   }
 
-  submitOrder() {
-    if (!this.canSubmit) return;
-    this.submitting = true;
+   removeFromCart(index: number) {
+      this.cart.splice(index, 1);
+   }
 
-    const payload: ResourceOrder = {
-       collecteId: this.targetCollecteId,
-       startDate: this.targetCollecte?.startDate || new Date(),
-       endDate: this.targetCollecte?.endDate || new Date(),
-       resources: this.cart.map(i => ({
-          resourceId: i.resourceId,
-          resourceName: i.resourceName,
-          quantity: i.quantity
-       }))
-    };
+   submitOrder() {
+      if (!this.canSubmit) return;
+      this.submitting = true;
 
-    this.resourceOrderService.createOrder(payload).subscribe({
-       next: () => {
-          this.toastService.show('Logistics demand dispatched! Waiting for approval.', 'success');
-          this.submitting = false;
-          this.cart = [];
-          this.targetCollecteId = '';
-          this.targetCollecte = null;
-       },
-       error: (err) => {
-          console.error('Provisioning Error:', err);
-          const msg = err.status === 403 
-             ? 'Security Block: Please ensure your account has Director privileges.' 
-             : 'Failed to initiate provisioning. Please check network connection.';
-          this.toastService.show(msg, 'error');
-          this.submitting = false;
-       }
-    });
-  }
+      const payload: ResourceOrder = {
+         collecteId: this.targetCollecteId,
+         startDate: this.targetCollecte?.startDate || new Date(),
+         endDate: this.targetCollecte?.endDate || new Date(),
+         resources: this.cart.map(i => ({
+            resourceId: i.resourceId,
+            resourceName: i.resourceName,
+            quantity: i.quantity
+         }))
+      };
+
+      this.resourceOrderService.createOrder(payload).subscribe({
+         next: () => {
+            this.toastService.show('Demande logistique envoyée ! En attente d\'approbation.', 'success');
+            this.submitting = false;
+            this.cart = [];
+            this.targetCollecteId = '';
+            this.targetCollecte = null;
+         },
+         error: (err) => {
+            console.error('Provisioning Error:', err);
+            const msg = err.status === 403
+               ? 'Blocage de sécurité : Veuillez vous assurer que votre compte dispose des privilèges de Directeur.'
+               : 'Échec de l\'initialisation de l\'approvisionnement. Veuillez vérifier la connexion réseau.';
+            this.toastService.show(msg, 'error');
+            this.submitting = false;
+         }
+      });
+   }
 }

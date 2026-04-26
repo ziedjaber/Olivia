@@ -7,7 +7,9 @@ import com.google.cloud.firestore.Firestore;
 import com.olivia.backend.dto.AuthDTOs.*;
 import com.olivia.backend.model.User;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.security.core.context.SecurityContextHolder;
+
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -21,8 +23,10 @@ public class AuthService {
     @org.springframework.beans.factory.annotation.Autowired
     private FileService fileService;
 
+
     @org.springframework.beans.factory.annotation.Autowired
     private EmailService emailService;
+
 
     public String register(RegisterRequest request) throws Exception {
         String normalizedEmail = request.getEmail().toLowerCase();
@@ -70,6 +74,7 @@ public class AuthService {
             } catch (Exception emailEx) {
                 log.warn("[Auth] Welcome email failed but registration succeeded: {}", emailEx.getMessage());
             }
+
 
             return "User registered successfully";
         } catch (Exception e) {

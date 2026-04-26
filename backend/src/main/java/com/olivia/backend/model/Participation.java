@@ -3,7 +3,7 @@ package com.olivia.backend.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.util.Date;
+
 
 /**
  * Represents a worker's participation record in a Collecte.
@@ -24,16 +24,16 @@ public class Participation {
     private String ouvrierEmail;
     private String collecteDescription;
     private String collecteType;   // planifiee / urgente
-    private Date   collecteDate;
-    private Date   collecteEndDate;
+    private String   collecteDate;
+    private String   collecteEndDate;
     private String collecteLocation;
 
     // Status lifecycle
     private String status;         // mirrors ParticipationStatus enum name
 
     // Timestamps
-    private Date dateInvitation;
-    private Date dateReponse;
+    private String dateInvitation;
+    private String dateReponse;
 
     // Who sent the invite
     private String invitedByUid;
@@ -41,6 +41,6 @@ public class Participation {
 
     // Added for new worker UI requirements
     private Boolean salaryPaid;
-    private Date dateRemoved;
+    private String dateRemoved;
     private Double dailySalary;
 }

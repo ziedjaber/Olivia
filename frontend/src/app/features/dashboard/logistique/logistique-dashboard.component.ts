@@ -8,11 +8,12 @@ import { ResourceOrderService, ResourceOrder } from '../../../core/services/reso
 import { AuthService } from '../../../core/services/auth.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { DialogService } from '../../../core/services/dialog.service';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-logistique-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   template: `
 <!-- LIGHTBOX -->
 <div *ngIf="lightboxImages.length > 0"
@@ -56,9 +57,9 @@ import { DialogService } from '../../../core/services/dialog.service';
     <div class="p-8 flex items-center justify-between border-b border-outline-variant/15 bg-surface-container-low">
       <div>
         <h3 class="text-2xl font-bold text-on-surface" style="font-family: Manrope, sans-serif;">
-          {{ isEditing ? 'Edit Resource' : 'Add New Resource' }}
+          {{ isEditing ? 'Modifier la ressource' : 'Ajouter une ressource' }}
         </h3>
-        <p class="text-xs text-on-surface-variant mt-1">{{ isEditing ? 'Update the selected item' : 'Register a new inventory item' }}</p>
+        <p class="text-xs text-on-surface-variant mt-1">{{ isEditing ? 'Mettre à jour l\'élément sélectionné' : 'Enregistrer un nouvel élément' }}</p>
       </div>
       <button (click)="closeModal()"
               class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-outline-variant/20 transition-colors">
@@ -82,12 +83,14 @@ import { DialogService } from '../../../core/services/dialog.service';
         <select [(ngModel)]="newResource.type" name="type"
                 class="w-full bg-surface-container-highest border-none rounded-xl font-body text-sm py-3 px-4 focus:ring-2 focus:ring-primary/30 text-on-surface outline-none appearance-none cursor-pointer">
           <option value="">Select a category</option>
-          <option value="TRACTORS">Tractors</option>
+
+          <option value="TRACTORS">Tracteurs</option>
           <option value="BENNES">Bennes (Bins/Trailers)</option>
-          <option value="MECHANICS">Mechanics & Vehicles</option>
-          <option value="TOOLS">Hand Tools & Equipment</option>
-          <option value="FERTILIZER">Fertilizers & Nutrition</option>
-          <option value="SAFETY">Safety Gear</option>
+          <option value="MECHANICS">Mécanique et véhicules</option>
+          <option value="TOOLS">Outils et équipements</option>
+          <option value="FERTILIZER">Engrais & nutrition</option>
+          <option value="SAFETY">Équipement de sécurité</option>
+
         </select>
       </div>
 
@@ -103,7 +106,9 @@ import { DialogService } from '../../../core/services/dialog.service';
       <div class="grid grid-cols-2 gap-4">
         <div>
           <label class="block text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-2">€/Hour</label>
-          <input [(ngModel)]="newResource.costPerHour" name="costPerHour" type="number" min="0" step="0.5"
+
+          <input [(ngModel)]="newResource.pricePerHour" name="pricePerHour" type="number" min="0" step="0.5"
+
                  class="w-full bg-surface-container-highest border-none rounded-xl font-body text-sm py-3 px-4 focus:ring-2 focus:ring-primary/30 text-on-surface outline-none"
                  placeholder="0.00"/>
         </div>
@@ -201,8 +206,8 @@ import { DialogService } from '../../../core/services/dialog.service';
   <!-- Top Bar -->
   <header class="bg-surface-container-low/80 backdrop-blur-xl border-b border-outline-variant/15 sticky top-0 z-30 flex justify-between items-center px-8 py-4">
     <div>
-      <h2 class="text-xl font-extrabold text-on-surface" style="font-family: Manrope, sans-serif;">Logistics &amp; Inventory</h2>
-      <p class="text-xs text-on-surface-variant mt-0.5">Real-time resource management</p>
+      <h2 class="text-xl font-extrabold text-on-surface" style="font-family: Manrope, sans-serif;">Logistique &amp; Inventaire</h2>
+      <p class="text-xs text-on-surface-variant mt-0.5">Gestion des ressources en temps réel</p>
     </div>
     <div class="flex items-center gap-4">
       <!-- Search -->
@@ -215,7 +220,7 @@ import { DialogService } from '../../../core/services/dialog.service';
               class="bg-primary text-on-primary px-5 py-2.5 rounded-full font-bold text-sm flex items-center gap-2 shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all"
               style="font-family: Manrope, sans-serif;">
         <span class="material-symbols-outlined text-[18px]">add</span>
-        New Resource
+        Nouvelle ressource
       </button>
     </div>
   </header>
@@ -226,17 +231,20 @@ import { DialogService } from '../../../core/services/dialog.service';
     <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
       <div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-outline-variant/15 flex flex-col justify-between h-36 hover:shadow-md transition-all hover:-translate-y-0.5">
         <div>
-          <p class="text-on-surface-variant text-xs font-bold uppercase tracking-widest mb-1" style="font-family: Manrope, sans-serif;">Total Resources</p>
+
+          <p class="text-on-surface-variant text-xs font-bold uppercase tracking-widest mb-1" style="font-family: Manrope, sans-serif;">Ressources totales</p>
+
           <h3 class="text-3xl font-extrabold text-primary" style="font-family: Manrope, sans-serif;">{{ resources.length }}</h3>
         </div>
         <div class="flex items-center text-secondary text-xs font-bold gap-1">
           <span class="material-symbols-outlined text-[16px]">inventory_2</span>
-          Registered items
+
+          Éléments enregistrés
         </div>
       </div>
       <div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-outline-variant/15 flex flex-col justify-between h-36 hover:shadow-md transition-all hover:-translate-y-0.5">
         <div>
-          <p class="text-on-surface-variant text-xs font-bold uppercase tracking-widest mb-1" style="font-family: Manrope, sans-serif;">Active Items</p>
+          <p class="text-on-surface-variant text-xs font-bold uppercase tracking-widest mb-1" style="font-family: Manrope, sans-serif;">Éléments actifs</p>
           <h3 class="text-3xl font-extrabold text-primary" style="font-family: Manrope, sans-serif;">{{ activeCount }}</h3>
         </div>
         <div class="w-full bg-surface-container-highest h-1.5 rounded-full mt-2">
@@ -245,22 +253,22 @@ import { DialogService } from '../../../core/services/dialog.service';
       </div>
       <div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-outline-variant/15 flex flex-col justify-between h-36 hover:shadow-md transition-all hover:-translate-y-0.5">
         <div>
-          <p class="text-on-surface-variant text-xs font-bold uppercase tracking-widest mb-1" style="font-family: Manrope, sans-serif;">Low Stock Alerts</p>
+          <p class="text-on-surface-variant text-xs font-bold uppercase tracking-widest mb-1" style="font-family: Manrope, sans-serif;">Alertes de stock bas</p>
           <h3 class="text-3xl font-extrabold text-tertiary" style="font-family: Manrope, sans-serif;">{{ lowStockCount | number: '2.0' }}</h3>
         </div>
         <div class="flex items-center text-tertiary text-xs font-bold gap-1">
           <span class="material-symbols-outlined text-[16px]">warning</span>
-          Requires attention
+          Nécessite une attention
         </div>
       </div>
       <div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-outline-variant/15 flex flex-col justify-between h-36 hover:shadow-md transition-all hover:-translate-y-0.5">
         <div>
-          <p class="text-on-surface-variant text-xs font-bold uppercase tracking-widest mb-1" style="font-family: Manrope, sans-serif;">Hourly Budget</p>
+          <p class="text-on-surface-variant text-xs font-bold uppercase tracking-widest mb-1" style="font-family: Manrope, sans-serif;">Budget horaire</p>
           <h3 class="text-3xl font-extrabold text-primary" style="font-family: Manrope, sans-serif;">€{{ totalHourlyValue | number: '1.0-0' }}</h3>
         </div>
         <div class="flex items-center text-on-surface-variant text-xs font-bold gap-1">
           <span class="material-symbols-outlined text-[16px]">euro</span>
-          Total rent rate/hour
+          Taux de location total/heure
         </div>
       </div>
     </section>
@@ -276,9 +284,9 @@ import { DialogService } from '../../../core/services/dialog.service';
          <div class="flex items-center justify-between mb-8">
             <div>
                <h4 class="text-2xl font-black text-on-surface tracking-tighter" style="font-family: Manrope, sans-serif;">
-                 Provisioning Gate
+                 Portail d'approvisionnement
                </h4>
-               <p class="text-xs text-on-surface-variant font-medium opacity-60">Demand queue from the Director's Office</p>
+               <p class="text-xs text-on-surface-variant font-medium opacity-60">File d'attente des demandes de la direction</p>
             </div>
             <div class="px-4 py-2 bg-error/10 rounded-2xl flex items-center gap-2 border border-error/10">
                <span class="w-2 h-2 rounded-full bg-error animate-pulse"></span>
@@ -363,8 +371,8 @@ import { DialogService } from '../../../core/services/dialog.service';
         <div class="bg-surface-container-low rounded-xl p-8 border border-outline-variant/15">
         <div class="flex justify-between items-end mb-8">
           <div>
-            <h4 class="text-2xl font-extrabold text-on-surface" style="font-family: Manrope, sans-serif;">Inventory Matrix</h4>
-            <p class="text-on-surface-variant text-sm mt-1">Live stock monitoring across all locations.</p>
+            <h4 class="text-2xl font-extrabold text-on-surface" style="font-family: Manrope, sans-serif;">Matrice d'inventaire</h4>
+            <p class="text-on-surface-variant text-sm mt-1">Suivi des stocks en direct sur tous les sites.</p>
           </div>
           <button (click)="loadResources()" class="p-2 rounded-xl border border-outline-variant/20 hover:bg-surface-container transition-colors" title="Refresh">
             <span class="material-symbols-outlined text-outline text-[20px]">refresh</span>
@@ -442,7 +450,7 @@ import { DialogService } from '../../../core/services/dialog.service';
                 </td>
                 <!-- Price -->
                 <td class="py-4 px-4">
-                  <span class="text-sm font-bold text-on-surface">€{{ res.costPerHour }}/h</span>
+                  <span class="text-sm font-bold text-on-surface">€{{ res.pricePerHour }}/h</span>
                 </td>
                 <!-- Actions -->
                 <td class="py-4 px-4 text-right">
@@ -470,7 +478,7 @@ import { DialogService } from '../../../core/services/dialog.service';
       <div class="space-y-6">
         <!-- Category Breakdown -->
         <div class="bg-surface-container-lowest rounded-xl p-8 border border-outline-variant/15 shadow-sm">
-          <h4 class="text-xl font-bold text-on-surface mb-6" style="font-family: Manrope, sans-serif;">By Category</h4>
+          <h4 class="text-xl font-bold text-on-surface mb-6" style="font-family: Manrope, sans-serif;">Par Catégorie</h4>
           <div class="space-y-4">
             <div *ngFor="let cat of categoryBreakdown" class="flex items-center gap-3">
               <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" [class]="cat.iconBg">
@@ -493,13 +501,13 @@ import { DialogService } from '../../../core/services/dialog.service';
         <!-- CTA Card -->
         <div class="bg-primary text-on-primary rounded-xl p-8 shadow-xl relative overflow-hidden">
           <div class="relative z-10">
-            <h4 class="text-xl font-extrabold mb-2" style="font-family: Manrope, sans-serif;">Resource Hub</h4>
-            <p class="text-sm opacity-80 mb-6">Manage all your logistics assets from one place. Add machinery, tools and more.</p>
+            <h4 class="text-xl font-extrabold mb-2" style="font-family: Manrope, sans-serif;">Centre de ressources</h4>
+            <p class="text-sm opacity-80 mb-6">Gérez tous vos actifs logistiques. Ajoutez des machines, des outils, etc.</p>
             <button (click)="openModal()"
                     class="w-full bg-surface text-primary py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:bg-surface-container transition-colors"
                     style="font-family: Manrope, sans-serif;">
               <span class="material-symbols-outlined text-[18px]">add_circle</span>
-              Add New Item
+              Ajouter un nouvel élément
             </button>
           </div>
           <div class="absolute -right-6 -bottom-6 opacity-10">
@@ -512,8 +520,8 @@ import { DialogService } from '../../../core/services/dialog.service';
     <!-- Resource Cards Gallery (Images) -->
     <section *ngIf="resourcesWithImages.length > 0">
       <div class="flex items-center justify-between mb-6">
-        <h4 class="text-xl font-extrabold text-on-surface" style="font-family: Manrope, sans-serif;">Equipment Gallery</h4>
-        <p class="text-xs text-on-surface-variant">Items with images: {{ resourcesWithImages.length }}</p>
+        <h4 class="text-xl font-extrabold text-on-surface" style="font-family: Manrope, sans-serif;">Galerie d'équipements</h4>
+        <p class="text-xs text-on-surface-variant">Éléments avec images : {{ resourcesWithImages.length }}</p>
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
         <div *ngFor="let res of resourcesWithImages"
@@ -538,7 +546,7 @@ import { DialogService } from '../../../core/services/dialog.service';
           <div class="p-4">
             <div class="flex items-start justify-between gap-2 mb-2">
               <p class="font-bold text-on-surface text-sm leading-tight">{{ res.name }}</p>
-              <span class="text-xs font-black text-primary whitespace-nowrap">€{{ res.costPerHour }}/h</span>
+              <span class="text-xs font-black text-primary whitespace-nowrap">€{{ res.pricePerHour }}/h</span>
             </div>
             <div class="flex items-center justify-between">
               <span class="text-[10px] font-bold uppercase text-on-surface-variant bg-surface-container px-2 py-0.5 rounded-full">{{ res.type }}</span>
@@ -589,7 +597,7 @@ export class LogistiqueDashboardComponent implements OnInit {
   ngOnInit() {
     this.loadResources();
     this.loadOrders();
-    
+
     // Handle fragment navigation (Provisioning Gate shortcut)
     this.route.fragment.subscribe(fragment => {
       if (fragment === 'provisioning') {
@@ -608,7 +616,7 @@ export class LogistiqueDashboardComponent implements OnInit {
       name: '',
       type: '',
       description: '',
-      costPerHour: 0,
+      pricePerHour: 0,
       images: [],
       stockLevel: 0,
       location: '',
@@ -648,14 +656,15 @@ export class LogistiqueDashboardComponent implements OnInit {
   }
 
   async rejectOrder(id: string) {
-    const isConfirmed = await this.dialogService.confirm("Reject Demand", "Are you sure you want to reject this demand?", "warning");
+    const isConfirmed = await this.dialogService.confirm("Rejeter la demande", "êtes-vous sûr de vouloir rejeter cette demande?", "warning");
     if(!isConfirmed) return;
+
     this.resourceOrderService.rejectOrder(id).subscribe({
       next: () => {
-        this.toastService.show('Order rejected.', 'success');
+        this.toastService.show('Demande rejetée avec succès !', 'success');
         this.loadOrders();
       },
-      error: () => this.toastService.show('Failed to reject order.', 'error')
+      error: () => this.toastService.show('erreur lors du rejet de la demande.', 'error')
     });
   }
 
@@ -690,16 +699,16 @@ export class LogistiqueDashboardComponent implements OnInit {
     return this.resources.length > 0 ? (this.activeCount / this.resources.length) * 100 : 0;
   }
   get totalHourlyValue(): number {
-    return this.resources.reduce((sum, r) => sum + (r.costPerHour || 0), 0);
+    return this.resources.reduce((sum, r) => sum + (r.pricePerHour || 0), 0);
   }
 
   get categoryBreakdown() {
     const categories = [
-      { key: 'TRACTORS', label: 'Tractors', icon: 'agriculture', iconBg: 'bg-primary/10', iconColor: 'text-primary', barColor: 'bg-primary', count: 0 },
+      { key: 'TRACTORS', label: 'Tracteurs', icon: 'agriculture', iconBg: 'bg-primary/10', iconColor: 'text-primary', barColor: 'bg-primary', count: 0 },
       { key: 'BENNES', label: 'Bennes', icon: 'local_shipping', iconBg: 'bg-secondary/10', iconColor: 'text-secondary', barColor: 'bg-secondary', count: 0 },
-      { key: 'MECHANICS', label: 'Mechanics', icon: 'build', iconBg: 'bg-tertiary/10', iconColor: 'text-tertiary', barColor: 'bg-tertiary', count: 0 },
-      { key: 'TOOLS', label: 'Tools', icon: 'construction', iconBg: 'bg-outline-variant/20', iconColor: 'text-on-surface', barColor: 'bg-outline', count: 0 },
-      { key: 'FERTILIZER', label: 'Fertilizers', icon: 'eco', iconBg: 'bg-secondary-container/20', iconColor: 'text-secondary', barColor: 'bg-secondary-container', count: 0 },
+      { key: 'MECHANICS', label: 'Mécanique & véhicules', icon: 'build', iconBg: 'bg-tertiary/10', iconColor: 'text-tertiary', barColor: 'bg-tertiary', count: 0 },
+      { key: 'TOOLS', label: 'Outils & équipements', icon: 'construction', iconBg: 'bg-outline-variant/20', iconColor: 'text-on-surface', barColor: 'bg-outline', count: 0 },
+      { key: 'FERTILIZER', label: 'Engrais & nutrition', icon: 'eco', iconBg: 'bg-secondary-container/20', iconColor: 'text-secondary', barColor: 'bg-secondary-container', count: 0 },
     ];
     categories.forEach(cat => {
       cat.count = this.resources.filter(r => r.type === cat.key).length;
@@ -793,22 +802,30 @@ export class LogistiqueDashboardComponent implements OnInit {
       proceed(this.newResource.images);
     }
   }
+async deleteResource(id: string) {
+  // 1. On garde ton dialogue personnalisé (plus beau)
+  const isConfirmed = await this.dialogService.confirm(
+    'Supprimer la ressource', 
+    'Voulez-vous vraiment retirer cet élément de l\'inventaire ?', 
+    'danger'
+  );
 
-  async deleteResource(id: string) {
-    const isConfirmed = await this.dialogService.confirm('Remove Inventory Resource', 'Remove this resource from inventory?', 'danger');
-    if (!isConfirmed) return;
+  if (!isConfirmed) return;
 
-    this.logistiqueService.deleteResource(id).subscribe({
-      next: () => {
-        this.dialogService.alert('Success', 'Resource deleted from inventory.', 'success');
-        this.loadResources();
-      },
-      error: (err) => {
-        this.dialogService.alert('Error', 'Error deleting resource.', 'danger');
-      }
-    });
-  }
-
+  // 2. Appel au service avec gestion Next/Error
+  this.logistiqueService.deleteResource(id).subscribe({
+    next: () => {
+      // 3. Utilisation du Toast (Chaima) pour le succès (plus fluide)
+      this.toastService.show('Ressource supprimée avec succès.', 'success');
+      this.loadResources();
+    },
+    error: (err) => {
+      // 4. Utilisation du Dialog (Toi) pour l'erreur (pour être sûr que l'utilisateur le voit)
+      this.dialogService.alert('Erreur', 'Impossible de supprimer la ressource.', 'danger');
+      console.error(err);
+    }
+  });
+}
   getImageUrl(path: string): string {
     if (!path) return '';
     if (path.startsWith('http')) return path;

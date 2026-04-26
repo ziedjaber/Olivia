@@ -14,35 +14,43 @@ import { effect } from '@angular/core';
   selector: 'app-dashboard',
   standalone: true,
   imports: [
-    CommonModule, 
+    CommonModule,
     RouterModule,
-    DirecteurDashboardComponent,
+    DirecteurDashboardComponent,      // OK ici (c'est le parent qui importe l'enfant)
     ChefEquipeDashboardComponent,
     OleiculteurDashboardComponent,
     OuvrierDashboardComponent
+    // LogistiqueDashboardComponent → tu peux l'ajouter si besoin plus tard
   ],
   template: `
     <ng-container [ngSwitch]="user()?.role">
       <app-directeur-dashboard *ngSwitchCase="'DIRECTEUR'"></app-directeur-dashboard>
-      
-      <!-- Redirect Logistics Manager to the new Analytics Hub -->
+      <!-- Redirection responsable logistique -->
       <div *ngSwitchCase="'RESPONSABLE_LOGISTIQUE'" class="p-12 text-center vibrant-mesh min-h-[60vh] flex flex-col items-center justify-center animate-fade-in">
          <span class="material-symbols-outlined text-6xl text-primary animate-pulse mb-4">insights</span>
-         <h2 class="text-2xl font-black tracking-tighter">Initializing Logistics Intel...</h2>
-         <p class="text-outline text-sm mt-2">Accessing specialized operational modules.</p>
-         <script>
-            // Note: In a real Angular app we'd use a guard or navigate in ngOnInit.
-            // But since this is a switcher component, we'll provide a direct link button for now 
-            // and I'll add the programmatic navigation in the TS file.
-         </script>
-         <a routerLink="/logistics/analytics" class="mt-8 bg-on-surface text-surface px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl">Enter Command Center</a>
+         
+         <h2 class="text-2xl font-black tracking-tighter">
+           Initialisation du centre logistique...
+         </h2>
+
+         <p class="text-outline text-sm mt-2">
+           Accès aux modules opérationnels spécialisés.
+         </p>
+
+         <a routerLink="/logistics/analytics" 
+            class="mt-8 bg-on-surface text-surface px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl">
+            Accéder au centre de contrôle
+         </a>
       </div>
 
       <app-team-lead-dashboard *ngSwitchCase="'CHEF_EQUIPE_RECOLTE'"></app-team-lead-dashboard>
       <app-oleiculteur-dashboard *ngSwitchCase="'OLEICULTEUR'"></app-oleiculteur-dashboard>
       <app-ouvrier-dashboard *ngSwitchCase="'OUVRIER_RECOLTE'"></app-ouvrier-dashboard>
+
       <div *ngSwitchDefault class="p-12 text-center">
-        <h2 class="text-2xl font-bold">Accessing Dashboard...</h2>
+        <h2 class="text-2xl font-bold">
+          Chargement du tableau de bord...
+        </h2>
       </div>
     </ng-container>
   `

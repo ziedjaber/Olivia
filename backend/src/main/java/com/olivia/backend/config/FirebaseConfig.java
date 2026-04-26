@@ -1,49 +1,50 @@
 package com.olivia.backend.config;
 
 import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.firestore.Firestore;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
-import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.google.firebase.cloud.FirestoreClient;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 
 import java.io.InputStream;
 
+@Slf4j
 @Configuration
 public class FirebaseConfig {
 
-    @Autowired
-    private ResourceLoader resourceLoader;
-
-    @PostConstruct
-    public void init() {
-        System.out.println("[FIREBASE] Initializing Firebase Admin SDK...");
+    @Bean
+    public FirebaseApp firebaseApp() {
         try {
-            Resource resource = resourceLoader.getResource("classpath:firebase-key.json");
-            
-            if (!resource.exists()) {
-                System.err.println("[FIREBASE] ERROR: firebase-key.json not found in classpath!");
+            if (!FirebaseApp.getApps().isEmpty()) {
+                return FirebaseApp.getInstance();
+            }
+
+            // Utilisation du ClassLoader pour charger la clé
+            InputStream serviceAccount = getClass().getClassLoader().getResourceAsStream("firebase-key.json");
+
+            if (serviceAccount == null) {
+                log.error("[FIREBASE] ERREUR CRITIQUE: firebase-key.json introuvable dans src/main/resources/");
                 throw new RuntimeException("Firebase key not found");
             }
 
-            try (InputStream serviceAccount = resource.getInputStream()) {
-                FirebaseOptions options = FirebaseOptions.builder()
-                        .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-                        .build();
+            FirebaseOptions options = FirebaseOptions.builder()
+                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                    .build();
 
-                if (FirebaseApp.getApps().isEmpty()) {
-                    FirebaseApp.initializeApp(options);
-                    System.out.println("[FIREBASE] Firebase Admin SDK initialized successfully.");
-                } else {
-                    System.out.println("[FIREBASE] Firebase Admin SDK already initialized.");
-                }
-            }
-
+            log.info("[FIREBASE] Initialisation du SDK Admin...");
+            return FirebaseApp.initializeApp(options);
         } catch (Exception e) {
-            System.err.println("[FIREBASE] CRITICAL ERROR during initialization: " + e.getMessage());
-            e.printStackTrace();
+            log.error("[FIREBASE] Échec de l'initialisation", e);
+            throw new RuntimeException(e);
         }
     }
-}
+
+    @Bean
+    public Firestore firestore(FirebaseApp firebaseApp) {
+        log.info("[FIREBASE] Firestore est prêt à être utilisé par le service de Chat.");
+        return FirestoreClient.getFirestore(firebaseApp);
+    }
+}

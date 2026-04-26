@@ -15,21 +15,21 @@ import { ToastService } from '../../../core/services/toast.service';
       <header class="mb-10 animate-in">
         <div class="flex items-center gap-2 text-primary font-black text-[10px] uppercase tracking-[0.25em] mb-3 opacity-70">
           <span class="w-12 h-[1px] bg-primary"></span>
-          Operational Intelligence
+          Intelligence Opérationnelle
         </div>
         <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
           <div>
             <h1 class="text-4xl font-black text-on-surface tracking-tighter" style="font-family: Manrope, sans-serif;">
-              Assigned <span class="text-primary italic">Orchards</span>
+              Vergers <span class="text-primary italic">Assignés</span>
             </h1>
-            <p class="text-on-surface-variant text-sm font-medium mt-1">Real-time maturity tracking and harvest readiness monitor.</p>
+            <p class="text-on-surface-variant text-sm font-medium mt-1">Suivi en temps réel de la maturité et de l’état de préparation à la récolte.</p>
           </div>
           
           <!-- SEARCH & FILTER BAR -->
           <div class="w-full md:w-96 relative group animate-up">
             <span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline/30 group-focus-within:text-primary transition-colors">search</span>
             <input [(ngModel)]="searchTerm" (ngModelChange)="currentPage = 1" type="text" 
-                   placeholder="Search sectors or types..."
+                   placeholder="Rechercher des secteurs ou types..."
                    class="w-full bg-white/60 backdrop-blur-xl border border-outline-variant/10 rounded-2xl pl-12 pr-6 py-4 focus:border-primary/40 focus:bg-white outline-none transition-all text-sm font-bold text-on-surface shadow-sm shadow-inner">
           </div>
         </div>
@@ -43,9 +43,9 @@ import { ToastService } from '../../../core/services/toast.service';
               <table class="w-full text-left border-collapse">
                 <thead>
                   <tr class="bg-surface-container-low/50 border-b border-outline-variant/10">
-                    <th class="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-outline">Estate / Type</th>
-                    <th class="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-outline">Maturity Spectrum</th>
-                    <th class="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-outline">Last telemetry</th>
+                    <th class="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-outline">Domaine / Type</th>
+                    <th class="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-outline">Niveau de maturité</th>
+                    <th class="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-outline">Dernière mise à jour</th>
                     <th class="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-outline text-right">Action</th>
                   </tr>
                 </thead>
@@ -68,7 +68,7 @@ import { ToastService } from '../../../core/services/toast.service';
                     <td class="px-6 py-5">
                       <div class="w-48">
                          <div class="flex justify-between items-center mb-1.5">
-                            <span class="text-[9px] font-black text-outline uppercase tracking-widest">Readiness</span>
+                            <span class="text-[9px] font-black text-outline uppercase tracking-widest">Préparation</span>
                             <span class="text-xs font-black text-on-surface">{{ v.niveauMaturite || 0 }}%</span>
                          </div>
                          <div class="h-1.5 w-full bg-surface-container rounded-full overflow-hidden">
@@ -80,8 +80,8 @@ import { ToastService } from '../../../core/services/toast.service';
                     </td>
                     <td class="px-6 py-5">
                        <div class="flex flex-col">
-                          <span class="text-xs font-bold text-on-surface">{{ v.dateDerniereMaturite ? (v.dateDerniereMaturite | date:'MMM d, HH:mm') : 'Pending' }}</span>
-                          <span class="text-[9px] font-bold text-outline-variant uppercase tracking-tighter">{{ v.dateDerniereMaturite ? 'Verified update' : 'No telemetry yet' }}</span>
+                          <span class="text-xs font-bold text-on-surface">{{ v.dateDerniereMaturite ? (v.dateDerniereMaturite | date:'MMM d, HH:mm') : 'En attente' }}</span>
+                          <span class="text-[9px] font-bold text-outline-variant uppercase tracking-tighter">{{ v.dateDerniereMaturite ? 'Mise à jour vérifiée' : 'Aucune donnée disponible' }}</span>
                        </div>
                     </td>
                     <td class="px-6 py-5 text-right">
@@ -94,13 +94,13 @@ import { ToastService } from '../../../core/services/toast.service';
               </table>
               <div *ngIf="filteredVergers.length === 0" class="py-20 text-center opacity-30">
                  <span class="material-symbols-outlined text-5xl mb-3">radar</span>
-                 <p class="text-[10px] font-black uppercase tracking-[0.2em]">No assigned sectors match criteria.</p>
+                 <p class="text-[10px] font-black uppercase tracking-[0.2em]">Aucun secteur assigné ne correspond aux critères.</p>
               </div>
             </div>
 
             <!-- Pagination Footer -->
             <div *ngIf="totalPages > 1" class="px-8 py-5 bg-surface-container-low/50 border-t border-outline-variant/10 flex items-center justify-between">
-               <span class="text-[10px] font-black text-outline uppercase tracking-widest">Page {{ currentPage }} of {{ totalPages }}</span>
+               <span class="text-[10px] font-black text-outline uppercase tracking-widest">Page {{ currentPage }} sur {{ totalPages }}</span>
                <div class="flex gap-2">
                   <button (click)="prevPage()" [disabled]="currentPage === 1" 
                           class="p-2 rounded-lg bg-surface border border-outline-variant/10 text-outline hover:text-primary disabled:opacity-30 transition-all">
@@ -123,7 +123,7 @@ import { ToastService } from '../../../core/services/toast.service';
 
             <div class="relative z-10">
               <header class="mb-8">
-                <span class="text-[9px] font-black text-primary uppercase tracking-[0.3em] mb-2 block">Command Center</span>
+                <span class="text-[9px] font-black text-primary uppercase tracking-[0.3em] mb-2 block">Centre de contrôle</span>
                 <h3 class="text-2xl font-black text-on-surface tracking-tighter flex items-center gap-2" style="font-family: Manrope, sans-serif;">
                   <span class="material-symbols-outlined text-primary">monitoring</span>
                   {{ selectedVerger.nom }}
@@ -134,20 +134,20 @@ import { ToastService } from '../../../core/services/toast.service';
                 <!-- Maturity Range Slider -->
                 <div class="space-y-4">
                   <div class="flex justify-between items-end">
-                    <label class="text-[10px] font-black text-outline uppercase tracking-widest">Maturity Spectrum</label>
+                    <label class="text-[10px] font-black text-outline uppercase tracking-widest">Niveau de maturité</label>
                     <span class="text-3xl font-black text-primary tracking-tighter">{{ maturityData.niveauMaturite }}<small class="text-xs ml-0.5 opacity-40 uppercase">%</small></span>
                   </div>
                   <input type="range" name="niveau" [(ngModel)]="maturityData.niveauMaturite" min="0" max="100" step="1"
                          class="w-full h-2 bg-surface-container rounded-lg appearance-none cursor-pointer accent-primary">
                   <div class="flex justify-between text-[9px] font-black text-outline-variant uppercase tracking-widest">
-                    <span>Premature</span>
-                    <span>Peak Harvest</span>
+                    <span>Prématuré</span>
+                    <span>Récolte optimale</span>
                   </div>
                 </div>
 
                 <!-- Advanced Media Manager -->
                 <div class="space-y-4">
-                  <label class="text-[10px] font-black text-outline uppercase tracking-widest">Optical Telemetry (Photos)</label>
+                  <label class="text-[10px] font-black text-outline uppercase tracking-widest">Télémétrie optique (Photos)</label>
                   
                   <!-- Drag & Drop Area -->
                   <div (dragover)="onDragOver($event)" 
@@ -162,8 +162,8 @@ import { ToastService } from '../../../core/services/toast.service';
                        <div class="w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center mb-4 mx-auto group-hover:scale-110 transition-transform">
                           <span class="material-symbols-outlined text-3xl">cloud_upload</span>
                        </div>
-                       <p class="text-[10px] font-black text-on-surface tracking-tight uppercase mb-1">Drop Image Intelligence</p>
-                       <p class="text-[9px] text-outline-variant font-medium italic">Supports JPG, PNG by drag or click</p>
+                       <p class="text-[10px] font-black text-on-surface tracking-tight uppercase mb-1">Déposer l'image</p>
+                       <p class="text-[9px] text-outline-variant font-medium italic">Prend en charge JPG, PNG par glisser ou cliquer</p>
                     </div>
 
                     <!-- Image Preview -->
@@ -171,7 +171,7 @@ import { ToastService } from '../../../core/services/toast.service';
                        <img [src]="maturityData.imageMaturiteUrl" class="w-full h-full object-cover">
                        <div class="absolute inset-0 bg-black/40 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-white">
                           <span class="material-symbols-outlined text-3xl mb-2">sync</span>
-                          <span class="text-[10px] font-black uppercase tracking-widest">Update Photo</span>
+                          <span class="text-[10px] font-black uppercase tracking-widest">Mettre à jour la photo</span>
                        </div>
                     </div>
                   </div>
@@ -179,12 +179,12 @@ import { ToastService } from '../../../core/services/toast.service';
 
                 <!-- Observations -->
                 <div class="space-y-4">
-                  <label class="text-[10px] font-black text-outline uppercase tracking-widest">Field Observations</label>
+                  <label class="text-[10px] font-black text-outline uppercase tracking-widest">Observations terrain</label>
                   <div class="relative">
                     <span class="absolute left-4 top-4 material-symbols-outlined text-primary/40">edit_note</span>
                     <textarea name="desc" [(ngModel)]="maturityData.descriptionMaturite" rows="4" 
                             class="w-full bg-surface-container-low border border-outline-variant/10 focus:border-primary/40 focus:bg-white rounded-[1.5rem] pl-12 pr-6 py-4 text-xs font-bold text-on-surface outline-none transition-all shadow-inner"
-                            placeholder="Detail fruit condition, pest sightings, or weather impacts..."></textarea>
+                            placeholder="Décrivez l’état des olives, les parasites ou les conditions météo..."></textarea>
                   </div>
                 </div>
 
@@ -193,7 +193,7 @@ import { ToastService } from '../../../core/services/toast.service';
                           class="w-full group relative overflow-hidden py-4 bg-primary text-on-primary font-black rounded-2xl shadow-[0_20px_50px_rgba(var(--primary-rgb),0.2)] hover:shadow-primary/40 hover:-translate-y-1 active:translate-y-0 active:scale-95 transition-all text-xs uppercase tracking-[0.2em] disabled:opacity-50">
                     <span class="relative z-10 flex items-center justify-center gap-3">
                        <span *ngIf="loading" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-                       <span>{{ loading ? 'Synchronizing...' : 'Authorize Telemetry Update' }}</span>
+                       <span>{{ loading ? 'Synchronisation...' : 'Mettre à jour la maturité' }}</span>
                     </span>
                     <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
                   </button>
@@ -206,8 +206,8 @@ import { ToastService } from '../../../core/services/toast.service';
              <div class="w-24 h-24 bg-surface rounded-full flex items-center justify-center mb-6 border border-outline-variant/10">
                 <span class="material-symbols-outlined text-4xl">radar</span>
              </div>
-             <h3 class="text-on-surface font-black text-sm uppercase tracking-widest">Radar Standby</h3>
-             <p class="text-[10px] mt-2 font-medium italic">Select an orchard sector from the list to synchronize field data.</p>
+             <h3 class="text-on-surface font-black text-sm uppercase tracking-widest">Radar en attente</h3>
+             <p class="text-[10px] mt-2 font-medium italic">Sélectionnez un secteur de verger dans la liste pour synchroniser les données de terrain.</p>
           </div>
         </div>
       </div>
@@ -229,7 +229,7 @@ export class AffectedVergersComponent implements OnInit {
   selectedVerger: Verger | null = null;
   loading = false;
   isDragging = false;
-  
+
   // --- Search & Pagination ---
   searchTerm = '';
   currentPage = 1;
@@ -257,7 +257,8 @@ export class AffectedVergersComponent implements OnInit {
       },
       error: () => {
         this.loading = false;
-        this.toastService.show('Failed to load assigned orchards', 'error');
+
+        this.toastService.show('Échec du chargement des vergers assignés', 'error');
         this.cdr.detectChanges();
       }
     });
@@ -293,7 +294,8 @@ export class AffectedVergersComponent implements OnInit {
 
   private handleFile(file: File) {
     if (!file.type.startsWith('image/')) {
-      this.toastService.show('Please select an image file', 'error');
+
+      this.toastService.show('Veuillez sélectionner un fichier image', 'error');
       return;
     }
     const reader = new FileReader();
@@ -312,12 +314,13 @@ export class AffectedVergersComponent implements OnInit {
     this.vergerService.updateMaturite(this.selectedVerger.id, this.maturityData).subscribe({
       next: () => {
         this.loading = false;
-        this.toastService.show('Telemetry successful!', 'success');
+        this.toastService.show('Télémétrie réussie !', 'success');
         this.loadAssigned();
       },
       error: () => {
         this.loading = false;
-        this.toastService.show('Transmission protocol failed', 'error');
+
+        this.toastService.show('Échec du protocole de transmission', 'error');
         this.cdr.detectChanges();
       }
     });
@@ -327,9 +330,10 @@ export class AffectedVergersComponent implements OnInit {
   get filteredVergers() {
     if (!this.searchTerm) return this.vergers;
     const s = this.searchTerm.toLowerCase();
-    return this.vergers.filter(v => 
-      v.nom.toLowerCase().includes(s) || 
-      v.localisation.toLowerCase().includes(s) || 
+
+    return this.vergers.filter(v =>
+      v.nom.toLowerCase().includes(s) ||
+      v.localisation.toLowerCase().includes(s) ||
       v.typeOlive.toLowerCase().includes(s)
     );
   }

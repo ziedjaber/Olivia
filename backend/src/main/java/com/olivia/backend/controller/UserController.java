@@ -4,7 +4,9 @@ import com.olivia.backend.model.User;
 import com.olivia.backend.model.Role;
 import com.olivia.backend.service.FileService;
 import com.olivia.backend.service.UserService;
+
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,6 +18,7 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequestMapping("/api/users")
+@CrossOrigin(origins = "*")
 public class UserController {
 
     @Autowired
@@ -43,9 +46,6 @@ public class UserController {
             return ResponseEntity.badRequest().body("Error updating profile: " + e.getMessage());
         }
     }
-
-    // --- Administrative Endpoints ---
-
     @GetMapping
     @PreAuthorize("hasAnyAuthority('ROLE_DIRECTEUR', 'ROLE_CHEF_EQUIPE_RECOLTE')")
     public ResponseEntity<?> getAllUsers() {
@@ -78,7 +78,6 @@ public class UserController {
             return ResponseEntity.badRequest().body("Error updating status");
         }
     }
-
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('ROLE_DIRECTEUR')")
     public ResponseEntity<?> deleteUser(@PathVariable String id) {
@@ -103,7 +102,6 @@ public class UserController {
             return ResponseEntity.badRequest().body("Error updating user: " + e.getMessage());
         }
     }
-
     @Autowired
     private com.olivia.backend.service.AuthService authService;
 

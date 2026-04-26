@@ -2,27 +2,28 @@ import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ParticipationService, Participation } from '../../../core/services/participation.service';
 import { DialogService } from '../../../core/services/dialog.service';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-ouvrier-dashboard',
   standalone: true,
-  imports: [CommonModule],
-  template: `
-    <div class="max-w-7xl mx-auto py-6 pb-24 px-4 space-y-12">
+   imports: [CommonModule, RouterModule],
+   template: `
+       <div class="max-w-7xl mx-auto py-6 pb-24 px-4 space-y-12">
       <!-- Minimalist Header -->
       <header class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
         <div>
-          <span class="text-[10px] font-black text-primary uppercase tracking-[0.3em] mb-2 block">Personnel Portal</span>
-          <h1 class="text-5xl font-extrabold text-on-surface font-headline tracking-tighter leading-none">My Workday</h1>
-          <p class="text-on-surface-variant font-medium mt-2 opacity-60 italic">Tracking your contribution to the heritage harvest.</p>
+          <span class="text-[10px] font-black text-primary uppercase tracking-[0.3em] mb-2 block">Portail du Personnel</span>
+          <h1 class="text-5xl font-extrabold text-on-surface font-headline tracking-tighter leading-none">Ma journée de travail</h1>
+          <p class="text-on-surface-variant font-medium mt-2 opacity-60 italic">Suivi de votre contribution à la récolte.</p>
         </div>
         <div class="px-6 py-4 bg-stone-50 border border-stone-100 rounded-2xl flex items-center gap-4 shadow-sm">
            <div class="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center text-green-600">
              <span class="material-symbols-outlined">verified</span>
            </div>
            <div>
-             <span class="text-[9px] font-black text-outline uppercase tracking-wider block">Status</span>
-             <span class="text-xs font-black text-on-surface">Active Duty</span>
+             <span class="text-[9px] font-black text-outline uppercase tracking-wider block">Statut</span>
+             <span class="text-xs font-black text-on-surface">En service</span>
            </div>
         </div>
       </header>
@@ -30,33 +31,33 @@ import { DialogService } from '../../../core/services/dialog.service';
       <!-- Personal Pulse (Statistics) -->
       <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <div class="bg-white p-6 rounded-[2rem] border border-stone-100 shadow-sm group hover:scale-[1.02] transition-all">
-           <p class="text-[10px] font-black text-outline uppercase tracking-[0.2em] mb-4">Total Yield</p>
-           <h3 class="text-4xl font-black text-on-surface">2.4 <span class="text-sm font-medium text-outline">Tons</span></h3>
+           <p class="text-[10px] font-black text-outline uppercase tracking-[0.2em] mb-4">Rendement total</p>
+           <h3 class="text-4xl font-black text-on-surface">2.4 <span class="text-sm font-medium text-outline">Tonnes</span></h3>
            <div class="mt-4 flex items-center gap-2">
-              <span class="text-[10px] font-black text-green-600 bg-green-50 px-2 py-0.5 rounded-full">+12% vs LW</span>
+              <span class="text-[10px] font-black text-green-600 bg-green-50 px-2 py-0.5 rounded-full">+12% vs S.D.</span>
            </div>
         </div>
         <div class="bg-white p-6 rounded-[2rem] border border-stone-100 shadow-sm group hover:scale-[1.02] transition-all">
            <p class="text-[10px] font-black text-outline uppercase tracking-[0.2em] mb-4">Missions</p>
            <h3 class="text-4xl font-black text-on-surface">08</h3>
            <div class="mt-4 flex items-center gap-2">
-              <span class="text-[10px] font-black text-outline opacity-40 uppercase tracking-widest">Completed in 2024</span>
+              <span class="text-[10px] font-black text-outline opacity-40 uppercase tracking-widest">Terminées en 2024</span>
            </div>
         </div>
         <div class="bg-[#1e1c12] p-6 rounded-[2rem] shadow-2xl group hover:scale-[1.02] transition-all overflow-hidden relative">
            <div class="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-           <p class="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] mb-4">Earnings Hub</p>
+           <p class="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] mb-4">Gains</p>
            <h3 class="text-4xl font-black text-white" [ngClass]="{'text-emerald-400': getTotalEarnings() > 0}">{{ getTotalEarnings() }} <span class="text-sm font-medium text-white/40">TND</span></h3>
            <div class="mt-4 flex items-center gap-2">
-              <span *ngIf="getTotalEarnings() > 0" class="text-[10px] font-black text-emerald-400 uppercase tracking-[0.2em]">Paid & Secured</span>
-              <span *ngIf="getTotalEarnings() === 0" class="text-[10px] font-black text-primary uppercase tracking-[0.2em]">Awaiting payout</span>
-           </div>
+              <span *ngIf="getTotalEarnings() > 0" class="text-[10px] font-black text-emerald-400 uppercase tracking-[0.2em]">Prêt pour paiement</span>
+              <span *ngIf="getTotalEarnings() === 0" class="text-[10px] font-black text-primary uppercase tracking-[0.2em]">En attente</span>
+              </div>
         </div>
         <div class="bg-white p-6 rounded-[2rem] border border-stone-100 shadow-sm group hover:scale-[1.02] transition-all">
            <p class="text-[10px] font-black text-outline uppercase tracking-[0.2em] mb-4">Performance</p>
            <h3 class="text-4xl font-black text-on-surface">A+</h3>
            <div class="mt-4 flex items-center gap-2">
-              <span class="text-[10px] font-black text-primary px-2 py-0.5 bg-primary/5 rounded-full uppercase">Top 5% in Sector</span>
+              <span class="text-[10px] font-black text-primary px-2 py-0.5 bg-primary/5 rounded-full uppercase">Top 5% du secteur</span>
            </div>
         </div>
       </section>
@@ -65,7 +66,7 @@ import { DialogService } from '../../../core/services/dialog.service';
       <section class="space-y-6">
         <h4 class="text-xs font-black text-outline uppercase tracking-[0.2em] flex items-center gap-3">
           <span class="material-symbols-outlined text-sm">event_available</span>
-          My Work Agenda
+          Mon agenda de travail
         </h4>
         <div class="flex gap-4 overflow-x-auto pb-4 custom-scrollbar">
            <div *ngFor="let day of getAgendaDays()" 
@@ -73,7 +74,7 @@ import { DialogService } from '../../../core/services/dialog.service';
                 [ngClass]="day.isActive ? 'bg-primary text-white border-primary shadow-lg scale-105' : 'bg-white border-stone-100 text-on-surface'">
              <span class="text-[9px] font-black uppercase tracking-widest opacity-80">{{ day.dayName }}</span>
              <span class="text-2xl font-black">{{ day.dayNum }}</span>
-             <span *ngIf="day.hasMission" class="text-[8px] font-black uppercase mt-1 px-2 py-0.5 rounded-full bg-black/20 text-white">Booked</span>
+             <span *ngIf="day.hasMission" class="text-[8px] font-black uppercase mt-1 px-2 py-0.5 rounded-full bg-black/20 text-white">Réservé</span>
            </div>
         </div>
       </section>
@@ -85,8 +86,8 @@ import { DialogService } from '../../../core/services/dialog.service';
         <div class="lg:col-span-2 space-y-6">
            <div class="flex justify-between items-center px-2">
               <div>
-                 <h4 class="text-2xl font-black font-headline text-on-surface">Available Deployments</h4>
-                 <p class="text-[10px] font-black text-outline uppercase tracking-[0.2em] mt-1">Review and manage your harvest offers</p>
+                 <h4 class="text-2xl font-black font-headline text-on-surface">Déploiements disponibles</h4>
+                 <p class="text-[10px] font-black text-outline uppercase tracking-[0.2em] mt-1">Consultez et gérez vos offres de récolte</p>
               </div>
               <button (click)="loadParticipations()" class="w-10 h-10 rounded-xl bg-stone-50 border border-stone-100 flex items-center justify-center text-outline hover:bg-stone-100 transition-all shadow-sm">
                 <span class="material-symbols-outlined text-lg">sync</span>
@@ -95,23 +96,23 @@ import { DialogService } from '../../../core/services/dialog.service';
 
            <div *ngIf="loading" class="text-center py-20 animate-pulse bg-white rounded-[2rem] border border-stone-100">
               <span class="material-symbols-outlined text-4xl text-stone-200">grid_view</span>
-              <p class="text-xs font-black text-stone-300 uppercase tracking-widest mt-4">Syncing Mission Feed...</p>
+              <p class="text-xs font-black text-stone-300 uppercase tracking-widest mt-4">Synchronisation des missions...</p>
            </div>
 
            <div *ngIf="!loading && participations.length === 0" class="py-24 text-center border-2 border-dashed border-stone-100 rounded-[3rem] bg-stone-50/30">
               <span class="material-symbols-outlined text-4xl text-stone-200 mb-4 block">notifications_none</span>
-              <p class="text-on-surface-variant font-medium opacity-50 italic">No invitations or active missions found.</p>
-              <p class="text-[10px] font-black text-outline uppercase tracking-widest mt-2">Wait for a Chef to recruit you.</p>
+              <p class="text-on-surface-variant font-medium opacity-50 italic">Aucune invitation ou mission active trouvée.</p>
+              <p class="text-[10px] font-black text-outline uppercase tracking-widest mt-2">Attendez qu'un Chef vous recrute.</p>
            </div>
 
            <div *ngIf="!loading && participations.length > 0" class="bg-white rounded-[2.5rem] border border-stone-100 shadow-sm overflow-hidden">
               <table class="w-full text-left">
                 <thead>
                   <tr class="bg-stone-50/80 border-b border-stone-100">
-                    <th class="px-6 py-5 text-[9px] font-black text-outline uppercase tracking-widest">Mission details</th>
-                    <th class="px-6 py-5 text-[9px] font-black text-outline uppercase tracking-widest">Duration & Location</th>
-                    <th class="px-6 py-5 text-[9px] font-black text-outline uppercase tracking-widest">Compensation</th>
-                    <th class="px-6 py-5 text-[9px] font-black text-outline uppercase tracking-widest text-right">Action / Status</th>
+                    <th class="px-6 py-5 text-[9px] font-black text-outline uppercase tracking-widest">Détails de la mission</th>
+                    <th class="px-6 py-5 text-[9px] font-black text-outline uppercase tracking-widest">Durée et emplacement</th>
+                    <th class="px-6 py-5 text-[9px] font-black text-outline uppercase tracking-widest">Rémunération</th>
+                    <th class="px-6 py-5 text-[9px] font-black text-outline uppercase tracking-widest text-right">Action / Statut</th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-stone-100">
@@ -170,6 +171,7 @@ import { DialogService } from '../../../core/services/dialog.service';
                            <span class="text-lg font-black" [ngClass]="p.salaryPaid ? 'text-emerald-600' : 'text-on-surface'">{{ p.dailySalary ? p.dailySalary : '---' }} <span class="text-[10px] text-outline">TND</span></span>
                            <span *ngIf="!p.salaryPaid" class="text-[8px] font-black text-outline uppercase tracking-[0.2em]">Offered Daily Rate</span>
                            <span *ngIf="p.salaryPaid" class="text-[8px] font-black text-emerald-600 uppercase tracking-[0.2em] flex items-center gap-1"><span class="material-symbols-outlined text-[10px]">check_circle</span> Payment Received</span>
+
                         </div>
                      </td>
 
@@ -217,95 +219,97 @@ import { DialogService } from '../../../core/services/dialog.service';
 
       </section>
     </div>
-  `,
-  styles: [`
+
+   `,
+   styles: [`
     :host { display: block; animation: fade-in 0.8s ease-out; }
     @keyframes fade-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
   `]
 })
 export class OuvrierDashboardComponent implements OnInit {
-  private participationService = inject(ParticipationService);
-  private cdr = inject(ChangeDetectorRef);
-  private dialogService = inject(DialogService);
-  participations: Participation[] = [];
-  loading = false;
+   // --- Injections ---
+   private participationService = inject(ParticipationService);
+   private cdr = inject(ChangeDetectorRef);
+   private dialogService = inject(DialogService);
 
-  getTotalEarnings(): number {
-     return this.participations
-       .filter(p => p.salaryPaid && p.dailySalary)
-       .reduce((sum, p) => sum + (p.dailySalary || 0), 0);
-  }
+   participations: Participation[] = [];
+   loading = false;
 
-  getAgendaDays() {
-     // A simple dynamic calendar for the next 7 days indicating if worker is booked
-     const days = [];
-     const today = new Date();
-     
-     for (let i = 0; i < 7; i++) {
-        const d = new Date(today);
-        d.setDate(d.getDate() + i);
-        
-        // Checking if worker is "Booked" on this day based on accepted/assigned missions
-        const isBooked = this.participations.some(p => {
-           if (p.status !== 'ACCEPTED' && p.status !== 'ASSIGNED') return false;
-           // If we have both start and end dates
-           if (p.collecteDate && p.collecteEndDate) {
-              const start = new Date(p.collecteDate as string);
-              const end = new Date(p.collecteEndDate as string);
-              // Normalize times to midnight for comparison
-              start.setHours(0,0,0,0);
-              end.setHours(0,0,0,0);
-              const currentDate = new Date(d);
-              currentDate.setHours(0,0,0,0);
-              return currentDate >= start && currentDate <= end;
-           } else if (p.collecteDate) {
-              const start = new Date(p.collecteDate as string);
-              return start.toDateString() === d.toDateString();
-           }
-           return false;
-        });
+   getTotalEarnings(): number {
+      return this.participations
+        .filter(p => p.salaryPaid && p.dailySalary)
+        .reduce((sum, p) => sum + (p.dailySalary || 0), 0);
+   }
 
-        days.push({
-           dayNum: d.getDate(),
-           dayName: d.toLocaleDateString('en-US', { weekday: 'short' }),
-           isActive: isBooked,
-           hasMission: isBooked
-        });
-     }
-     return days;
-  }
+   // --- Logique du Calendrier ---
+   getAgendaDays() {
+      const days = [];
+      const today = new Date();
+      
+      for (let i = 0; i < 7; i++) {
+         const d = new Date(today);
+         d.setDate(d.getDate() + i);
+         
+         const isBooked = this.participations.some(p => {
+            if (p.status !== 'ACCEPTED' && p.status !== 'ASSIGNED') return false;
+            
+            if (p.collecteDate && p.collecteEndDate) {
+               const start = new Date(p.collecteDate as string);
+               const end = new Date(p.collecteEndDate as string);
+               start.setHours(0,0,0,0);
+               end.setHours(0,0,0,0);
+               const currentDate = new Date(d);
+               currentDate.setHours(0,0,0,0);
+               return currentDate >= start && currentDate <= end;
+            } else if (p.collecteDate) {
+               const start = new Date(p.collecteDate as string);
+               return start.toDateString() === d.toDateString();
+            }
+            return false;
+         });
 
-  ngOnInit() {
-    this.loadParticipations();
-  }
-
-  loadParticipations() {
-    this.loading = true;
-    this.participationService.getMyParticipations().subscribe({
-      next: (data) => {
-        this.participations = data;
-        this.loading = false;
-        this.cdr.detectChanges();
-      },
-      error: () => {
-        this.loading = false;
+         days.push({
+            dayNum: d.getDate(),
+            dayName: d.toLocaleDateString('en-US', { weekday: 'short' }),
+            isActive: isBooked,
+            hasMission: isBooked
+         });
       }
-    });
-  }
+      return days;
+   }
 
-  accept(p: Participation) {
-    if (!p.id) return;
-    this.participationService.acceptInvitation(p.id).subscribe({
-      next: () => this.loadParticipations(),
-      error: (err) => this.dialogService.alert('Error', err.error || 'Failed to accept invitation', 'danger')
-    });
-  }
+   ngOnInit() {
+      this.loadParticipations();
+   }
 
-  reject(p: Participation) {
-    if (!p.id) return;
-    this.participationService.rejectInvitation(p.id).subscribe({
-      next: () => this.loadParticipations(),
-      error: (err) => this.dialogService.alert('Error', err.error || 'Failed to reject invitation', 'danger')
-    });
-  }
+   loadParticipations() {
+      this.loading = true;
+      this.participationService.getMyParticipations().subscribe({
+         next: (data) => {
+            this.participations = data;
+            this.loading = false;
+            this.cdr.detectChanges();
+         },
+         error: () => {
+            this.loading = false;
+         }
+      });
+   }
+
+   // --- Actions (Avec ton DialogService pour la cohérence) ---
+   accept(p: Participation) {
+      if (!p.id) return;
+      this.participationService.acceptInvitation(p.id).subscribe({
+         next: () => this.loadParticipations(),
+         error: (err) => this.dialogService.alert('Erreur', err.error || 'Impossible d\'accepter l\'invitation', 'danger')
+      });
+   }
+
+   reject(p: Participation) {
+      if (!p.id) return;
+      this.participationService.rejectInvitation(p.id).subscribe({
+         next: () => this.loadParticipations(),
+         error: (err) => this.dialogService.alert('Erreur', err.error || 'Impossible de refuser l\'invitation', 'danger')
+      });
+   }
 }

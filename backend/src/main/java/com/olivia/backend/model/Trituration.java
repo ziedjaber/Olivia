@@ -20,7 +20,7 @@ public class Trituration {
     private String millId; // Linked to MillingCenter
     private String millName;
     private String status; // PLANNED, PROCESSING, COMPLETED
-    private Date plannedDate;
+    private String plannedDate;
     
     // Results (Nullable during planning)
     private Double oilProducedLiters;

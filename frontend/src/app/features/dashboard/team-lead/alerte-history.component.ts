@@ -20,12 +20,13 @@ import { DialogService } from '../../../core/services/dialog.service';
         <div class="space-y-2">
           <div class="flex items-center gap-3 mb-2">
             <span class="w-12 h-1.5 bg-primary rounded-full"></span>
-            <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Operational Intelligence Hub</p>
+
+            <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Centre d Intelligence Opérationnelle</p>
           </div>
           <h1 class="text-5xl font-black text-on-surface tracking-tighter leading-none" style="font-family: Manrope, sans-serif;">
-            Emergency <span class="text-primary italic">Center</span>
+            Centre <span class="text-primary italic">d'urgence</span>
           </h1>
-          <p class="text-on-surface-variant font-medium text-sm max-w-md">Unified console for reporting and tracking field incidents in your assigned sectors.</p>
+          <p class="text-on-surface-variant font-medium text-sm max-w-md"> Interface unifiée pour signaler et suivre les incidents sur le terrain dans vos secteurs assignés.</p>
         </div>
         
         <div class="flex items-center gap-3">
@@ -33,14 +34,18 @@ import { DialogService } from '../../../core/services/dialog.service';
                   class="px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-xl transition-all active:scale-95 flex items-center gap-3 border-2"
                   [ngClass]="showReportForm ? 'bg-white text-outline border-outline-variant/20' : 'bg-primary text-on-primary border-primary shadow-primary/30 hover:-translate-y-1'">
             <span class="material-symbols-outlined text-[18px]">{{ showReportForm ? 'close' : 'add_alert' }}</span>
-            {{ showReportForm ? 'Close Transmission' : 'Report New Incident' }}
+
+            {{ showReportForm ? 'Fermer le formulaire' : 'Signaler un incident' }}
+
           </button>
           <div class="flex flex-col items-center">
             <button (click)="loadAlerts()" class="w-14 h-14 rounded-2xl bg-surface-container-low flex items-center justify-center text-outline hover:text-primary transition-all border border-outline-variant/10 shadow-sm relative group">
               <span class="material-symbols-outlined" [class.animate-spin]="isRefreshing">refresh</span>
               <div class="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full border-2 border-surface" *ngIf="autoRefreshActive"></div>
             </button>
-            <span class="text-[8px] font-bold text-outline uppercase mt-1 opacity-50">Auto-Live</span>
+
+            <span class="text-[8px] font-bold text-outline uppercase mt-1 opacity-50">Actualisation auto</span>
+
           </div>
         </div>
       </header>
@@ -53,19 +58,21 @@ import { DialogService } from '../../../core/services/dialog.service';
           <form (ngSubmit)="onTransmit()" class="space-y-8 relative z-10 font-headline">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               <div class="space-y-3">
-                <label class="text-[10px] font-black text-outline uppercase tracking-widest text-error/60">Category</label>
+
+                <label class="text-[10px] font-black text-outline uppercase tracking-widest text-error/60">Catégorie</label>
                 <select [(ngModel)]="report.type" name="type" required
                         class="w-full bg-white border border-outline-variant/20 rounded-2xl px-6 py-4 outline-none focus:border-error/40 text-sm font-bold text-on-surface transition-all shadow-inner">
-                  <option value="MACHINE">Machine Failure</option>
-                  <option value="ACCIDENT">Medical / Accident</option>
-                  <option value="INFRASTRUCTURE">Infrastructure Damage</option>
-                  <option value="WEATHER">Weather Disruption</option>
-                  <option value="OTHER">Other Issue</option>
+                  <option value="MACHINE">Panne Machine</option>
+                  <option value="ACCIDENT">Accident Médical</option>
+                  <option value="INFRASTRUCTURE">Dommage d'Infrastructure</option>
+                  <option value="WEATHER">Intempéries</option>
+                  <option value="OTHER">Autre</option>
                 </select>
               </div>
 
               <div class="space-y-3">
-                <label class="text-[10px] font-black text-outline uppercase tracking-widest text-error/60">Severity</label>
+
+                <label class="text-[10px] font-black text-outline uppercase tracking-widest text-error/60">Gravité</label>
                 <div class="flex gap-2">
                   <button *ngFor="let imp of ['LOW', 'MEDIUM', 'URGENT']" type="button" (click)="report.importance = imp"
                           [ngClass]="report.importance === imp ? 'bg-error text-white scale-105' : 'bg-white text-outline'"
@@ -76,20 +83,21 @@ import { DialogService } from '../../../core/services/dialog.service';
               </div>
 
               <div class="space-y-3">
-                <label class="text-[10px] font-black text-outline uppercase tracking-widest text-error/60">Affected Sector</label>
+
+                <label class="text-[10px] font-black text-outline uppercase tracking-widest text-error/60">Secteur concerné</label>
                 <select [(ngModel)]="report.vergerId" name="verger" (change)="onVergerChange()" required
                         class="w-full bg-white border border-outline-variant/20 rounded-2xl px-6 py-4 outline-none focus:border-error/40 text-sm font-bold text-on-surface transition-all shadow-inner">
-                  <option value="">Select Sector...</option>
+                  <option value="">Choisir un secteur...</option>
                   <option *ngFor="let v of assignedVergers" [value]="v.id">{{ v.nom }}</option>
                 </select>
               </div>
 
               <div class="space-y-3">
-                <label class="text-[10px] font-black text-outline uppercase tracking-widest text-error/60">Optical Intel</label>
+                <label class="text-[10px] font-black text-outline uppercase tracking-widest text-error/60"> Preuves visuelles</label>
                 <div class="flex items-center gap-3">
                   <button type="button" (click)="fileInput.click()" class="h-14 px-6 bg-white border border-dashed border-outline-variant/30 rounded-2xl flex items-center justify-center gap-3 text-outline hover:text-error hover:border-error/40 transition-all flex-grow">
                     <span class="material-symbols-outlined text-lg">add_a_photo</span>
-                    <span class="text-[10px] font-black uppercase tracking-widest">{{ report.imageUrls?.length }} Captured</span>
+                    <span class="text-[10px] font-black uppercase tracking-widest">{{ report.imageUrls?.length }} Capturé(s)</span>
                   </button>
                   <input #fileInput type="file" (change)="onFileSelected($event)" accept="image/*" class="hidden" multiple>
                   <div *ngIf="report.imageUrls && report.imageUrls.length > 0" class="flex -space-x-3">
@@ -102,17 +110,18 @@ import { DialogService } from '../../../core/services/dialog.service';
             </div>
 
             <div class="space-y-3">
-              <label class="text-[10px] font-black text-outline uppercase tracking-widest text-error/60">Incident Description & Context</label>
+
+              <label class="text-[10px] font-black text-outline uppercase tracking-widest text-error/60">Description de l'incident et contexte</label>
               <textarea [(ngModel)]="report.description" name="desc" rows="3" required
                         class="w-full bg-white border border-outline-variant/20 rounded-3xl px-8 py-6 outline-none focus:border-error/40 text-sm font-bold text-on-surface transition-all shadow-inner"
-                        placeholder="Detailed tactical summary of the incident..."></textarea>
+                        placeholder="Résumé tactique détaillé de l'incident..."></textarea>
             </div>
 
             <div class="flex justify-end pt-4">
               <button type="submit" [disabled]="loading"
                       class="px-12 py-5 bg-error text-white font-black rounded-2xl shadow-2xl hover:shadow-error/40 hover:-translate-y-1 active:translate-y-0 active:scale-95 transition-all text-xs uppercase tracking-[0.2em] flex items-center gap-4">
                 <span *ngIf="loading" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-                <span>{{ loading ? 'TRANSMITTING...' : 'TRANSMIT EMERGENCY ALERT' }}</span>
+                <span>{{ loading ? 'TRANSMISSION...' : 'TRANSMETTRE L\`ALERTE D\'URGENCE' }}</span>
                 <span class="material-symbols-outlined text-[20px]">send</span>
               </button>
             </div>
@@ -127,7 +136,9 @@ import { DialogService } from '../../../core/services/dialog.service';
             <span class="material-symbols-outlined text-3xl">priority_high</span>
           </div>
           <div>
-            <p class="text-[10px] font-black text-outline uppercase tracking-[0.2em] mb-1">Active Stakes</p>
+
+            <p class="text-[10px] font-black text-outline uppercase tracking-[0.2em] mb-1">Enjeux actifs</p>
+
             <h3 class="text-3xl font-black text-on-surface tracking-tighter">{{ activeCount }}</h3>
           </div>
         </div>
@@ -136,7 +147,9 @@ import { DialogService } from '../../../core/services/dialog.service';
             <span class="material-symbols-outlined text-3xl">check_circle</span>
           </div>
           <div>
-            <p class="text-[10px] font-black text-outline uppercase tracking-[0.2em] mb-1">Resolved</p>
+
+            <p class="text-[10px] font-black text-outline uppercase tracking-[0.2em] mb-1">Résolus</p>
+
             <h3 class="text-3xl font-black text-on-surface tracking-tighter">{{ resolvedCount }}</h3>
           </div>
         </div>
@@ -145,7 +158,9 @@ import { DialogService } from '../../../core/services/dialog.service';
              <span class="material-symbols-outlined text-3xl">analytics</span>
           </div>
           <div>
-            <p class="text-[10px] font-black text-outline uppercase tracking-[0.2em] mb-1">Lifetime Flow</p>
+
+            <p class="text-[10px] font-black text-outline uppercase tracking-[0.2em] mb-1">Flux total</p>
+
             <h3 class="text-3xl font-black text-on-surface tracking-tighter">{{ alerts.length }}</h3>
           </div>
         </div>
@@ -156,24 +171,25 @@ import { DialogService } from '../../../core/services/dialog.service';
         <div class="flex-grow relative">
           <span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline/40">search</span>
           <input type="text" [(ngModel)]="searchTerm" (ngModelChange)="onFilterChange()"
-                 placeholder="Search by description or ID..."
+                 placeholder="Rechercher par description ou ID..."
                  class="w-full bg-white border border-outline-variant/10 rounded-2xl pl-12 pr-6 py-4 text-sm font-bold text-on-surface outline-none focus:border-primary/40 shadow-sm transition-all">
         </div>
         <div class="flex gap-2">
           <select [(ngModel)]="statusFilter" (ngModelChange)="onFilterChange()"
                   class="bg-white border border-outline-variant/10 rounded-2xl px-6 py-4 text-sm font-bold text-on-surface outline-none focus:border-primary/40 shadow-sm appearance-none">
-            <option value="ALL">All Status</option>
-            <option value="NON_TRAITEE">Active Only</option>
-            <option value="TRAITEE">Resolved Only</option>
+
+            <option value="ALL">Tous les statuts</option>
+            <option value="NON_TRAITEE">Actifs uniquement</option>
+            <option value="TRAITEE">Résolus uniquement</option>
           </select>
           <select [(ngModel)]="typeFilter" (ngModelChange)="onFilterChange()"
                   class="bg-white border border-outline-variant/10 rounded-2xl px-6 py-4 text-sm font-bold text-on-surface outline-none focus:border-primary/40 shadow-sm appearance-none">
-            <option value="ALL">All Categories</option>
+            <option value="ALL">Toutes les catégories</option>
             <option value="MACHINE">Machine</option>
             <option value="ACCIDENT">Accident</option>
             <option value="INFRASTRUCTURE">Infrastructure</option>
-            <option value="WEATHER">Weather</option>
-            <option value="OTHER">Other</option>
+            <option value="WEATHER">Intempéries</option>
+            <option value="OTHER">Autre</option>
           </select>
         </div>
       </div>
@@ -184,12 +200,12 @@ import { DialogService } from '../../../core/services/dialog.service';
           <table class="w-full text-left border-collapse font-headline">
             <thead>
               <tr class="bg-surface-container-lowest/50 border-b border-outline-variant/10">
-                <th class="p-6 text-[10px] font-black text-outline uppercase tracking-[0.2em]">Intel Category</th>
-                <th class="p-6 text-[10px] font-black text-outline uppercase tracking-[0.2em]">Summary</th>
-                <th class="p-6 text-[10px] font-black text-outline uppercase tracking-[0.2em]">Stakes</th>
-                <th class="p-6 text-[10px] font-black text-outline uppercase tracking-[0.2em]">Temporal Mark</th>
-                <th class="p-6 text-[10px] font-black text-outline uppercase tracking-[0.2em] text-center">Status</th>
-                <th class="p-6 text-[10px] font-black text-outline uppercase tracking-[0.2em] text-right">Ops</th>
+                <th class="p-6 text-[10px] font-black text-outline uppercase tracking-[0.2em]">Catégorie</th>
+                <th class="p-6 text-[10px] font-black text-outline uppercase tracking-[0.2em]">Résumé</th>
+                <th class="p-6 text-[10px] font-black text-outline uppercase tracking-[0.2em]">Gravité</th>
+                <th class="p-6 text-[10px] font-black text-outline uppercase tracking-[0.2em]">Marque temporelle</th>
+                <th class="p-6 text-[10px] font-black text-outline uppercase tracking-[0.2em] text-center">Statut</th>
+                <th class="p-6 text-[10px] font-black text-outline uppercase tracking-[0.2em] text-right">Actions</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-outline-variant/10">
@@ -224,18 +240,18 @@ import { DialogService } from '../../../core/services/dialog.service';
                   <div class="flex flex-col items-center gap-1">
                     <span class="px-3 py-1.5 rounded-full text-[8px] font-black uppercase tracking-[0.2em]"
                           [ngClass]="a.statut === 'NON_TRAITEE' ? 'bg-orange-500/10 text-orange-500' : 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20'">
-                      {{ a.statut === 'NON_TRAITEE' ? 'ACTIVE' : 'RESOLVED' }}
+                      {{ a.statut === 'NON_TRAITEE' ? 'ACTIF' : 'RÉSOLU' }}
                     </span>
-                    <p *ngIf="a.statut === 'TRAITEE'" class="text-[8px] font-bold text-emerald-600 uppercase">Director OK</p>
+                    <p *ngIf="a.statut === 'TRAITEE'" class="text-[8px] font-bold text-emerald-600 uppercase">Validé Directeur</p>
                   </div>
                 </td>
                 <td class="p-6">
                   <div class="flex items-center justify-end gap-2">
-                    <button (click)="viewDetails(a)" class="w-9 h-9 rounded-xl flex items-center justify-center text-outline hover:text-primary hover:bg-primary/10 transition-all border border-transparent hover:border-primary/20" title="View Evidence">
-                      <span class="material-symbols-outlined text-lg">visibility</span>
+                    <button (click)="viewDetails(a)" class="w-9 h-9 rounded-xl flex items-center justify-center text-outline hover:text-primary hover:bg-primary/10 transition-all border border-transparent hover:border-primary/20" title="Voir les preuves">
+                      <span class="material-symbols-outlined text-lg">visibilité</span>
                     </button>
-                    <button *ngIf="a.statut === 'NON_TRAITEE'" (click)="confirmDelete(a)" class="w-9 h-9 rounded-xl flex items-center justify-center text-outline hover:text-error hover:bg-error/10 transition-all border border-transparent hover:border-error/20" title="Retract Intel">
-                      <span class="material-symbols-outlined text-lg">delete_forever</span>
+                    <button *ngIf="a.statut === 'NON_TRAITEE'" (click)="confirmDelete(a)" class="w-9 h-9 rounded-xl flex items-center justify-center text-outline hover:text-error hover:bg-error/10 transition-all border border-transparent hover:border-error/20" title="Retirer l'alerte">
+                      <span class="material-symbols-outlined text-lg"> Retirer l'alerte</span>
                     </button>
                   </div>
                 </td>
@@ -243,7 +259,7 @@ import { DialogService } from '../../../core/services/dialog.service';
               <tr *ngIf="filteredAlerts.length === 0">
                 <td colspan="6" class="p-20 text-center opacity-40 italic font-medium">
                    <span class="material-symbols-outlined text-6xl mb-4 text-outline/50">crisis_alert</span>
-                   <p class="text-sm font-black uppercase tracking-[0.3em]">No incident records match your criteria.</p>
+                   <p class="text-sm font-black uppercase tracking-[0.3em]">Aucun incident ne correspond à vos critères.</p>
                 </td>
               </tr>
             </tbody>
@@ -252,7 +268,7 @@ import { DialogService } from '../../../core/services/dialog.service';
           <!-- PAGINATION FOOTER -->
           <div class="p-6 bg-surface-container-lowest/30 border-t border-outline-variant/10 flex justify-between items-center" *ngIf="filteredAlerts.length > 0">
             <p class="text-[10px] font-black text-outline uppercase tracking-widest">
-              Showing {{ (currentPage - 1) * pageSize + 1 }} - {{ Math.min(currentPage * pageSize, filteredAlerts.length) }} of {{ filteredAlerts.length }} Entries
+              Affichage de {{ (currentPage - 1) * pageSize + 1 }} - {{ Math.min(currentPage * pageSize, filteredAlerts.length) }} sur {{ filteredAlerts.length }} entrées
             </p>
             <div class="flex items-center gap-2">
               <button [disabled]="currentPage === 1" (click)="setPage(currentPage - 1)"
@@ -285,10 +301,10 @@ import { DialogService } from '../../../core/services/dialog.service';
                  <img *ngIf="currentPreviewImage" [src]="currentPreviewImage" class="w-full h-full object-cover animate-in fade-in zoom-in duration-500">
                  <div *ngIf="!currentPreviewImage" class="w-full h-full flex flex-col items-center justify-center opacity-30">
                     <span class="material-symbols-outlined text-6xl mb-4">photo_library</span>
-                    <p class="text-[10px] font-black uppercase tracking-widest">No Visual Evidence Provided</p>
+                    <p class="text-[10px] font-black uppercase tracking-widest">Aucune preuve visuelle fournie</p>
                  </div>
                  <div class="absolute top-6 left-6 flex items-center gap-2 px-4 py-2 rounded-full bg-black/40 backdrop-blur-md text-white text-[10px] font-black uppercase tracking-widest">
-                    Evidence Hub
+                    Centre de preuves
                  </div>
               </div>
               <div *ngIf="selectedDetail.imageUrls && selectedDetail.imageUrls.length > 1" class="h-20 bg-black/5 backdrop-blur-sm flex items-center gap-3 px-4 border-t border-outline-variant/5">
@@ -302,15 +318,16 @@ import { DialogService } from '../../../core/services/dialog.service';
            <div class="md:w-1/2 p-10 flex flex-col">
               <header class="mb-8">
                  <div class="flex justify-between items-center mb-6">
-                    <span class="px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest" [ngClass]="getImportanceClass(selectedDetail)">{{ selectedDetail.importance }} SEVERITY</span>
+                    <span class="px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest" [ngClass]="getImportanceClass(selectedDetail)">GRAVITÉ {{ selectedDetail.importance }}</span>
                     <button (click)="selectedDetail = null" class="w-12 h-12 rounded-full hover:bg-surface transition-colors flex items-center justify-center text-outline shadow-sm bg-surface-container-low border border-outline-variant/10">
                        <span class="material-symbols-outlined text-xl">close</span>
                     </button>
                  </div>
-                 <h2 class="text-4xl font-black text-on-surface tracking-tighter" style="font-family: Manrope, sans-serif;">{{ (selectedDetail.type || '').replace('_', ' ') }} INCIDENT</h2>
+
+                 <h2 class="text-4xl font-black text-on-surface tracking-tighter" style="font-family: Manrope, sans-serif;">INCIDENT {{ (selectedDetail.type || '').replace('_', ' ') }}</h2>
                  <p class="text-xs text-outline font-bold mt-2 uppercase tracking-widest flex items-center gap-2 text-primary">
                     <span class="material-symbols-outlined text-[16px]">fingerprint</span>
-                    Trace: {{ selectedDetail.id }}
+                    Trace : {{ selectedDetail.id }}
                  </p>
               </header>
 
@@ -335,7 +352,8 @@ import { DialogService } from '../../../core/services/dialog.service';
               </div>
 
               <div class="mt-8 pt-6 border-t border-outline-variant/10 flex gap-4">
-                 <span class="text-[10px] font-black uppercase text-outline self-center">Status: {{ selectedDetail.statut === 'NON_TRAITEE' ? 'AWAITING DIRECTOR COMMAND' : 'RESOLVED BY COMMAND' }}</span>
+
+                 <span class="text-[10px] font-black uppercase text-outline self-center">Statut : {{ selectedDetail.statut === 'NON_TRAITEE' ? 'EN ATTENTE DU DIRECTEUR' : 'RÉSOLU PAR LA DIRECTION' }}</span>
               </div>
            </div>
         </div>
@@ -369,7 +387,6 @@ export class AlerteHistoryComponent implements OnInit, OnDestroy {
   alerts: Alerte[] = [];
   filteredAlerts: Alerte[] = [];
   pagedAlerts: Alerte[] = [];
-  
   selectedDetail: Alerte | null = null;
   currentPreviewImage: string | null = null;
   activeCount = 0;
@@ -380,7 +397,6 @@ export class AlerteHistoryComponent implements OnInit, OnDestroy {
   searchTerm = '';
   statusFilter = 'ALL';
   typeFilter = 'ALL';
-  
   // Pagination System
   currentPage = 1;
   pageSize = 5;
@@ -407,7 +423,6 @@ export class AlerteHistoryComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.initAutoRefresh();
     this.loadAssigned();
-    
     const user = this.authService.currentUser();
     if (user) {
       this.report.senderUid = user.id;
@@ -476,13 +491,14 @@ export class AlerteHistoryComponent implements OnInit, OnDestroy {
 
   applyFilters() {
     this.filteredAlerts = this.alerts.filter(a => {
+
       const matchesSearch = !this.searchTerm || 
         a.description?.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
         a.id?.toLowerCase().includes(this.searchTerm.toLowerCase());
-      
+
       const matchesStatus = this.statusFilter === 'ALL' || a.statut === this.statusFilter;
       const matchesType = this.typeFilter === 'ALL' || a.type === this.typeFilter;
-      
+
       return matchesSearch && matchesStatus && matchesType;
     });
 
@@ -492,7 +508,7 @@ export class AlerteHistoryComponent implements OnInit, OnDestroy {
   updatePagination() {
     this.totalPages = Math.ceil(this.filteredAlerts.length / this.pageSize);
     this.pages = Array.from({ length: this.totalPages }, (_, i) => i + 1);
-    
+
     if (this.currentPage > this.totalPages && this.totalPages > 0) {
       this.currentPage = this.totalPages;
     }
@@ -518,10 +534,10 @@ export class AlerteHistoryComponent implements OnInit, OnDestroy {
   }
 
   onVergerChange() {
-     const verger = this.assignedVergers.find(v => v.id === this.report.vergerId);
-     if (verger) {
-       this.report.localisation = verger.localisation;
-     }
+    const verger = this.assignedVergers.find(v => v.id === this.report.vergerId);
+    if (verger) {
+      this.report.localisation = verger.localisation;
+    }
   }
 
   onFileSelected(event: any) {
@@ -544,12 +560,12 @@ export class AlerteHistoryComponent implements OnInit, OnDestroy {
   onTransmit() {
     const user = this.authService.currentUser();
     if (!user) {
-      this.toastService.show('Identity Verification Required. Please Re-login.', 'error');
+      this.toastService.show('Vérification d\'identité requise. Veuillez vous reconnecter.', 'error');
       return;
     }
 
     if (!this.report.vergerId || !this.report.description) {
-      this.toastService.show('Operational Data Missing: Category & Sector Required.', 'error');
+      this.toastService.show('Données manquantes : Catégorie & Secteur requis.', 'error');
       return;
     }
 
@@ -566,15 +582,15 @@ export class AlerteHistoryComponent implements OnInit, OnDestroy {
 
     this.alerteService.reportAlerte(finalReport).subscribe({
       next: () => {
-        this.toastService.show('Emergency alert transmitted to Command Center.', 'success');
+        this.toastService.show('Alerte d\'urgence transmise au Centre de Commande.', 'success');
         this.loading = false;
         this.showReportForm = false;
         this.resetForm();
-        setTimeout(() => this.loadAlerts(), 500); 
+        setTimeout(() => this.loadAlerts(), 500);
       },
       error: (err) => {
         this.loading = false;
-        this.toastService.show('Relay Error: Transmission Failed.', 'error');
+        this.toastService.show('Erreur : Échec de la transmission.', 'error');
         this.cdr.detectChanges();
       }
     });
@@ -600,14 +616,25 @@ export class AlerteHistoryComponent implements OnInit, OnDestroy {
      this.cdr.detectChanges();
   }
 
+ // On garde le "async" de ta version HEAD
   async confirmDelete(a: Alerte) {
-    const isConfirmed = await this.dialogService.confirm('Retract Intel', 'Are you sure you want to retract this incident report?', 'warning');
+    // On garde ton beau dialogue avec le style 'warning'
+    const isConfirmed = await this.dialogService.confirm(
+      'Retirer le signalement', 
+      'Êtes-vous sûr de vouloir retirer ce rapport d\'incident ?', 
+      'warning'
+    );
+
     if (isConfirmed) {
       if (!a.id) return;
       this.alerteService.deleteAlerte(a.id).subscribe({
         next: () => {
-          this.toastService.show('Intel retracted.', 'success');
+          // Utilisation du Toast (Chaima) avec ton message "Intel" traduit
+          this.toastService.show('Signalement (Intel) retiré avec succès.', 'success');
           this.loadAlerts();
+        },
+        error: (err) => {
+          this.toastService.show('Erreur lors du retrait du signalement.', 'error');
         }
       });
     }
@@ -623,9 +650,14 @@ export class AlerteHistoryComponent implements OnInit, OnDestroy {
     }
   }
 
+  getTypeLabel(type: string | undefined): string {
+    if (!type) return 'Incident';
+    return type.replace('_', ' ');
+  }
+
   getImportanceClass(a: Alerte): string {
     if (a.statut !== 'NON_TRAITEE') return 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20';
-    switch(a.importance) {
+    switch (a.importance) {
       case 'URGENT': return 'bg-error text-white shadow-lg shadow-error/20';
       case 'MEDIUM': return 'bg-orange-500/10 text-orange-500 border border-orange-500/20';
       default: return 'bg-blue-500/10 text-blue-500 border border-blue-500/20';

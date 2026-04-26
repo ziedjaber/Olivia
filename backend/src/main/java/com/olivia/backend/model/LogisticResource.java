@@ -15,7 +15,7 @@ public class LogisticResource {
     private String name;
     private String type; // e.g., MECHANICS, TOOLS, TRACTORS, BENNES, FERTILIZER
     private String description;
-    private double costPerHour;
+    private double pricePerHour;
     private List<String> images; // up to 4 URLs
     private int stockLevel;
     private String location; // e.g., Warehouse A

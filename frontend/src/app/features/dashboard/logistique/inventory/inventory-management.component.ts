@@ -74,8 +74,10 @@ import { DialogService } from '../../../../core/services/dialog.service';
             <!-- Modal Header -->
             <div class="p-8 border-b border-outline-variant/10 flex justify-between items-center bg-stone-50">
                <div>
+
                  <h2 class="text-2xl font-black text-on-surface">{{ isEditing ? 'Edit Asset' : 'New Asset' }}</h2>
                  <p class="text-[10px] text-outline font-bold mt-1 uppercase tracking-widest leading-none">Global Inventory System</p>
+
                </div>
                <button (click)="closeModal()" class="w-12 h-12 rounded-full hover:bg-stone-200 flex items-center justify-center transition-colors">
                   <span class="material-symbols-outlined">close</span>
@@ -84,6 +86,7 @@ import { DialogService } from '../../../../core/services/dialog.service';
 
             <form class="p-8 space-y-6 flex-grow overflow-y-auto">
                <div class="space-y-2">
+
                   <label class="text-[10px] font-black uppercase tracking-[0.2em] text-outline ml-1">Asset Identity</label>
                   <input [(ngModel)]="activeResource.name" name="name" class="w-full bg-stone-100 rounded-2xl px-6 py-4 font-bold text-sm outline-none focus:ring-2 focus:ring-primary/20 transition-all" placeholder="Enter full name..."/>
                </div>
@@ -95,7 +98,7 @@ import { DialogService } from '../../../../core/services/dialog.service';
                       <option value="TRACTORS">Tractor</option>
                       <option value="BENNES">Bennes</option>
                       <option value="TOOLS">Tools</option>
-                      <option value="MECHANICS">Mechanics</option>
+                      <option value="MECHANICS">Mechanics & véhicules</option>
                     </select>
                  </div>
                  <div class="space-y-2">
@@ -103,9 +106,10 @@ import { DialogService } from '../../../../core/services/dialog.service';
                     <input [(ngModel)]="activeResource.stockLevel" name="stock" type="number" class="w-full bg-stone-100 rounded-2xl px-6 py-4 font-bold text-sm outline-none"/>
                  </div>
                  <div class="space-y-2">
-                    <label class="text-[10px] font-black uppercase tracking-[0.2em] text-outline ml-1">Cost / Hour (€)</label>
-                    <input [(ngModel)]="activeResource.costPerHour" name="cost" type="number" step="0.5" class="w-full bg-stone-100 rounded-2xl px-6 py-4 font-bold text-sm outline-none"/>
+                    <label class="text-[10px] font-black uppercase tracking-[0.2em] text-outline ml-1">prix/heure</label>
+                    <input [(ngModel)]="activeResource.pricePerHour" name="cost" type="number" step="0.5" class="w-full bg-stone-100 rounded-2xl px-6 py-4 font-bold text-sm outline-none"/>
                  </div>
+
                </div>
 
                <div class="space-y-2">
@@ -115,7 +119,7 @@ import { DialogService } from '../../../../core/services/dialog.service';
 
                <!-- Image Upload -->
                <div class="space-y-2">
-                  <label class="text-[10px] font-black uppercase tracking-[0.2em] text-outline ml-1">Asset Imagery</label>
+                  <label class="text-[10px] font-black uppercase tracking-[0.2em] text-outline ml-1">Imagerie des actifs</label>
                   <div class="grid grid-cols-3 gap-2">
                     <div *ngFor="let img of activeResource.images; let i = index" class="relative group h-24 rounded-xl overflow-hidden bg-stone-200">
                       <img [src]="getImageUrl(img)" class="w-full h-full object-cover">
@@ -126,7 +130,8 @@ import { DialogService } from '../../../../core/services/dialog.service';
                     <label *ngIf="activeResource.images.length < 5" class="h-24 rounded-xl border-2 border-dashed border-outline-variant/30 flex flex-col items-center justify-center cursor-pointer hover:border-primary/40 transition-colors">
                       <input type="file" (change)="onFileSelected($event)" class="hidden" multiple accept="image/*">
                       <span class="material-symbols-outlined text-outline/40">add_photo_alternate</span>
-                      <span class="text-[8px] font-black uppercase tracking-widest text-outline/40 mt-1">Upload</span>
+                      <span class="text-[8px] font-black uppercase tracking-widest text-outline/40 mt-1">Téléverser</span>
+>>>>>>> origin/chaima-branch
                     </label>
                   </div>
                </div>
@@ -176,7 +181,7 @@ export class InventoryManagementComponent implements OnInit {
   }
 
   emptyResource(): LogisticResource {
-    return { name: '', type: 'TRACTORS', description: '', costPerHour: 0, images: [], stockLevel: 1, location: 'DEPOT_1', status: 'active' };
+    return { name: '', type: 'TRACTORS', description: '', pricePerHour: 0, images: [], stockLevel: 1, location: 'DEPOT_1', status: 'active' };
   }
 
   openModal() {
@@ -225,13 +230,20 @@ export class InventoryManagementComponent implements OnInit {
     }
   }
 
-  async deleteResource(id: string) {
-    const isConfirmed = await this.dialogService.confirm('Delete Asset', 'Delete this asset from inventory?', 'danger');
-    if (isConfirmed) {
-      this.logistiqueService.deleteResource(id).subscribe(() => {
-        this.dialogService.alert('Removed', 'Asset removed from inventory successfully.', 'success');
-        this.loadResources();
-      });
-    }
+async deleteResource(id: string) {
+  // On garde ton beau dialogue de confirmation
+  const isConfirmed = await this.dialogService.confirm(
+    'Supprimer la ressource', 
+    'Voulez-vous vraiment retirer cet élément de l\'inventaire ?', 
+    'danger'
+  );
+
+  if (isConfirmed) {
+    this.logistiqueService.deleteResource(id).subscribe(() => {
+      // On utilise le Toast de Chaima (plus moderne pour un succès)
+      this.toastService.show('Ressource supprimée avec succès', 'success');
+      this.loadResources();
+    });
   }
+}
 }

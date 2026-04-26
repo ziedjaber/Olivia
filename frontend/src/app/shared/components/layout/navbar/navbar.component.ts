@@ -1,25 +1,33 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
+import { ChatService } from '../../../../features/chat/services/chat';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <header class="fixed top-0 right-0 w-[calc(100%-16rem)] z-40 bg-background/70 backdrop-blur-xl shadow-sm h-16 flex justify-between items-center px-8 border-b border-outline-variant/10">
+    <header class="fixed top-0 right-0 z-40 bg-background/70 backdrop-blur-xl shadow-sm h-20 flex justify-between items-center px-8 border-b border-outline-variant/10 transition-all duration-500"
+            [class.w-[calc(100%-16rem)]]="!isSidebarCollapsed"
+            [class.w-[calc(100%-5rem)]]="isSidebarCollapsed">
       <div class="flex items-center gap-8">
-        <span class="text-xl font-bold tracking-tight text-primary font-headline italic">The Curated Harvest</span>
       </div>
       <div class="flex items-center gap-4">
-        <button class="p-2 transition-colors duration-200 hover:bg-surface-container-low rounded-full">
+        <button class="p-3 transition-colors duration-200 hover:bg-surface-container-low rounded-full relative" (click)="toggleChat()">
+          <span class="material-symbols-outlined text-primary">chat</span>
+          <span *ngIf="(totalUnreadCount$ | async) as unread" class="absolute top-1 right-1 bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">
+            {{ unread > 9 ? '9+' : unread }}
+          </span>
+        </button>
+        <button class="p-3 transition-colors duration-200 hover:bg-surface-container-low rounded-full">
           <span class="material-symbols-outlined text-primary">notifications</span>
         </button>
-        <button class="p-2 transition-colors duration-200 hover:bg-surface-container-low rounded-full" routerLink="/profile">
+        <button class="p-3 transition-colors duration-200 hover:bg-surface-container-low rounded-full" routerLink="/profile">
           <span class="material-symbols-outlined text-primary">settings</span>
         </button>
-        <div class="flex items-center gap-3 ml-2 group cursor-pointer" routerLink="/profile">
+        <div class="flex items-center gap-4 mr-3 group cursor-pointer" routerLink="/profile">
           <div class="text-right hidden sm:block">
             <p class="text-xs font-bold text-on-surface">{{ user()?.fullName }}</p>
             <p class="text-[10px] text-outline font-medium uppercase tracking-tighter">{{ user()?.role }}</p>
@@ -37,6 +45,14 @@ import { AuthService } from '../../../../core/services/auth.service';
   `
 })
 export class NavbarComponent {
+  @Input() isSidebarCollapsed = false;
   authService = inject(AuthService);
+  chatService = inject(ChatService);
+
   user = this.authService.currentUser;
+  totalUnreadCount$ = this.chatService.totalUnreadCount$;
+
+  toggleChat() {
+    this.chatService.toggleChat();
+  }
 }

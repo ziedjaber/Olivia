@@ -1,3 +1,22 @@
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Angular/React build
+/dist
+/tmp
+/out-tsc
+
+# IDE
+.vscode/
+.idea/
+
+# System
+.DS_Store
+Thumbs.db
+.env
 # See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
 
 # Compiled output
@@ -42,7 +61,3 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
-
-.env
-.env.local
-.env.*.local
