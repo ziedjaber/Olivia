@@ -1,0 +1,105 @@
+<div class="min-h-screen bg-[#FDFCF6]/50 py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-4xl mx-auto space-y-8 animate-in fade-in duration-700">
+    
+    <!-- Title Section -->
+    <header class="flex items-center justify-between mb-12">
+      <div>
+        <h1 class="text-3xl font-black text-on-surface tracking-tight" style="font-family: Manrope, sans-serif;">Mon Profil</h1>
+        <p class="text-on-surface-variant font-medium text-sm mt-1">Gérez vos informations personnelles et votre compte.</p>
+      </div>
+      <button (click)="onLogout()" class="flex items-center gap-2 px-6 py-3 bg-white border border-error/20 text-error rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-error/5 transition-all shadow-sm">
+        <span class="material-symbols-outlined text-[18px]">logout</span>
+        Déconnexion
+      </button>
+    </header>
+
+    <!-- Top Profile Card -->
+    <div class="bg-white rounded-[32px] p-8 md:p-12 shadow-sm border border-outline-variant/10 flex flex-col md:flex-row items-center gap-10">
+      <!-- Avatar Section -->
+      <div class="relative group">
+        <div class="w-40 h-40 rounded-[2.5rem] overflow-hidden bg-surface-container-low border-4 border-white shadow-xl relative">
+          <img [src]="authService.getAvatarUrl(user?.avatarUrl)" 
+               alt="User Avatar" 
+               class="w-full h-full object-cover">
+          <!-- Hover Overlay -->
+          <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[1px]">
+            <label for="profile-photo-input" class="cursor-pointer text-white flex flex-col items-center gap-1">
+              <span class="material-symbols-outlined text-2xl">photo_camera</span>
+              <span class="text-[9px] font-bold uppercase tracking-widest">Changer</span>
+              <input id="profile-photo-input" type="file" class="hidden" (change)="onFileSelected($event)" accept="image/*">
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Basic Info -->
+      <div class="text-center md:text-left flex-grow">
+        <div class="flex flex-col md:flex-row items-center gap-3 mb-2">
+          <h2 class="text-3xl font-black text-on-surface tracking-tight">{{ user?.fullName }}</h2>
+          <span class="px-3 py-1 bg-primary/10 text-primary rounded-full text-[10px] font-black uppercase tracking-widest border border-primary/5">
+            {{ user?.role?.replace('_', ' ') }}
+          </span>
+        </div>
+        <p class="text-on-surface-variant font-bold text-lg italic opacity-70">{{ user?.email }}</p>
+        <div class="mt-4 flex flex-wrap justify-center md:justify-start gap-4">
+          <div class="flex items-center gap-2 text-[10px] font-black text-outline uppercase tracking-widest bg-surface-container-low px-4 py-2 rounded-xl">
+            <span class="material-symbols-outlined text-[16px]">fingerprint</span>
+            ID: {{ user?.id?.substring(0, 8) }}...
+          </div>
+          <div class="flex items-center gap-2 text-[10px] font-black text-emerald-600 uppercase tracking-widest bg-emerald-50 px-4 py-2 rounded-xl border border-emerald-100">
+            <span class="material-symbols-outlined text-[16px]">verified</span>
+            Compte Vérifié
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Information Form Card -->
+    <div class="bg-white rounded-[32px] p-8 md:p-12 shadow-sm border border-outline-variant/10">
+      <div class="flex items-center gap-4 mb-10 pb-6 border-b border-outline-variant/5">
+        <div class="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary">
+          <span class="material-symbols-outlined text-[24px]">manage_accounts</span>
+        </div>
+        <h3 class="text-xl font-black text-on-surface tracking-tight">Paramètres du Compte</h3>
+      </div>
+
+      <form (ngSubmit)="onUpdate()" #f="ngForm" class="space-y-10">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <!-- Full Name Field -->
+          <div class="space-y-3">
+            <label class="text-[10px] font-black uppercase tracking-widest text-outline ml-1">Nom et Prénom</label>
+            <div class="relative">
+              <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline/50 text-[20px]">person</span>
+              <input name="fullName" [(ngModel)]="editUser.fullName" required
+                     class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-2xl py-4 pl-12 pr-6 font-bold text-on-surface focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all outline-none shadow-sm"
+                     placeholder="Votre nom complet">
+            </div>
+          </div>
+
+          <!-- Email Display (Read-only) -->
+          <div class="space-y-3">
+            <label class="text-[10px] font-black uppercase tracking-widest text-outline ml-1">Email (Non modifiable)</label>
+            <div class="w-full bg-surface-container-low border border-outline-variant/10 rounded-2xl py-4 px-6 font-bold text-on-surface opacity-60 flex items-center gap-3">
+              <span class="material-symbols-outlined text-[20px]">alternate_email</span>
+              {{ user?.email }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer Actions -->
+        <div class="pt-8 border-t border-outline-variant/5 flex flex-col md:flex-row justify-between items-center gap-6">
+          <p class="text-[10px] font-black text-outline uppercase tracking-widest flex items-center gap-2">
+            <span class="material-symbols-outlined text-[16px]">security</span>
+            Sécurisé par Olivia Cooperative Cloud
+          </p>
+          <button type="submit" [disabled]="updating"
+                  class="bg-primary text-on-primary py-5 px-16 rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-4 min-w-[280px]">
+            <span *ngIf="updating" class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+            {{ updating ? 'Enregistrement...' : 'Enregistrer les modifications' }}
+          </button>
+        </div>
+      </form>
+    </div>
+
+  </div>
+</div>

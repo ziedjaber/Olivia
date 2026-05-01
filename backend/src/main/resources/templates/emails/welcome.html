@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Welcome – Olivia Cooperative</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0e1a07;
+    font-family: 'DM Sans', sans-serif;
+    padding: 48px 20px;
+    min-height: 100vh;
+  }
+
+  .wrapper {
+    max-width: 620px;
+    margin: 0 auto;
+  }
+
+  /* ─── TOP BRAND BAR ─── */
+  .brand-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 0 0 28px;
+  }
+
+  .brand-emblem {
+    width: 32px;
+    height: 32px;
+  }
+
+  .brand-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #a8c87a;
+    letter-spacing: 0.04em;
+  }
+
+  .brand-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #4a7c1f;
+  }
+
+  .brand-tagline {
+    font-size: 11px;
+    color: #5a7a3a;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  /* ─── HERO CARD ─── */
+  .hero {
+    background: linear-gradient(160deg, #1a3308 0%, #122808 40%, #0e2005 100%);
+    border-radius: 20px 20px 0 0;
+    padding: 60px 50px 50px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid #2a4a10;
+    border-bottom: none;
+  }
+
+  /* Decorative olive branch SVG watermark */
+  .hero-watermark {
+    position: absolute;
+    right: -20px;
+    top: -20px;
+    opacity: 0.07;
+    width: 260px;
+  }
+
+  /* Glowing orb */
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -80px;
+    right: -60px;
+    width: 320px;
+    height: 320px;
+    background: radial-gradient(circle, rgba(120, 190, 50, 0.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -40px;
+    left: -40px;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(60, 120, 15, 0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(140, 200, 60, 0.12);
+    border: 1px solid rgba(140, 200, 60, 0.3);
+    color: #9cd44e;
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .badge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #7ec832;
+    box-shadow: 0 0 6px rgba(126, 200, 50, 0.8);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 38px;
+    font-weight: 700;
+    color: #e8f5d0;
+    line-height: 1.2;
+    margin-bottom: 16px;
+    position: relative;
+    z-index: 2;
+    letter-spacing: -0.01em;
+  }
+
+  .hero-title span {
+    color: #9cd44e;
+  }
+
+  .hero-subtitle {
+    font-size: 15px;
+    color: #7a9a5a;
+    line-height: 1.7;
+    max-width: 440px;
+    position: relative;
+    z-index: 2;
+    font-weight: 300;
+  }
+
+  /* ─── DIVIDER LINE ─── */
+  .hero-divider {
+    width: 48px;
+    height: 2px;
+    background: linear-gradient(90deg, #4a9a1a, #7ec832);
+    margin: 24px 0;
+    border-radius: 2px;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* ─── STATS BAND ─── */
+  .stats-band {
+    background: #111f06;
+    border-left: 1px solid #2a4a10;
+    border-right: 1px solid #2a4a10;
+    padding: 0;
+    display: flex;
+  }
+
+  .stat-block {
+    flex: 1;
+    padding: 32px 36px;
+    position: relative;
+  }
+
+  .stat-block:first-child {
+    border-right: 1px solid #1e3a0a;
+  }
+
+  .stat-block::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #3a6e14, transparent);
+  }
+
+  .stat-icon {
+    font-size: 20px;
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  .stat-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: #4a6a2a;
+    margin-bottom: 10px;
+  }
+
+  .stat-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 500;
+    color: #c8e89a;
+    letter-spacing: 0.01em;
+  }
+
+  .stat-value.mono {
+    font-family: 'DM Sans', monospace;
+    font-size: 14px;
+    font-weight: 600;
+    color: #8ecf48;
+    letter-spacing: 0.18em;
+    background: rgba(90, 180, 30, 0.1);
+    border: 1px solid rgba(90, 180, 30, 0.2);
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 6px;
+    margin-top: 4px;
+  }
+
+  /* ─── BODY CARD ─── */
+  .body-card {
+    background: #0f1e06;
+    border: 1px solid #2a4a10;
+    border-top: none;
+    padding: 44px 50px;
+  }
+
+  .body-text {
+    font-size: 15px;
+    color: #6a8a4a;
+    line-height: 1.75;
+    font-weight: 300;
+    margin-bottom: 40px;
+  }
+
+  .body-text strong {
+    color: #9ac060;
+    font-weight: 500;
+  }
+
+  /* ─── STEPS ─── */
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 0 0 44px;
+  }
+
+  .step {
+    display: flex;
+    gap: 18px;
+    align-items: flex-start;
+    padding: 18px 0;
+    border-bottom: 1px solid #1a3008;
+    position: relative;
+  }
+
+  .step:last-child {
+    border-bottom: none;
+  }
+
+  .step-num {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: rgba(90, 160, 30, 0.12);
+    border: 1px solid rgba(90, 160, 30, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: #7ec832;
+    margin-top: 2px;
+  }
+
+  .step-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: #b0d07a;
+    margin-bottom: 4px;
+  }
+
+  .step-desc {
+    font-size: 13px;
+    color: #4e6a30;
+    line-height: 1.5;
+    font-weight: 300;
+  }
+
+  /* ─── CTA BUTTON ─── */
+  .cta-wrapper {
+    text-align: center;
+    margin: 44px 0 36px;
+  }
+
+  .cta-button {
+    display: inline-block;
+    background: linear-gradient(135deg, #3a7a12 0%, #5aaa1e 60%, #70c025 100%);
+    color: #e8f8d0;
+    padding: 18px 56px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    box-shadow: 0 4px 30px rgba(80, 160, 20, 0.35), 0 1px 0 rgba(255,255,255,0.1) inset;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-button::after {
+    content: '→';
+    margin-left: 10px;
+    font-size: 16px;
+    font-weight: 300;
+  }
+
+  /* ─── SECURITY NOTE ─── */
+  .security-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    background: rgba(220, 100, 40, 0.06);
+    border: 1px solid rgba(200, 80, 30, 0.2);
+    border-radius: 10px;
+    padding: 18px 22px;
+  }
+
+  .security-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .security-text {
+    font-size: 12.5px;
+    color: #7a5040;
+    line-height: 1.6;
+    font-weight: 400;
+  }
+
+  .security-text strong {
+    color: #c07050;
+    font-weight: 500;
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  /* ─── FOOTER ─── */
+  .footer {
+    background: #090f04;
+    border: 1px solid #1e3008;
+    border-top: none;
+    border-radius: 0 0 20px 20px;
+    padding: 32px 50px;
+    text-align: center;
+  }
+
+  .footer-rule {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #2a4010, transparent);
+    margin-bottom: 24px;
+  }
+
+  .footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin-bottom: 18px;
+  }
+
+  .footer-link {
+    font-size: 12px;
+    color: #3a5020;
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    transition: color 0.2s;
+  }
+
+  .footer-link:hover {
+    color: #6a9a3a;
+  }
+
+  .footer-copy {
+    font-size: 11.5px;
+    color: #2e4018;
+    letter-spacing: 0.04em;
+  }
+
+  .footer-copy strong {
+    color: #4a6a28;
+    font-weight: 500;
+  }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 520px) {
+    .hero, .body-card { padding: 40px 28px; }
+    .footer { padding: 28px; }
+    .stats-band { flex-direction: column; }
+    .stat-block:first-child { border-right: none; border-bottom: 1px solid #1e3a0a; }
+    .hero-title { font-size: 30px; }
+    .cta-button { padding: 16px 32px; display: block; }
+  }
+</style>
+</head>
+<body th:replace="~{emails/layout :: body(content=~{:: .welcome-content})}">
+<div class="welcome-content">
+<div class="wrapper">
+
+  <!-- Brand Bar -->
+  <div class="brand-bar">
+    <!-- Olive emblem SVG -->
+    <svg class="brand-emblem" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="16" cy="13" rx="6" ry="9" fill="#2a5c0a" stroke="#5aaa1e" stroke-width="0.8"/>
+      <ellipse cx="16" cy="13" rx="3" ry="5.5" fill="#1a3c06"/>
+      <path d="M16 22 Q22 26 26 30" stroke="#4a8a18" stroke-width="1.2" stroke-linecap="round"/>
+      <path d="M21 8 Q26 4 28 6" stroke="#4a8a18" stroke-width="1" stroke-linecap="round"/>
+      <circle cx="24" cy="7" r="2.5" fill="#3a7012"/>
+      <path d="M11 7 Q7 3 6 6" stroke="#4a8a18" stroke-width="1" stroke-linecap="round"/>
+      <circle cx="8" cy="6.5" r="2" fill="#3a7012"/>
+    </svg>
+    <span class="brand-name">Olivia</span>
+    <div class="brand-dot"></div>
+    <span class="brand-tagline">Cooperative Network</span>
+  </div>
+
+  <!-- Hero -->
+  <div class="hero">
+    <!-- Watermark -->
+    <svg class="hero-watermark" viewBox="0 0 260 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M130 240 Q80 180 60 120 Q40 60 100 30 Q160 0 200 50 Q240 100 200 160 Q160 220 130 240Z" fill="#5aaa1e"/>
+      <path d="M130 220 Q90 165 75 115 Q55 65 105 40 Q155 15 190 60 Q225 105 190 158 Q155 210 130 220Z" fill="#2a5c0a"/>
+      <ellipse cx="105" cy="90" rx="20" ry="30" transform="rotate(-30 105 90)" fill="#3a8014"/>
+      <ellipse cx="160" cy="100" rx="18" ry="28" transform="rotate(20 160 100)" fill="#3a8014"/>
+      <ellipse cx="125" cy="140" rx="16" ry="24" transform="rotate(-10 125 140)" fill="#3a8014"/>
+    </svg>
+
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      Personnel Onboarding
+    </div>
+
+    <h1 class="hero-title">
+      Welcome to the<br>Mission, <span th:text="${userName}">Agent</span>.
+    </h1>
+
+    <div class="hero-divider"></div>
+
+    <p class="hero-subtitle">
+      Your account has been initialized within the Olivia Cooperative ecosystem — a digital-first olive production network built for precision and impact.
+    </p>
+  </div>
+
+  <!-- Stats Band -->
+  <div class="stats-band">
+    <div class="stat-block">
+      <span class="stat-label">Assigned Role</span>
+      <div class="stat-value" th:text="${userRole}">Directeur</div>
+    </div>
+    <div class="stat-block">
+      <span class="stat-label">Temporary Access Key</span>
+      <div class="stat-value mono" th:text="${tempPassword}">OLIVIA-2026</div>
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div class="body-card">
+    <p class="body-text">
+      Please <strong>log in immediately</strong> to complete your profile synchronization and establish your permanent security credentials. Your access to the command center is ready and awaiting activation.
+    </p>
+
+    <!-- Quick Steps -->
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div>
+          <div class="step-title">Access the command center</div>
+          <div class="step-desc">Click the button below and enter your temporary credentials</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div>
+          <div class="step-title">Update your password</div>
+          <div class="step-desc">Choose a strong, unique password to secure your account</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div>
+          <div class="step-title">Complete your profile</div>
+          <div class="step-desc">Finalize your details to unlock all cooperative features</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="cta-wrapper">
+      <a href="http://localhost:4200/login" class="cta-button">Access Command Center</a>
+    </div>
+
+    <!-- Security Note -->
+    <div class="security-note">
+      <span class="security-icon">⚠</span>
+      <div class="security-text">
+        <strong>Security Notice</strong>
+        Your temporary access key expires in 24 hours. Do not share it with anyone. If you did not request this account, please contact support immediately.
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div class="footer-rule"></div>
+    <div class="footer-links">
+      <a href="#" class="footer-link">Support</a>
+      <a href="#" class="footer-link">Privacy Policy</a>
+      <a href="#" class="footer-link">Unsubscribe</a>
+    </div>
+    <p class="footer-copy">
+      &copy; 2026 <strong>Olivia Cooperative</strong> &mdash; All rights reserved.<br>
+      You received this because an account was created for you on our platform.
+    </p>
+  </div>
+
+</div>
+</div>
+</body>
+</html>

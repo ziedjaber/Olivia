@@ -1,0 +1,402 @@
+<div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+  <!-- Premium Header -->
+  <header class="mb-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 animate-in">
+    <div>
+      <div class="flex items-center gap-2 text-primary font-black text-[10px] uppercase tracking-[0.25em] mb-2 opacity-70">
+        <span class="w-10 h-[1px] bg-primary"></span>
+        Registre des vergers
+      </div>
+      <h1 class="text-4xl font-black text-on-surface tracking-tighter" style="font-family: Manrope, sans-serif;">
+        Gestion des <span class="text-primary italic">vergers</span>
+      </h1>
+      <p class="text-on-surface-variant text-sm font-medium mt-1 italic">
+        Planifiez et gerez vos ressources oleicoles a travers le domaine.
+      </p>
+    </div>
+    <div class="flex gap-4">
+      <button *ngIf="!isGrower" (click)="toggleForm()"
+        class="bg-primary text-on-primary px-8 py-3.5 font-black rounded-2xl shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-3 text-xs uppercase tracking-widest">
+        <span class="material-symbols-outlined">{{ showCreateForm ? 'close' : 'add_location_alt' }}</span>
+        {{ showCreateForm ? 'Annuler' : 'Ajouter' }}
+      </button>
+    </div>
+  </header>
+
+  <!-- INTEGRATED FORM (NOT DIALOG) -->
+  <div *ngIf="showCreateForm" class="mb-12 bg-[#FDFCF6] rounded-[40px] shadow-xl border border-primary/10 overflow-hidden animate-in slide-in-from-top-8 duration-500">
+      <!-- Form Header -->
+      <div class="px-10 py-6 border-b border-primary/10 flex items-center justify-between bg-white/50">
+        <div class="flex items-center gap-4">
+          <div class="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
+            <span class="material-symbols-outlined text-[24px]">{{ isEditing ? 'edit_square' : 'add_location_alt' }}</span>
+          </div>
+          <div>
+            <h3 class="text-[9px] font-black uppercase tracking-[0.3em] text-primary/60 mb-0.5">Système d'Enregistrement</h3>
+            <p class="text-lg font-black text-on-surface tracking-tight uppercase italic">
+              {{ isEditing ? 'Modification du Secteur' : 'Nouvelle Unité de Production' }}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Body -->
+      <div class="p-10 space-y-10">
+        <!-- SECTION 1: Identification -->
+        <div class="space-y-6">
+          <div class="flex items-center gap-3">
+            <span class="text-[10px] font-black text-primary uppercase tracking-widest bg-primary/10 px-3 py-1 rounded-full">01</span>
+            <h4 class="text-xs font-black uppercase tracking-widest text-on-surface">Identification du Domaine</h4>
+            <div class="flex-grow h-px bg-primary/10"></div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="space-y-2">
+              <label class="text-[10px] font-black uppercase text-outline tracking-widest ml-1">Nomenclature du Verger</label>
+              <input [(ngModel)]="newVerger.nom" type="text" placeholder="ex. Secteur Nord B-12"
+                class="w-full bg-white border border-outline-variant/20 rounded-2xl px-6 py-4 focus:ring-4 focus:ring-primary/5 focus:border-primary/40 outline-none transition-all text-sm font-bold text-on-surface shadow-sm">
+            </div>
+            <div class="space-y-2 flex flex-col">
+              <label class="text-[10px] font-black uppercase text-outline tracking-widest ml-1">Variété d'Olive</label>
+              <div class="relative">
+                <select [(ngModel)]="newVerger.varieteOlive"
+                  class="w-full bg-white border border-outline-variant/20 rounded-2xl px-6 py-4 focus:ring-4 focus:ring-primary/5 focus:border-primary/40 outline-none transition-all text-sm font-bold text-on-surface shadow-sm appearance-none cursor-pointer">
+                  <option *ngFor="let v of varietes" [value]="v">{{ v }}</option>
+                </select>
+                <span class="absolute right-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline pointer-events-none">expand_more</span>
+              </div>
+            </div>
+            <div class="space-y-2">
+              <label class="text-[10px] font-black uppercase text-outline tracking-widest ml-1">Début Cycle (Réf GDD)</label>
+              <input [(ngModel)]="newVerger.dateReferenceCalculGDD" type="date"
+                class="w-full bg-white border border-outline-variant/20 rounded-2xl px-6 py-4 focus:ring-4 focus:ring-primary/5 focus:border-primary/40 outline-none transition-all text-sm font-bold text-on-surface shadow-sm">
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 2: Quota & Propriété -->
+        <div class="space-y-6">
+          <div class="flex items-center gap-3">
+            <span class="text-[10px] font-black text-primary uppercase tracking-widest bg-primary/10 px-3 py-1 rounded-full">02</span>
+            <h4 class="text-xs font-black uppercase tracking-widest text-on-surface">Gestion & Capacités</h4>
+            <div class="flex-grow h-px bg-primary/10"></div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="space-y-2">
+              <label class="text-[10px] font-black uppercase text-outline tracking-widest ml-1">Quota (Arbres)</label>
+              <div class="relative">
+                <span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline/40 text-[18px]">nature</span>
+                <input [(ngModel)]="newVerger.nombreArbres" type="number"
+                  class="w-full bg-white border border-outline-variant/20 rounded-2xl pl-12 pr-6 py-4 focus:ring-4 focus:ring-primary/5 focus:border-primary/40 outline-none transition-all text-sm font-bold text-on-surface shadow-sm">
+              </div>
+            </div>
+            <div *ngIf="!isGrower" class="space-y-2">
+              <label class="text-[10px] font-black uppercase text-outline tracking-widest ml-1">Propriétaire Légal</label>
+              <div class="relative">
+                <select [(ngModel)]="newVerger.proprietaireId"
+                  class="w-full bg-white border border-outline-variant/20 rounded-2xl px-6 py-4 focus:ring-4 focus:ring-primary/5 focus:border-primary/40 outline-none transition-all text-sm font-bold text-on-surface shadow-sm appearance-none cursor-pointer">
+                  <option value="" disabled>Sélectionner Oléiculteur</option>
+                  <option *ngFor="let o of oleiculteurs" [value]="o.id">{{ o.fullName }}</option>
+                </select>
+                <span class="absolute right-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline pointer-events-none">expand_more</span>
+              </div>
+            </div>
+            <div *ngIf="!isGrower" class="space-y-2">
+              <label class="text-[10px] font-black uppercase text-outline tracking-widest ml-1">Responsable Opérationnel</label>
+              <div class="relative">
+                <select [(ngModel)]="newVerger.responsableUid"
+                  class="w-full bg-white border border-outline-variant/20 rounded-2xl px-6 py-4 focus:ring-4 focus:ring-primary/5 focus:border-primary/40 outline-none transition-all text-sm font-bold text-on-surface shadow-sm appearance-none cursor-pointer">
+                  <option value="" disabled>Assigner Chef d'Équipe</option>
+                  <option *ngFor="let c of chefsEquipe" [value]="c.id">{{ c.fullName }}</option>
+                </select>
+                <span class="absolute right-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline pointer-events-none">expand_more</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 3: Géospatiale -->
+        <div class="space-y-6">
+          <div class="flex items-center gap-3">
+            <span class="text-[10px] font-black text-primary uppercase tracking-widest bg-primary/10 px-3 py-1 rounded-full">03</span>
+            <h4 class="text-xs font-black uppercase tracking-widest text-on-surface">Configuration Géospatiale</h4>
+            <div class="flex-grow h-px bg-primary/10"></div>
+          </div>
+          <div class="bg-primary/5 p-6 rounded-[2rem] border border-primary/10 space-y-6">
+            <div class="flex flex-col md:flex-row gap-4">
+              <div class="flex-grow flex gap-2">
+                <div class="relative flex-grow">
+                   <span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline/40 text-[18px]">map</span>
+                   <input [(ngModel)]="newVerger.localisation" type="text" readonly 
+                      placeholder="Cliquez sur la carte en bas de page pour tracer le périmètre..."
+                      class="w-full bg-white/80 border border-outline-variant/20 rounded-2xl pl-12 pr-6 py-4 outline-none text-sm font-bold text-on-surface shadow-inner cursor-not-allowed">
+                </div>
+                <button (click)="getGeolocation()"
+                  class="w-14 h-14 bg-primary text-white rounded-2xl shadow-lg shadow-primary/20 hover:scale-110 active:scale-95 transition-all flex items-center justify-center">
+                  <span class="material-symbols-outlined">my_location</span>
+                </button>
+              </div>
+              <div class="flex flex-wrap gap-2">
+                 <div class="flex items-center gap-3 px-6 py-4 bg-white rounded-2xl border border-primary/10 shadow-sm">
+                    <span class="material-symbols-outlined text-primary text-[18px] animate-pulse">polyline</span>
+                    <span class="text-[10px] font-black text-primary uppercase tracking-widest">{{ boundaryPoints.length }} POINTS</span>
+                 </div>
+                 <button *ngIf="boundaryPoints.length >= 3" (click)="finalizeBoundary()"
+                         class="px-6 py-4 bg-emerald-600 text-white rounded-2xl shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 transition-all flex items-center gap-2 text-[10px] font-black uppercase tracking-widest">
+                    <span class="material-symbols-outlined text-[18px]">verified</span>
+                    Finaliser
+                 </button>
+                 <button *ngIf="boundaryPoints.length > 0" (click)="clearBoundary()"
+                         class="px-6 py-4 bg-white text-error rounded-2xl border border-error/20 hover:bg-error/5 transition-all flex items-center gap-2 text-[10px] font-black uppercase tracking-widest">
+                    <span class="material-symbols-outlined text-[18px]">layers_clear</span>
+                    Effacer
+                 </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Footer -->
+      <div class="px-10 py-8 border-t border-primary/10 bg-white/50 flex flex-col md:flex-row justify-between items-center gap-6">
+        <button (click)="toggleForm()" class="text-[10px] font-black text-outline hover:text-error transition-all tracking-[0.2em] uppercase">
+          Annuler
+        </button>
+        <button (click)="onCreateVerger()" [disabled]="loading" class="bg-primary text-on-primary px-16 py-5 rounded-2xl font-black uppercase tracking-[0.2em] text-xs shadow-xl shadow-primary/30 hover:translate-y-[-4px] active:translate-y-0 transition-all flex items-center justify-center gap-4 min-w-[320px]">
+          <span *ngIf="loading" class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+          {{ isEditing ? 'Mettre à jour le secteur' : 'Enregistrer' }}
+        </button>
+      </div>
+  </div>
+
+  <!-- MODAL: Delete Confirmation -->
+  <div *ngIf="showDeleteConfirm" class="fixed inset-0 z-[120] flex items-center justify-center p-4 md:pl-72">
+    <div class="absolute inset-0 bg-on-surface/40 backdrop-blur-md animate-in fade-in duration-300" (click)="cancelDelete()"></div>
+    <div class="relative w-full max-w-md bg-white rounded-[40px] p-10 border border-error/10 shadow-2xl shadow-on-surface/30 text-center animate-in zoom-in-95 duration-300">
+      <div class="w-24 h-24 bg-error/5 rounded-[2rem] flex items-center justify-center mx-auto mb-8 text-error">
+        <span class="material-symbols-outlined text-[48px]">warning</span>
+      </div>
+      <h3 class="text-2xl font-black uppercase tracking-tighter text-on-surface mb-4">Confirmation de suppression</h3>
+      <p class="text-on-surface-variant font-bold text-sm leading-relaxed mb-10 px-4">
+        Êtes-vous absolument sûr ? Cette action est irréversible et supprimera définitivement toutes les données liées à ce secteur.
+      </p>
+      <div class="flex flex-col gap-3">
+        <button (click)="confirmDelete()" class="w-full bg-error text-white py-5 rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl shadow-error/20 hover:scale-[1.02] active:scale-95 transition-all">
+          Supprimer définitivement
+        </button>
+        <button (click)="cancelDelete()" class="w-full py-5 text-[10px] font-black uppercase tracking-widest text-outline hover:text-on-surface transition-all">
+          Garder le verger
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEARCH & FILTER BAR -->
+  <div class="mb-8 flex flex-col md:flex-row gap-4 animate-up">
+    <div class="flex-grow relative group">
+      <span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline/30 group-focus-within:text-primary transition-colors">search</span>
+      <input [(ngModel)]="searchTerm" (ngModelChange)="currentPage = 1" type="text" 
+             placeholder="Rechercher par nom, emplacement, type d'olive..."
+             class="w-full bg-white/80 border border-outline-variant/10 rounded-2xl pl-12 pr-6 py-4 focus:border-primary/40 focus:bg-white outline-none transition-all text-sm font-bold text-on-surface shadow-sm">
+    </div>
+    <div class="flex items-center gap-2 px-6 py-4 bg-surface-container rounded-2xl border border-outline-variant/5">
+       <span class="text-[10px] font-black text-outline uppercase tracking-widest whitespace-nowrap">Taille du Catalogue :</span>
+       <span class="text-xs font-black text-primary">{{ filteredVergers.length }} Secteurs</span>
+    </div>
+  </div>
+
+  <!-- MODERN ORCHARD DATA TABLE -->
+  <div class="bg-white rounded-[48px] border border-outline-variant/10 shadow-editorial overflow-hidden animate-up relative">
+    <div class="absolute inset-0 bg-gradient-to-b from-primary/[0.02] to-transparent pointer-events-none"></div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="bg-surface-container-low border-b border-outline-variant/10">
+            <th class="px-8 py-8 text-[10px] font-black uppercase tracking-[0.25em] text-outline">Identification du Domaine</th>
+            <th class="px-8 py-8 text-[10px] font-black uppercase tracking-[0.25em] text-outline text-center">
+              <div class="flex items-center justify-center gap-3">
+                <span>Progression de Maturité</span>
+                <button *ngIf="!isGrower" (click)="syncPredictions()" [disabled]="loading"
+                  class="w-8 h-8 flex items-center justify-center bg-primary text-white rounded-full hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 active:scale-95 group/actualiser"
+                  title="Actualiser tous les vergers">
+                  <span class="material-symbols-outlined text-[16px]" [class.animate-spin]="loading">sync</span>
+                </button>
+              </div>
+            </th>
+            <th class="px-8 py-8 text-[10px] font-black uppercase tracking-[0.25em] text-outline text-center">Contexte Opérationnel</th>
+            <th class="px-8 py-8 text-[10px] font-black uppercase tracking-[0.25em] text-outline">Étape Opérationnelle</th>
+            <th class="px-8 py-8 text-[10px] font-black uppercase tracking-[0.25em] text-outline text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-outline-variant/5">
+          <tr *ngFor="let verger of pagedVergers" class="hover:bg-primary/[0.02] transition-all duration-300 group">
+            <td class="px-8 py-6">
+              <div class="flex items-center gap-5">
+                <div class="w-14 h-14 rounded-2xl bg-white flex items-center justify-center text-primary group-hover:scale-110 transition-transform shadow-lg shadow-primary/5 border border-primary/5">
+                  <span class="material-symbols-outlined text-[26px]">landscape</span>
+                </div>
+                <div>
+                  <p class="font-black text-on-surface text-lg tracking-tight group-hover:text-primary transition-colors">{{ verger.nom }}</p>
+                  <p class="text-[10px] text-outline font-black uppercase tracking-widest flex items-center gap-2 mt-1">
+                    <span class="bg-primary/10 px-2.5 py-1 rounded-lg text-primary">{{ verger.varieteOlive }}</span>
+                    <span *ngIf="verger.dateMaturitePrevue" class="flex items-center gap-1">
+                      <span class="material-symbols-outlined text-[14px]">event_note</span>
+                      {{ verger.dateMaturitePrevue | date:'dd MMM' }}
+                    </span>
+                  </p>
+                </div>
+              </div>
+            </td>
+            <td class="px-8 py-6">
+              <div class="w-72 mx-auto space-y-4">
+                <div class="flex justify-between items-end mb-1">
+                  <div class="flex flex-col">
+                    <span class="text-[8px] font-black text-outline uppercase tracking-widest mb-1">Indice GDD</span>
+                    <span class="text-xs font-black text-on-surface">Maturité Appliquée</span>
+                  </div>
+                  <span class="text-2xl font-black text-primary tracking-tighter">{{ verger.pourcentageMaturite || verger.niveauMaturite | number:'1.0-1' }}%</span>
+                </div>
+                <div class="h-3 w-full bg-surface-container rounded-full overflow-hidden shadow-inner p-0.5">
+                  <div class="h-full bg-gradient-to-r from-primary/60 to-primary transition-all duration-1000 rounded-full shadow-[0_0_12px_rgba(var(--primary-rgb),0.3)]" [style.width.%]="verger.niveauMaturite"></div>
+                </div>
+              </div>
+            </td>
+            <td class="px-8 py-6 text-center">
+              <div class="inline-flex flex-col items-center group/info">
+                <div class="w-12 h-12 bg-secondary/5 rounded-2xl flex items-center justify-center mb-2 group-hover:bg-secondary/10 transition-colors">
+                  <span class="material-symbols-outlined text-secondary text-[22px]">nature</span>
+                </div>
+                <span class="text-xs font-black text-on-surface tracking-tight">{{ verger.nombreArbres | number }} UNITÉS</span>
+                <span class="text-[8px] font-black text-outline uppercase tracking-widest">Capacité Estimée</span>
+              </div>
+            </td>
+            <td class="px-8 py-6">
+                <div class="relative group/select">
+                  <select [ngModel]="verger.statut" (ngModelChange)="onStatutChange(verger, $event)"
+                    class="w-full bg-surface-container-low border border-outline-variant/10 rounded-2xl px-5 py-3 text-[10px] font-black uppercase text-on-surface outline-none appearance-none cursor-pointer hover:bg-white hover:border-primary/30 transition-all shadow-sm">
+                    <option *ngFor="let s of statuts" [value]="s">{{ s.replace(/_/g, ' ') }}</option>
+                  </select>
+                  <span class="absolute right-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline group-hover/select:text-primary transition-colors pointer-events-none text-[20px]">expand_more</span>
+                </div>
+            </td>
+            <td class="px-8 py-6">
+              <div class="flex justify-end gap-3 transition-all duration-300">
+                <button (click)="onEdit(verger)" 
+                        class="w-11 h-11 bg-white border border-outline-variant/20 rounded-xl text-outline hover:text-primary hover:border-primary/40 hover:shadow-xl hover:-translate-y-1 transition-all flex items-center justify-center shadow-sm">
+                  <span class="material-symbols-outlined text-[20px]">edit</span>
+                </button>
+                <button *ngIf="!isGrower" (click)="onDelete(verger.id)" 
+                        class="w-11 h-11 bg-white border border-error/20 rounded-xl text-error/60 hover:text-error hover:bg-error/5 hover:border-error/40 hover:shadow-xl hover:-translate-y-1 transition-all flex items-center justify-center shadow-sm">
+                  <span class="material-symbols-outlined text-[20px]">delete</span>
+                </button>
+                <button *ngIf="!isGrower" (click)="openTelemetry(verger)" class="w-11 h-11 rounded-xl bg-primary shadow-lg shadow-primary/20 text-on-primary flex items-center justify-center hover:scale-110 active:scale-95 transition-all">
+                  <span class="material-symbols-outlined text-[20px]">assignment_returned</span>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- RADAR MAP SECTION -->
+  <div class="mt-12 animate-up">
+    <div class="bg-white rounded-[48px] border border-outline-variant/10 shadow-editorial overflow-hidden">
+      <div class="bg-surface-container-low px-8 py-8 border-b border-outline-variant/10 flex items-center justify-between">
+        <div class="flex items-center gap-5">
+          <div class="w-14 h-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center shadow-inner border border-primary/5">
+            <span class="material-symbols-outlined text-[28px]">radar</span>
+          </div>
+          <div>
+            <h3 class="text-sm font-black uppercase tracking-[0.2em] text-primary">Radar de Télémétrie Opérationnelle</h3>
+            <p class="text-[10px] font-bold text-outline uppercase tracking-widest mt-1">Supervision géospatiale du domaine oléicole</p>
+          </div>
+        </div>
+      </div>
+      <div id="verger-map" class="bg-surface-container-lowest" style="width:100%; height:650px;"></div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .orchard-polygon {
+    filter: drop-shadow(0 0 12px rgba(76, 175, 80, 0.4));
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+  }
+  /* Force Leaflet tile visibility */
+  #verger-map {
+    z-index: 10 !important;
+  }
+  .leaflet-tile {
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  .leaflet-container {
+    background: #f8f9fa !important;
+  }
+</style>
+
+<!-- TELEMETRY HUB MODAL -->
+<div *ngIf="showTelemetryModal" class="fixed inset-0 z-[130] flex items-center justify-center p-4 md:pl-72">
+    <div class="absolute inset-0 bg-on-surface/40 backdrop-blur-md animate-in fade-in duration-500" (click)="closeTelemetry()"></div>
+    <div class="relative bg-[#FDFCF6] w-full max-w-3xl rounded-[3rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-500 z-10 border border-white">
+        <div class="p-10 border-b border-primary/10 flex justify-between items-center bg-white/50">
+            <div class="flex items-center gap-5">
+              <div class="w-16 h-16 bg-primary/10 rounded-[2.5rem] flex items-center justify-center text-primary">
+                <span class="material-symbols-outlined text-[32px]">assignment_returned</span>
+              </div>
+              <div>
+                  <span class="text-[10px] font-black text-primary uppercase tracking-[0.3em] block mb-1">Rapport d'Intelligence</span>
+                  <h3 class="text-3xl font-black text-on-surface tracking-tighter">{{ selectedVergerForTelemetry?.nom }}</h3>
+                  <div class="flex items-center gap-2 mt-2">
+                     <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                     <span class="text-[10px] font-black text-outline uppercase tracking-widest">Opéré par : <span class="text-on-surface">{{ selectedVergerForTelemetry?.responsableName || 'Chef d\'Equipe' }}</span></span>
+                  </div>
+              </div>
+            </div>
+            <button (click)="closeTelemetry()" class="w-12 h-12 rounded-full bg-surface-container hover:bg-error/10 hover:text-error transition-all flex items-center justify-center group">
+                <span class="material-symbols-outlined group-hover:rotate-90 transition-transform">close</span>
+            </button>
+        </div>
+        <div class="p-10 grid grid-cols-1 md:grid-cols-2 gap-12 bg-white">
+            <div class="space-y-10">
+                <div class="p-8 bg-surface-container-low rounded-[2.5rem] border border-outline-variant/10 shadow-inner text-center">
+                   <label class="text-[10px] font-black text-outline uppercase tracking-widest block mb-6">Maturité de Terrain</label>
+                   <div class="flex items-end justify-center gap-3 mb-6">
+                       <span class="text-7xl font-black text-primary tracking-tighter">{{ selectedVergerForTelemetry?.niveauMaturite }}%</span>
+                       <span class="text-[10px] font-black text-outline uppercase mb-3">Statut Réel</span>
+                   </div>
+                   <div class="h-4 w-full bg-white rounded-full overflow-hidden shadow-inner p-1">
+                       <div class="h-full bg-gradient-to-r from-primary/60 to-primary transition-all duration-1000 rounded-full shadow-[0_0_15px_rgba(var(--primary-rgb),0.4)]" [style.width.%]="selectedVergerForTelemetry?.niveauMaturite"></div>
+                   </div>
+                </div>
+                <div class="px-2">
+                    <label class="text-[10px] font-black text-primary uppercase tracking-[0.2em] block mb-4 flex items-center gap-2">
+                      <span class="material-symbols-outlined text-[16px]">notes</span>
+                      Observations Détaillées
+                    </label>
+                    <p class="text-sm font-medium text-on-surface-variant leading-relaxed italic border-l-4 border-primary/20 pl-6 py-2">
+                        "{{ selectedVergerForTelemetry?.descriptionMaturite || 'Aucune observation de terrain fournie.' }}"
+                    </p>
+                </div>
+            </div>
+            <div class="space-y-6">
+                <label class="text-[10px] font-black text-primary uppercase tracking-[0.2em] block flex items-center gap-2">
+                   <span class="material-symbols-outlined text-[16px]">photo_library</span>
+                   Documentation Photographique
+                </label>
+                <div class="aspect-square rounded-[3rem] overflow-hidden bg-surface-container border border-outline-variant/10 shadow-2xl relative group">
+                    <img *ngIf="selectedVergerForTelemetry?.imageMaturiteUrl" [src]="selectedVergerForTelemetry?.imageMaturiteUrl" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                    <div *ngIf="!selectedVergerForTelemetry?.imageMaturiteUrl" class="w-full h-full flex flex-col items-center justify-center gap-4 text-outline opacity-40">
+                      <span class="material-symbols-outlined text-[64px]">image_not_supported</span>
+                      <span class="text-[10px] font-black uppercase">Aucun média disponible</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="p-10 bg-surface-container-low border-t border-outline-variant/10 flex justify-end">
+            <button (click)="closeTelemetry()" class="bg-primary text-on-primary px-12 py-5 rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-primary/30 hover:scale-105 active:scale-95 transition-all">Archiver le Rapport</button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    background: #0e1a07;
+    font-family: 'DM Sans', sans-serif;
+    padding: 48px 20px;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrapper {
+    max-width: 620px;
+    margin: 0 auto;
+  }
+
+  .brand-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding-bottom: 28px;
+  }
+
+  .brand-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #a8c87a;
+    letter-spacing: 0.04em;
+  }
+
+  .brand-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #4a7c1f;
+  }
+
+  .brand-tagline {
+    font-size: 11px;
+    color: #5a7a3a;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  /* HERO */
+
+  .hero {
+    background: linear-gradient(160deg, #220909 0%, #170505 40%, #110303 100%);
+    border-radius: 20px 20px 0 0;
+    padding: 60px 50px 50px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid #4a1111;
+    border-bottom: none;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -80px;
+    right: -60px;
+    width: 340px;
+    height: 340px;
+    background: radial-gradient(circle, rgba(239, 68, 68, 0.12) 0%, transparent 70%);
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -40px;
+    left: -40px;
+    width: 220px;
+    height: 220px;
+    background: radial-gradient(circle, rgba(185, 28, 28, 0.12) 0%, transparent 70%);
+  }
+
+  .hero-watermark {
+    position: absolute;
+    right: -10px;
+    top: -10px;
+    opacity: 0.05;
+    width: 240px;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(239, 68, 68, 0.08);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    color: #fca5a5;
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .badge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #ef4444;
+    box-shadow: 0 0 6px rgba(239, 68, 68, 0.9);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.35; }
+  }
+
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 38px;
+    font-weight: 700;
+    color: #fee2e2;
+    line-height: 1.2;
+    margin-bottom: 16px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero-title span {
+    color: #ef4444;
+  }
+
+  .hero-divider {
+    width: 48px;
+    height: 2px;
+    background: linear-gradient(90deg, #991b1b, #ef4444);
+    margin: 24px 0;
+    border-radius: 2px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero-subtitle {
+    font-size: 15px;
+    color: #c28b8b;
+    line-height: 1.7;
+    max-width: 470px;
+    position: relative;
+    z-index: 2;
+    font-weight: 300;
+  }
+
+  /* STATS */
+
+  .stats-band {
+    background: #130606;
+    border-left: 1px solid #4a1111;
+    border-right: 1px solid #4a1111;
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .stat-block {
+    flex: 1;
+    min-width: 180px;
+    padding: 30px 34px;
+    position: relative;
+  }
+
+  .stat-block + .stat-block {
+    border-left: 1px solid #2b0d0d;
+  }
+
+  .stat-block::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #991b1b, transparent);
+  }
+
+  .stat-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: #9c5a5a;
+    margin-bottom: 10px;
+  }
+
+  .stat-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 500;
+    color: #fee2e2;
+    line-height: 1.3;
+  }
+
+  .critical {
+    color: #ef4444;
+  }
+
+  /* BODY */
+
+  .body-card {
+    background: #0c0404;
+    border: 1px solid #4a1111;
+    border-top: none;
+    padding: 44px 50px;
+  }
+
+  .body-text {
+    font-size: 15px;
+    color: #c28b8b;
+    line-height: 1.75;
+    font-weight: 300;
+    margin-bottom: 36px;
+  }
+
+  .body-text strong {
+    color: #fca5a5;
+    font-weight: 500;
+  }
+
+  /* STEPS */
+
+  .steps {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 40px;
+  }
+
+  .step {
+    display: flex;
+    gap: 18px;
+    align-items: flex-start;
+    padding: 18px 0;
+    border-bottom: 1px solid #240909;
+  }
+
+  .step:last-child {
+    border-bottom: none;
+  }
+
+  .step-num {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: rgba(239, 68, 68, 0.08);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: #ef4444;
+    margin-top: 2px;
+  }
+
+  .step-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: #fecaca;
+    margin-bottom: 4px;
+  }
+
+  .step-desc {
+    font-size: 13px;
+    color: #b97b7b;
+    line-height: 1.5;
+    font-weight: 300;
+  }
+
+  /* CTA */
+
+  .cta-wrapper {
+    text-align: center;
+    margin: 40px 0 32px;
+  }
+
+  .cta-button {
+    display: inline-block;
+    background: linear-gradient(135deg, #991b1b 0%, #b91c1c 60%, #ef4444 100%);
+    color: #fff1f2;
+    padding: 18px 56px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    box-shadow: 0 4px 30px rgba(185, 28, 28, 0.35);
+  }
+
+  .cta-button::after {
+    content: ' →';
+    font-weight: 300;
+  }
+
+  /* ALERT */
+
+  .alert-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    background: rgba(239, 68, 68, 0.05);
+    border: 1px solid rgba(239, 68, 68, 0.16);
+    border-radius: 10px;
+    padding: 18px 22px;
+  }
+
+  .alert-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .alert-text {
+    font-size: 12.5px;
+    color: #c28b8b;
+    line-height: 1.6;
+    font-weight: 400;
+  }
+
+  .alert-text strong {
+    color: #fecaca;
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  /* FOOTER */
+
+  .footer {
+    background: #090f04;
+    border: 1px solid #1e3008;
+    border-top: none;
+    border-radius: 0 0 20px 20px;
+    padding: 32px 50px;
+    text-align: center;
+  }
+
+  .footer-rule {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #2a4010, transparent);
+    margin-bottom: 24px;
+  }
+
+  .footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+  }
+
+  .footer-link {
+    font-size: 12px;
+    color: #4b6630;
+    text-decoration: none;
+    letter-spacing: 0.05em;
+  }
+
+  .footer-copy {
+    font-size: 11.5px;
+    color: #3b5224;
+    line-height: 1.7;
+  }
+
+  .footer-copy strong {
+    color: #7da84d;
+  }
+
+  @media (max-width: 520px) {
+
+    .hero,
+    .body-card {
+      padding: 40px 28px;
+    }
+
+    .footer {
+      padding: 28px;
+    }
+
+    .stats-band {
+      flex-direction: column;
+    }
+
+    .stat-block + .stat-block {
+      border-left: none;
+      border-top: 1px solid #2b0d0d;
+    }
+
+    .hero-title {
+      font-size: 30px;
+    }
+
+    .cta-button {
+      display: block;
+      padding: 16px 32px;
+    }
+  }
+</style>
+</head>
+
+<body th:replace="~{emails/layout :: body(content=~{:: .stock-content})}">
+
+<div class="stock-content">
+
+<div class="wrapper">
+
+  <!-- Brand -->
+  <div class="brand-bar">
+
+    <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
+      <ellipse cx="16" cy="13" rx="6" ry="9" fill="#2a5c0a" stroke="#5aaa1e" stroke-width="0.8"/>
+      <ellipse cx="16" cy="13" rx="3" ry="5.5" fill="#1a3c06"/>
+      <path d="M16 22 Q22 26 26 30" stroke="#4a8a18" stroke-width="1.2" stroke-linecap="round"/>
+      <path d="M21 8 Q26 4 28 6" stroke="#4a8a18" stroke-width="1" stroke-linecap="round"/>
+      <circle cx="24" cy="7" r="2.5" fill="#3a7012"/>
+      <path d="M11 7 Q7 3 6 6" stroke="#4a8a18" stroke-width="1" stroke-linecap="round"/>
+      <circle cx="8" cy="6.5" r="2" fill="#3a7012"/>
+    </svg>
+
+    <span class="brand-name">Olivia</span>
+
+    <div class="brand-dot"></div>
+
+    <span class="brand-tagline">Cooperative Network</span>
+
+  </div>
+
+  <!-- Hero -->
+  <div class="hero">
+
+    <svg class="hero-watermark" viewBox="0 0 240 240" fill="none">
+      <rect x="70" y="60" width="100" height="120" rx="10" fill="#ef4444"/>
+      <line x1="90" y1="95" x2="150" y2="95" stroke="#fee2e2" stroke-width="6"/>
+      <line x1="90" y1="120" x2="150" y2="120" stroke="#fee2e2" stroke-width="6"/>
+      <line x1="90" y1="145" x2="130" y2="145" stroke="#fee2e2" stroke-width="6"/>
+    </svg>
+
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      Inventory Critical
+    </div>
+
+    <h1 class="hero-title">
+      Supply Threshold<br>
+      <span>Breach Detected.</span>
+    </h1>
+
+    <div class="hero-divider"></div>
+
+    <p class="hero-subtitle">
+      Strategic logistics resources have fallen below the operational safety margin. Immediate replenishment is required to maintain harvest continuity.
+    </p>
+
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-band">
+
+    <div class="stat-block">
+      <div class="stat-label">Resource Type</div>
+      <div class="stat-value" th:text="${resourceName}">
+        Harvest Crates
+      </div>
+    </div>
+
+    <div class="stat-block">
+      <div class="stat-label">Remaining Stock</div>
+      <div class="stat-value critical" th:text="${currentStock}">
+        15 Units
+      </div>
+    </div>
+
+    <div class="stat-block">
+      <div class="stat-label">Minimum Required</div>
+      <div class="stat-value" th:text="${minThreshold}">
+        100 Units
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Body -->
+  <div class="body-card">
+
+    <p class="body-text">
+      Automated provisioning systems recommend immediate procurement from verified vendors in order to prevent operational disruption and maintain harvest mission continuity.
+    </p>
+
+    <!-- Steps -->
+    <div class="steps">
+
+      <div class="step">
+        <div class="step-num">1</div>
+        <div>
+          <div class="step-title">Validate warehouse inventory</div>
+          <div class="step-desc">
+            Confirm remaining stock quantities across all operational zones
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">2</div>
+        <div>
+          <div class="step-title">Initiate emergency procurement</div>
+          <div class="step-desc">
+            Contact approved vendors and prioritize urgent replenishment
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">3</div>
+        <div>
+          <div class="step-title">Monitor delivery operations</div>
+          <div class="step-desc">
+            Ensure incoming resources arrive before operational depletion occurs
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- CTA -->
+    <div class="cta-wrapper">
+      <a href="http://localhost:4200/logistics/inventory" class="cta-button">
+        Open Inventory Manager
+      </a>
+    </div>
+
+    <!-- Alert -->
+    <div class="alert-box">
+
+      <span class="alert-icon">⚠</span>
+
+      <div class="alert-text">
+        <strong>Critical Supply Warning</strong>
+        Failure to restore strategic inventory levels may result in harvest delays, mission interruption and reduced operational capacity.
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+
+    <div class="footer-rule"></div>
+
+    <div class="footer-links">
+      <a href="#" class="footer-link">Inventory Center</a>
+      <a href="#" class="footer-link">Logistics</a>
+      <a href="#" class="footer-link">Support</a>
+    </div>
+
+    <p class="footer-copy">
+      &copy; 2026 <strong>Olivia Cooperative</strong> &mdash; All rights reserved.<br>
+      Sustainability &bull; Quality &bull; Innovation
+    </p>
+
+  </div>
+
+</div>
+
+</div>
+
+</body>
+</html>
