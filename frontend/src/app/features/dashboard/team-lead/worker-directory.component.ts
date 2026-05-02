@@ -8,6 +8,7 @@ import { ParticipationService } from '../../../core/services/participation.servi
 import { ToastService } from '../../../core/services/toast.service';
 import { Router } from '@angular/router';
 import { DialogService } from '../../../core/services/dialog.service';
+import { ChatService } from '../../chat/services/chat';
 import { forkJoin, of } from 'rxjs';
 
 @Component({
@@ -222,6 +223,10 @@ import { forkJoin, of } from 'rxjs';
                 </td>
                 <td class="p-6">
                   <div class="flex items-center justify-end gap-2">
+                    <button (click)="onStartChat(worker)"
+                            class="w-10 h-10 rounded-xl bg-primary/5 text-primary border border-primary/10 flex items-center justify-center hover:bg-primary hover:text-white transition-all shadow-sm">
+                      <span class="material-symbols-outlined text-[20px]">chat</span>
+                    </button>
                     <button (click)="sendOffer(worker)"
                             [disabled]="!selectedMissionId || isWorkerBusy(worker.id)"
                             class="px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] shadow-lg transition-all active:scale-95 flex items-center gap-2 border-2 bg-primary text-on-primary border-primary shadow-primary/20 hover:-translate-y-0.5 disabled:opacity-10 disabled:cursor-not-allowed disabled:hover:translate-y-0">
@@ -264,6 +269,7 @@ export class WorkerDirectoryComponent implements OnInit {
   private toastService = inject(ToastService);
   private dialogService = inject(DialogService);
   private router = inject(Router);
+  private chatService = inject(ChatService);
 
   allWorkers: User[] = [];
   filteredWorkers: User[] = [];
@@ -507,5 +513,18 @@ export class WorkerDirectoryComponent implements OnInit {
         error: (err) => { this.dialogService.alert('Erreur', 'Erreur lors du marquage.', 'danger'); console.error(err); }
       });
     }
+  }
+
+  onStartChat(user: User) {
+    if (user.id === this.authService.currentUser()?.id) {
+      this.toastService.show("Vous ne pouvez pas discuter avec vous-même.", "info");
+      return;
+    }
+    this.chatService.startConversation(user.id).subscribe({
+      next: () => {
+        this.chatService.setChatOpen(true);
+      },
+      error: () => this.toastService.show("Impossible de démarrer la conversation.", "error")
+    });
   }
 }

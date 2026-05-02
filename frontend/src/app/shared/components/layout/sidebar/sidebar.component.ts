@@ -2,6 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
+import { ChatService } from '../../../../features/chat/services/chat';
 
 @Component({
   selector: 'app-sidebar',
@@ -48,6 +49,18 @@ import { AuthService } from '../../../../core/services/auth.service';
             </span>
             <span class="nav-text">Tableau de bord</span>
           </a>
+
+          <div class="mt-4 mb-2 animate-fade-in-delayed-1">
+            <p class="px-5 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 section-header">Collaboration</p>
+            <a class="nav-link" routerLink="/directory" routerLinkActive="active-link">
+              <span class="nav-icon-wrapper"><span class="material-symbols-outlined nav-icon">groups</span></span>
+              <span class="nav-text">Annuaire Équipe</span>
+            </a>
+            <a class="nav-link" (click)="chatService.toggleChat()">
+              <span class="nav-icon-wrapper"><span class="material-symbols-outlined nav-icon">forum</span></span>
+              <span class="nav-text">Messages</span>
+            </a>
+          </div>
 
           <ng-container [ngSwitch]="user()?.role">
             
@@ -138,10 +151,7 @@ import { AuthService } from '../../../../core/services/auth.service';
                   <span class="nav-icon-wrapper"><span class="material-symbols-outlined nav-icon">my_location</span></span>
                   <span class="nav-text">Mes Vergers</span>
                 </a>
-                <a class="nav-link" routerLink="/worker-directory" routerLinkActive="active-link">
-                  <span class="nav-icon-wrapper"><span class="material-symbols-outlined nav-icon">person_search</span></span>
-                  <span class="nav-text">Annuaire Ouvriers</span>
-                </a>
+                <!-- Moved worker-directory to global collaboration section -->
               </div>
               <div class="mt-4 mb-2">
                 <p class="px-5 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 section-header">Ressources</p>
@@ -269,6 +279,7 @@ import { AuthService } from '../../../../core/services/auth.service';
 })
 export class SidebarComponent {
   authService = inject(AuthService);
+  chatService = inject(ChatService);
   router = inject(Router);
   user = this.authService.currentUser;
   isCollapsed = signal(false);

@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { UserService } from '../../../core/services/user.service';
 import { AuthService, User } from '../../../core/services/auth.service';
 import { ToastService } from '../../../core/services/toast.service';
+import { ChatService } from '../../chat/services/chat';
 
 @Component({
   selector: 'app-user-management',
@@ -18,6 +19,7 @@ export class UserManagementComponent implements OnInit {
   private toastService = inject(ToastService);
   private cdr = inject(ChangeDetectorRef);
   private ngZone = inject(NgZone);
+  private chatService = inject(ChatService);
 
   users: User[] = [];
   loading = false;
@@ -214,6 +216,19 @@ export class UserManagementComponent implements OnInit {
         });
       },
       error: () => this.toastService.show('Echec de la mise a jour du statut utilisateur', 'error')
+    });
+  }
+
+  onStartChat(user: User) {
+    if (user.id === this.authService.currentUser()?.id) {
+      this.toastService.show("Vous ne pouvez pas discuter avec vous-même.", "info");
+      return;
+    }
+    this.chatService.startConversation(user.id).subscribe({
+      next: () => {
+        this.chatService.setChatOpen(true);
+      },
+      error: () => this.toastService.show("Impossible de démarrer la conversation.", "error")
     });
   }
 }

@@ -89,6 +89,7 @@ export class ConversationListComponent implements OnInit, OnDestroy {
           }
           this.sortConversations();
           this.onSearch();
+          this.cdr.detectChanges();
         } else {
           this.loadConversations();
         }
@@ -119,6 +120,17 @@ export class ConversationListComponent implements OnInit, OnDestroy {
       const lastMsg = (c.lastMessage || '').toLowerCase();
       return otherName.includes(q) || lastMsg.includes(q);
     });
+
+    // Unified Search Logic: If searching and no conversations found, switch to users view
+    if (q !== '' && this.filteredConversations.length === 0 && this.view === 'conversations') {
+       // but only if we have users matching
+       if (this.filteredUsers.length > 0) {
+         this.view = 'users';
+       }
+    } else if (q === '' && this.view === 'users') {
+       this.view = 'conversations';
+    }
+
     this.cdr.detectChanges();
   }
 

@@ -18,6 +18,9 @@ import java.util.stream.Collectors;
 public class TriturationService {
 
     @org.springframework.beans.factory.annotation.Autowired
+    private Firestore db;
+
+    @org.springframework.beans.factory.annotation.Autowired
     private EmailService emailService;
 
     @org.springframework.beans.factory.annotation.Autowired
@@ -27,20 +30,66 @@ public class TriturationService {
 
     public List<Trituration> getAllTriturations() {
         try {
-            Firestore db = FirestoreClient.getFirestore();
-            return db.collection(COLLECTION).get().get(30, TimeUnit.SECONDS)
-                    .getDocuments().stream()
-                    .map(d -> d.toObject(Trituration.class))
-                    .collect(Collectors.toList());
+            var docs = db.collection(COLLECTION).get().get(30, TimeUnit.SECONDS).getDocuments();
+            List<Trituration> list = new ArrayList<>();
+            for (var d : docs) {
+                try {
+                    Trituration t = mapDocumentToTrituration(d);
+                    if (t != null) list.add(t);
+                } catch (Exception e) {
+                    log.error("[ERROR] Failed to map document {}: {}", d.getId(), e.getMessage());
+                }
+            }
+            log.info("[DEBUG] Successfully mapped {} triturations from Firestore", list.size());
+            return list;
         } catch (Exception e) {
-            log.error("Error fetching triturations: {}", e.getMessage());
+            log.error("[ERROR] Error fetching triturations: {}", e.getMessage());
             return new ArrayList<>();
         }
     }
 
+    private Trituration mapDocumentToTrituration(com.google.cloud.firestore.DocumentSnapshot d) {
+        try {
+            // Attempt standard mapping first
+            Trituration t = d.toObject(Trituration.class);
+            if (t != null && t.getId() == null) t.setId(d.getId());
+            return t;
+        } catch (Exception e) {
+            log.warn("[WARN] Manual mapping required for trituration {}: {}", d.getId(), e.getMessage());
+            Trituration t = new Trituration();
+            t.setId(d.getId());
+            t.setCollecteId(d.getString("collecteId"));
+            t.setVergerId(d.getString("vergerId"));
+            t.setVergerName(d.getString("vergerName"));
+            t.setOliveType(d.getString("oliveType"));
+            t.setInputWeightKg(d.getDouble("inputWeightKg"));
+            t.setMillId(d.getString("millId"));
+            t.setMillName(d.getString("millName"));
+            t.setStatus(d.getString("status"));
+            
+            // Handle Timestamp to String conversion for plannedDate
+            t.setPlannedDate(safeGetDate(d, "plannedDate"));
+            
+            t.setOilProducedLiters(d.getDouble("oilProducedLiters"));
+            t.setAcidity(d.getDouble("acidity"));
+            t.setQuality(d.getString("quality"));
+            t.setWorkerNotes(d.getString("workerNotes"));
+            
+            return t;
+        }
+    }
+
+    private String safeGetDate(com.google.cloud.firestore.DocumentSnapshot d, String field) {
+        Object val = d.get(field);
+        if (val == null) return null;
+        if (val instanceof com.google.cloud.Timestamp) {
+            return ((com.google.cloud.Timestamp) val).toDate().toInstant().toString().split("T")[0]; // YYYY-MM-DD
+        }
+        return val.toString();
+    }
+
     public Optional<Trituration> getTriturationById(String id) {
         try {
-            Firestore db = FirestoreClient.getFirestore();
             var doc = db.collection(COLLECTION).document(id).get().get(30, TimeUnit.SECONDS);
             if (doc.exists()) return Optional.ofNullable(doc.toObject(Trituration.class));
         } catch (Exception e) {
@@ -51,7 +100,7 @@ public class TriturationService {
 
     public Trituration saveTrituration(Trituration trituration) {
         try {
-            Firestore db = FirestoreClient.getFirestore();
+            log.info("[DEBUG] Persisting trituration: {}", trituration);
             if (trituration.getId() == null || trituration.getId().isEmpty()) {
                 trituration.setId(UUID.randomUUID().toString());
             }
@@ -63,7 +112,7 @@ public class TriturationService {
             // (This will be handled better by the frontend, but good for safety)
             
             db.collection(COLLECTION).document(trituration.getId()).set(trituration).get(30, TimeUnit.SECONDS);
-            log.info("Trituration {} successfully persisted", trituration.getId());
+            log.info("[DEBUG] Trituration {} successfully persisted in Firestore", trituration.getId());
 
             // 4. Send Email if Completed
             if ("COMPLETED".equals(trituration.getStatus())) {
@@ -94,7 +143,6 @@ public class TriturationService {
 
     public void deleteTrituration(String id) {
         try {
-            Firestore db = FirestoreClient.getFirestore();
             db.collection(COLLECTION).document(id).delete().get(30, TimeUnit.SECONDS);
             log.info("Trituration {} deleted", id);
         } catch (Exception e) {

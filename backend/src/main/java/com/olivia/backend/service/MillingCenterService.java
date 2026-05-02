@@ -17,14 +17,20 @@ import java.util.stream.Collectors;
 @Service
 public class MillingCenterService {
 
+    @org.springframework.beans.factory.annotation.Autowired
+    private com.google.cloud.firestore.Firestore db;
+
     private static final String COLLECTION = "milling_centers";
 
     public List<MillingCenter> getAllCenters() {
         try {
-            Firestore db = FirestoreClient.getFirestore();
             return db.collection(COLLECTION).get().get(30, TimeUnit.SECONDS)
                     .getDocuments().stream()
-                    .map(d -> d.toObject(MillingCenter.class))
+                    .map(d -> {
+                        MillingCenter m = d.toObject(MillingCenter.class);
+                        if (m.getId() == null) m.setId(d.getId());
+                        return m;
+                    })
                     .collect(Collectors.toList());
         } catch (Exception e) {
             log.error("Error fetching milling centers: {}", e.getMessage());
@@ -34,9 +40,12 @@ public class MillingCenterService {
 
     public Optional<MillingCenter> getCenterById(String id) {
         try {
-            Firestore db = FirestoreClient.getFirestore();
             var doc = db.collection(COLLECTION).document(id).get().get(30, TimeUnit.SECONDS);
-            if (doc.exists()) return Optional.ofNullable(doc.toObject(MillingCenter.class));
+            if (doc.exists()) {
+                MillingCenter m = doc.toObject(MillingCenter.class);
+                if (m != null && m.getId() == null) m.setId(doc.getId());
+                return Optional.ofNullable(m);
+            }
         } catch (Exception e) {
             log.error("Error fetching center {}: {}", id, e.getMessage());
         }
@@ -45,7 +54,6 @@ public class MillingCenterService {
 
     public MillingCenter saveCenter(MillingCenter center) {
         try {
-            Firestore db = FirestoreClient.getFirestore();
             if (center.getId() == null || center.getId().isEmpty()) {
                 center.setId(UUID.randomUUID().toString());
             }
@@ -63,7 +71,6 @@ public class MillingCenterService {
 
     public void deleteCenter(String id) {
         try {
-            Firestore db = FirestoreClient.getFirestore();
             db.collection(COLLECTION).document(id).delete().get(30, TimeUnit.SECONDS);
             log.info("Milling Center {} deleted", id);
         } catch (Exception e) {

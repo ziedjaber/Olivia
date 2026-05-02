@@ -1,4 +1,5 @@
 import { Injectable, signal, Inject, PLATFORM_ID } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient, HttpBackend, HttpHeaders } from '@angular/common/http';
 import { Observable, tap, from, switchMap, of } from 'rxjs';
@@ -33,6 +34,7 @@ export class AuthService {
   private apiUrl = 'http://localhost:8080/api/auth';
   
   currentUser = signal<User | null>(null);
+  currentUser$ = toObservable(this.currentUser);
 
   constructor(
     private http: HttpClient,

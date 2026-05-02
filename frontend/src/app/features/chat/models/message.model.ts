@@ -6,6 +6,7 @@ export interface Message {
   senderRole: string;
   receiverId: string;
   content: string;
+  imageUrl?: string;
   timestamp: string;
   read: boolean;
 }
@@ -14,6 +15,7 @@ export interface ChatMessageDTO {
   conversationId: string;
   receiverId: string;
   content: string;
+  imageUrl?: string;
 }
 
 export interface TypingDTO {

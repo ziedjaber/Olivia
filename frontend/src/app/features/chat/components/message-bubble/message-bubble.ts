@@ -46,4 +46,10 @@ export class MessageBubbleComponent {
   get showReadStatus(): boolean {
     return this.isOwn && this.message?.read !== undefined;
   }
+
+  getFullImageUrl(path: string): string {
+    if (!path) return '';
+    if (path.startsWith('http')) return path;
+    return `http://localhost:8080${path}`;
+  }
 }

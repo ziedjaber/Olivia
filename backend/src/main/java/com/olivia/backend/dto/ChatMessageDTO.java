@@ -6,7 +6,11 @@ public class ChatMessageDTO {
     private String receiverId;
     private String content;
     private String senderName;
+    private String imageUrl;
     private boolean isTyping;
+
+    public String getImageUrl() { return imageUrl; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 
     public String getConversationId() { return conversationId; }
     public void setConversationId(String conversationId) { this.conversationId = conversationId; }

@@ -15,6 +15,20 @@ public class FileService {
 
     private final String avatarUploadDir = "uploads/avatars/";
     private final String resourceUploadDir = "uploads/resources/";
+    private final String chatUploadDir = "uploads/chat/";
+
+    public String saveChatMessageImage(MultipartFile file) throws IOException {
+        File dir = new File(chatUploadDir);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
+        String fileName = "chat_" + System.currentTimeMillis() + "_" + file.getOriginalFilename().replaceAll("[^a-zA-Z0-9.-]", "_");
+        Path path = Paths.get(chatUploadDir + fileName);
+        Files.write(path, file.getBytes());
+
+        return fileName;
+    }
 
     public String saveAvatar(MultipartFile file, String userId) throws IOException {
         File dir = new File(avatarUploadDir);

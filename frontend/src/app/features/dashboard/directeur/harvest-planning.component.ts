@@ -439,7 +439,7 @@ interface Verger {
          </div>
      </div>
    `,
-   styles: [`
+  styles: [`
      :host { display: block; background: #FDFCF6/50; min-height: 100vh; }
      input[type="date"]::-webkit-calendar-picker-indicator { cursor: pointer; filter: grayscale(1) opacity(0.3); }
      
@@ -467,7 +467,7 @@ export class HarvestPlanningComponent implements OnInit {
   collectes: Collecte[] = [];
   chefs: User[] = [];
   logisticsManagers: User[] = [];
-  allVergers: Verger[] = []; 
+  allVergers: Verger[] = [];
 
   vergerMap: Map<string, Verger> = new Map();
   Math = Math;
@@ -506,8 +506,8 @@ export class HarvestPlanningComponent implements OnInit {
         this.collectes = data || [];
         // Slight delay to appreciate the premium skeleton
         setTimeout(() => {
-            this.loading = false;
-            this.cdr.detectChanges();
+          this.loading = false;
+          this.cdr.detectChanges();
         }, 800);
       },
       error: () => {
@@ -517,16 +517,16 @@ export class HarvestPlanningComponent implements OnInit {
     });
 
     this.userService.getAllUsers().subscribe(users => {
-       this.chefs = users.filter(u => u.role === 'CHEF_EQUIPE_RECOLTE');
-       this.logisticsManagers = users.filter(u => u.role === 'RESPONSABLE_LOGISTIQUE');
-       this.cdr.detectChanges();
+      this.chefs = users.filter(u => u.role === 'CHEF_EQUIPE_RECOLTE');
+      this.logisticsManagers = users.filter(u => u.role === 'RESPONSABLE_LOGISTIQUE');
+      this.cdr.detectChanges();
     });
 
     this.http.get<Verger[]>('http://localhost:8080/api/vergers').subscribe(v => {
-       this.allVergers = v;
-       this.vergerMap.clear();
-       v.forEach(v => this.vergerMap.set(v.id, v));
-       this.cdr.detectChanges();
+      this.allVergers = v;
+      this.vergerMap.clear();
+      v.forEach(v => this.vergerMap.set(v.id, v));
+      this.cdr.detectChanges();
     });
   }
 
@@ -537,8 +537,8 @@ export class HarvestPlanningComponent implements OnInit {
   async openIntelligence(vergerId: string) {
     const verger = this.vergerMap.get(vergerId);
     if (!verger) {
-       await this.dialogService.alert("Indisponible", "Synchronisation de l'intelligence du verger... veuillez patienter.", "info");
-       return;
+      await this.dialogService.alert("Indisponible", "Synchronisation de l'intelligence du verger... veuillez patienter.", "info");
+      return;
     }
     this.selectedVergerForTelemetry = verger;
     this.showTelemetryModal = true;
@@ -571,7 +571,7 @@ export class HarvestPlanningComponent implements OnInit {
       await this.dialogService.alert("Erreur de Validation", "Veuillez vous assurer que le titre de la mission, le verger et le chef sont correctement spécifiés.", "warning");
       return;
     }
-    
+
     const chefObj = this.chefs.find(c => c.id === this.newCollecte.chefUid);
     const rmObj = this.logisticsManagers.find(m => m.id === this.newCollecte.logisticsUid);
     const vergerObj = this.vergerMap.get(this.newCollecte.vergerId as string);
@@ -589,12 +589,12 @@ export class HarvestPlanningComponent implements OnInit {
       : this.collecteService.createCollecte(payload);
 
     request.subscribe({
-       next: () => {
-         this.dialogService.alert("Succès", "Protocole de mission enregistré.", "success");
-         this.closeCreateModal();
-         this.loadData();
-       },
-       error: (err) => this.dialogService.alert("Erreur", "L'opération de mission a échoué : " + (err.error || err.message), "danger")
+      next: () => {
+        this.dialogService.alert("Succès", "Protocole de mission enregistré.", "success");
+        this.closeCreateModal();
+        this.loadData();
+      },
+      error: (err) => this.dialogService.alert("Erreur", "L'opération de mission a échoué : " + (err.error || err.message), "danger")
     });
   }
 
@@ -647,8 +647,8 @@ export class HarvestPlanningComponent implements OnInit {
     const today = new Date();
     const start = new Date(c.startDate);
     return today.getFullYear() === start.getFullYear() &&
-           today.getMonth() === start.getMonth() &&
-           today.getDate() === start.getDate();
+      today.getMonth() === start.getMonth() &&
+      today.getDate() === start.getDate();
   }
 
   async launchCollection(c: Collecte) {

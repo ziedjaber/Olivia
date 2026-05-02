@@ -7,7 +7,7 @@ import { UserService } from '../../../core/services/user.service';
 import { User } from '../../../core/services/auth.service';
 import { ResourceOrderService, ResourceOrder } from '../../../core/services/resource-order.service';
 import { DirecteurAnalyticsComponent } from './directeur-analytics.component';
-import { DirectorLogisticsComponent } from './director-logistics.component';
+
 
 @Component({
   selector: 'app-directeur-dashboard',
@@ -15,10 +15,19 @@ import { DirectorLogisticsComponent } from './director-logistics.component';
   imports: [
     CommonModule,
     RouterModule,
-    DirecteurAnalyticsComponent,
-    DirectorLogisticsComponent
+    DirecteurAnalyticsComponent
   ],
-  templateUrl: './directeur-dashboard.component.html'
+  templateUrl: './directeur-dashboard.component.html',
+  styles: [`
+    .animate-fade-in {
+      animation: fadeIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      opacity: 0;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  `]
 })
 export class DirecteurDashboardComponent implements OnInit {
   private collecteService = inject(CollecteService);

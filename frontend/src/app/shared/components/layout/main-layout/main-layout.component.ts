@@ -51,8 +51,17 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    // 1. Connexion au WebSocket (Logique Chaima)
-    this.wsService.connect();
+    // Watch for user identity before connecting
+    this.subs.add(
+      this.authService.currentUser$.subscribe(user => {
+        if (user) {
+          console.log('[MainLayout] User identity confirmed, connecting WebSocket...');
+          this.wsService.connect();
+        } else {
+          this.wsService.disconnect();
+        }
+      })
+    );
     
     // 2. Écoute des nouveaux messages
     this.subs.add(

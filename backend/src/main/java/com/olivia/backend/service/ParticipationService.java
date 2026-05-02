@@ -24,13 +24,13 @@ import java.util.stream.Collectors;
 @Service
 public class ParticipationService {
 
+    @org.springframework.beans.factory.annotation.Autowired
+    private Firestore db;
+
     private static final String COL = "participations";
 
     @Autowired
     private EmailService emailService;
-
-    @Autowired
-    private Firestore db;
 
     @Autowired
     private NotificationService notificationService;

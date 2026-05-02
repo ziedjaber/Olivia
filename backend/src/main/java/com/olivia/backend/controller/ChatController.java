@@ -8,6 +8,7 @@ import com.olivia.backend.model.Message;
 import com.olivia.backend.model.User;
 import com.olivia.backend.service.ChatService;
 import com.olivia.backend.service.ConversationService;
+import com.olivia.backend.service.FileService;
 import com.olivia.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -35,6 +37,9 @@ public class ChatController {
     private UserService userService;
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
+
+    @Autowired
+    private FileService fileService;
 
     // ← injection du Bean Firestore depuis FirebaseConfig
     @Autowired
@@ -79,11 +84,14 @@ public void sendMessage(@Payload ChatMessageDTO dto, Principal principal) {
         System.out.println("[Chat] Message sauvegardé avec ID: " + saved.getId());
 
         // Echo au sender
+        System.out.println("[Chat] Tentative d'envoi WebSocket à senderId: " + senderId);
         messagingTemplate.convertAndSendToUser(senderId, "/queue/messages", saved);
+        
         // Au receiver
+        System.out.println("[Chat] Tentative d'envoi WebSocket à receiverId: " + dto.getReceiverId());
         messagingTemplate.convertAndSendToUser(dto.getReceiverId(), "/queue/messages", saved);
 
-        System.out.println("[Chat] Messages envoyés via WebSocket aux deux utilisateurs");
+        System.out.println("[Chat] WebSocket OK : " + saved.getContent());
     } catch (Exception e) {
         System.err.println("[Chat] Erreur lors du save/envoi : " + e.getMessage());
         e.printStackTrace();
@@ -132,6 +140,21 @@ public void sendMessage(@Payload ChatMessageDTO dto, Principal principal) {
         Conversation conv = conversationService.getOrCreate(
                 principal.getName(), targetUserId);
         return ResponseEntity.ok(conv);
+    }
+
+    @PostMapping("/api/chat/upload")
+    @ResponseBody
+    public ResponseEntity<Map<String, String>> uploadImage(
+            @RequestParam("file") MultipartFile file) {
+        System.out.println("[Chat] Appel endpoint upload reçu. Fichier: " + file.getOriginalFilename() + " Taille: " + file.getSize());
+        try {
+            String fileName = fileService.saveChatMessageImage(file);
+            Map<String, String> res = new HashMap<>();
+            res.put("url", "/uploads/chat/" + fileName);
+            return ResponseEntity.ok(res);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
+        }
     }
 
     @PostMapping("/api/chat/conversations/migrate")

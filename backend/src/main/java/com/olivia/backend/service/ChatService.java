@@ -34,6 +34,7 @@ public class ChatService {
             ? sender.getRole().name() : "");
         message.setReceiverId(dto.getReceiverId());
         message.setContent(dto.getContent());
+        message.setImageUrl(dto.getImageUrl());
         message.setTimestamp(LocalDateTime.now().toString()); // stocké en String
         message.setRead(false);
 
@@ -55,10 +56,12 @@ public class ChatService {
 
     public List<Message> getMessagesByConversation(String conversationId) {
         try {
-            return db.collection("messages")
+            List<Message> msgs = db.collection("messages")
                      .whereEqualTo("conversationId", conversationId)
                      .get().get()
                      .toObjects(Message.class);
+            msgs.sort((a, b) -> a.getTimestamp().compareTo(b.getTimestamp()));
+            return msgs;
         } catch (Exception e) {
             e.printStackTrace();
             return List.of();

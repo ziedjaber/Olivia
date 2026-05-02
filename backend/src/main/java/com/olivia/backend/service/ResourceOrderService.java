@@ -14,16 +14,22 @@ import java.util.stream.Collectors;
 @Service
 public class ResourceOrderService {
 
+    @org.springframework.beans.factory.annotation.Autowired
+    private com.google.cloud.firestore.Firestore db;
+
     private static final String COL = "resource_orders";
 
     public List<ResourceOrder> getOrdersByRequester(String requesterUid) {
         try {
-            Firestore db = FirestoreClient.getFirestore();
             return db.collection(COL)
                     .whereEqualTo("requesterUid", requesterUid)
                     .get().get(30, TimeUnit.SECONDS)
                     .getDocuments().stream()
-                    .map(d -> d.toObject(ResourceOrder.class))
+                    .map(d -> {
+                        ResourceOrder o = d.toObject(ResourceOrder.class);
+                        if (o.getId() == null) o.setId(d.getId());
+                        return o;
+                    })
                     .collect(Collectors.toList());
         } catch (Exception e) {
             log.error("Error fetching resource orders: {}", e.getMessage());
@@ -33,10 +39,13 @@ public class ResourceOrderService {
 
     public List<ResourceOrder> getAllOrders() {
         try {
-            Firestore db = FirestoreClient.getFirestore();
             return db.collection(COL).get().get(30, TimeUnit.SECONDS)
                     .getDocuments().stream()
-                    .map(d -> d.toObject(ResourceOrder.class))
+                    .map(d -> {
+                        ResourceOrder o = d.toObject(ResourceOrder.class);
+                        if (o.getId() == null) o.setId(d.getId());
+                        return o;
+                    })
                     .collect(Collectors.toList());
         } catch (Exception e) {
             log.error("Error fetching all resource orders: {}", e.getMessage());
@@ -46,16 +55,13 @@ public class ResourceOrderService {
 
     public ResourceOrder createOrder(ResourceOrder order) {
         try {
-            Firestore db = FirestoreClient.getFirestore();
             if (order.getId() == null || order.getId().isEmpty()) {
-                order.getId();
                 order.setId(UUID.randomUUID().toString());
             }
             order.setStatus("PENDING"); 
             order.setOrderDate(java.time.Instant.now().toString());
 
-            Map<String, Object> data = toMap(order);
-            db.collection(COL).document(order.getId()).set(data).get(30, TimeUnit.SECONDS);
+            db.collection(COL).document(order.getId()).set(order).get(30, TimeUnit.SECONDS);
             log.info("Resource Order {} created with status PENDING", order.getId());
             return order;
         } catch (Exception e) {
@@ -65,12 +71,13 @@ public class ResourceOrderService {
 
     public ResourceOrder approveOrder(String id) {
         try {
-            Firestore db = FirestoreClient.getFirestore();
             Map<String, Object> updates = new HashMap<>();
             updates.put("status", "APPROVED");
             db.collection(COL).document(id).update(updates).get(30, TimeUnit.SECONDS);
             
-            return db.collection(COL).document(id).get().get(30, TimeUnit.SECONDS).toObject(ResourceOrder.class);
+            ResourceOrder o = db.collection(COL).document(id).get().get(30, TimeUnit.SECONDS).toObject(ResourceOrder.class);
+            if (o != null && o.getId() == null) o.setId(id);
+            return o;
         } catch (Exception e) {
             throw new RuntimeException("Failed to approve order: " + e.getMessage(), e);
         }
@@ -78,7 +85,6 @@ public class ResourceOrderService {
 
     public String rejectOrder(String id) {
         try {
-            Firestore db = FirestoreClient.getFirestore();
             Map<String, Object> updates = new HashMap<>();
             updates.put("status", "REJECTED");
             db.collection(COL).document(id).update(updates).get(30, TimeUnit.SECONDS);

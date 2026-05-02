@@ -7,6 +7,8 @@ import { authGuard } from './core/guards/auth.guard';
 import { MainLayoutComponent } from './shared/components/layout/main-layout/main-layout.component';
 import { UserManagementComponent } from './features/user/management/user-management.component';
 import { VergerManagementComponent } from './features/verger/management/verger-management.component';
+import { ChatPageComponent } from './features/chat/components/chat-page/chat-page';
+import { UserDirectoryComponent } from './features/user/directory/directory.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
@@ -22,6 +24,7 @@ export const routes: Routes = [
       { path: 'profile', component: ProfileComponent },
       { path: 'users', component: UserManagementComponent },
       { path: 'vergers', component: VergerManagementComponent },
+      { path: 'directory', component: UserDirectoryComponent },
       
       // LOGISTICS MODULAR ROUTES
       { 

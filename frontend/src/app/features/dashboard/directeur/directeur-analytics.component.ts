@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, ViewChild, ElementRef, AfterViewInit, inject as injectFn, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, ViewChild, ElementRef, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Chart, registerables } from 'chart.js';
@@ -16,123 +16,232 @@ Chart.register(...registerables);
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="space-y-8 p-6 bg-stone-50/50 rounded-[3rem] border border-stone-200/60">
-      <header class="flex flex-col md:flex-row justify-between items-center gap-4 px-2">
-        <div>
-          <h2 class="text-2xl font-black text-on-surface tracking-tight uppercase">Intelligence Opérationnelle</h2>
-          <p class="text-xs text-outline font-bold tracking-widest opacity-60 uppercase">Analyse des performances et risques</p>
+    <div class="space-y-10 p-4 md:p-8 min-h-screen animate-fade-in font-headline text-[#1e1c12]">
+      <!-- Header Section -->
+      <header class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-stone-200/40 pb-10">
+        <div class="space-y-2">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="w-2 h-2 rounded-full bg-[#3e5219] animate-pulse"></span>
+            <span class="text-[10px] font-black text-[#3e5219] uppercase tracking-[0.4em]">Strategic Analytics</span>
+          </div>
+          <h1 class="text-4xl font-black tracking-tighter">Intelligence <span class="text-[#3e5219] italic">Opérationnelle</span></h1>
+          <p class="text-[#1e1c12]/50 font-medium text-sm italic">Analyse prédictive et performance globale du domaine.</p>
         </div>
         
-        <div class="flex items-center gap-3 bg-white p-1.5 rounded-2xl shadow-sm border border-stone-200">
-          <span class="text-[10px] font-black text-outline uppercase ml-3">Période :</span>
+        <div class="flex items-center gap-4 bg-white/60 backdrop-blur-xl p-2 rounded-[1.5rem] shadow-2xl shadow-[#3e5219]/5 border border-white/40 group transition-all duration-500 hover:scale-105">
+          <span class="text-[10px] font-black text-[#1e1c12]/40 uppercase tracking-widest ml-4">Horizon Temporel :</span>
           <select [(ngModel)]="period" (change)="updateCharts()" 
-                  class="bg-stone-100 border-none rounded-xl px-4 py-2 text-xs font-bold outline-none cursor-pointer hover:bg-stone-200 transition-colors">
-            <option value="7">7 Derniers Jours</option>
-            <option value="30">30 Derniers Jours</option>
-            <option value="365">Cette Année</option>
+                  class="bg-stone-900 text-white rounded-xl px-6 py-3 text-[10px] font-black uppercase tracking-widest outline-none cursor-pointer hover:bg-[#3e5219] transition-all">
+            <option value="7">7 Jours</option>
+            <option value="30">30 Jours</option>
+            <option value="365">Année</option>
           </select>
         </div>
       </header>
 
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Chart 1: Alerts Distribution -->
-        <div class="lg:col-span-1 bg-white p-8 rounded-[2.5rem] border border-stone-200 shadow-sm flex flex-col items-center">
-          <h4 class="text-center text-[10px] font-black uppercase tracking-widest text-outline mb-8">Répartition des Alertes</h4>
-          <div class="relative w-full aspect-square max-w-[220px]">
-            <canvas #alertsChart></canvas>
+      <!-- KPI Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 no-print">
+        <div class="kpi-card bg-emerald-50/30 border-emerald-100/50" style="--accent: #3e5219">
+          <div class="kpi-icon bg-emerald-100/50 text-[#3e5219]">
+            <span class="material-symbols-outlined">analytics</span>
           </div>
-          <div class="mt-6 w-full space-y-2">
-            <div *ngFor="let stat of alertStats" class="flex justify-between items-center text-[10px] px-2">
-              <span class="flex items-center gap-2 font-bold uppercase tracking-wider text-outline">
-                <span class="w-2 h-2 rounded-full" [style.backgroundColor]="stat.color"></span>
-                {{ stat.name }}
+          <div class="space-y-1">
+            <span class="text-[9px] font-black uppercase tracking-widest text-emerald-900/40">Taux de Résolution</span>
+            <div class="flex items-baseline gap-1">
+               <p class="text-3xl font-black text-emerald-950">{{ resolutionRate }}</p>
+               <span class="text-xs font-bold text-emerald-950/40">%</span>
+            </div>
+          </div>
+          <div class="kpi-glow"></div>
+        </div>
+
+        <div class="kpi-card bg-amber-50/30 border-amber-100/50" style="--accent: #d97706">
+          <div class="kpi-icon bg-amber-100/50 text-amber-600">
+            <span class="material-symbols-outlined">bolt</span>
+          </div>
+          <div class="space-y-1">
+            <span class="text-[9px] font-black uppercase tracking-widest text-amber-900/40">Urgence Récolte</span>
+            <div class="flex items-baseline gap-1">
+               <p class="text-3xl font-black text-amber-950">{{ urgentRatio }}</p>
+               <span class="text-xs font-bold text-amber-950/40">%</span>
+            </div>
+          </div>
+          <div class="kpi-glow"></div>
+        </div>
+
+        <div class="kpi-card bg-stone-900 border-stone-800 text-white" style="--accent: #ffffff">
+          <div class="kpi-icon bg-white/10 text-white">
+            <span class="material-symbols-outlined">tactic</span>
+          </div>
+          <div class="space-y-1">
+            <span class="text-[9px] font-black uppercase tracking-widest text-white/40">Missions Actives</span>
+            <div class="flex items-baseline gap-1">
+               <p class="text-3xl font-black">{{ activeMissionsCount }}</p>
+               <span class="text-xs font-bold text-white/40">UNITÉS</span>
+            </div>
+          </div>
+          <div class="kpi-glow"></div>
+        </div>
+
+        <div class="kpi-card bg-red-50/30 border-red-100/50" style="--accent: #dc2626">
+          <div class="kpi-icon bg-red-100/50 text-red-600">
+            <span class="material-symbols-outlined">warning</span>
+          </div>
+          <div class="space-y-1">
+            <span class="text-[9px] font-black uppercase tracking-widest text-red-900/40">Score de Risque</span>
+            <div class="flex items-baseline gap-1">
+               <p class="text-3xl font-black text-red-950">{{ riskScore }}</p>
+               <span class="text-xs font-bold text-red-950/40">%</span>
+            </div>
+          </div>
+          <div class="kpi-glow"></div>
+        </div>
+      </div>
+
+      <!-- Main Analytics Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <!-- Missions Evolution (Line Chart) -->
+        <div class="lg:col-span-8 bg-white/60 backdrop-blur-2xl p-10 rounded-[3.5rem] border border-white/60 shadow-[0_32px_64px_-12px_rgba(0,0,0,0.08)] flex flex-col group transition-all duration-700 hover:shadow-[0_48px_96px_-24px_rgba(62,82,25,0.12)]">
+          <header class="flex justify-between items-center mb-12">
+            <div class="space-y-1">
+              <h4 class="text-[10px] font-black uppercase tracking-[0.3em] text-[#3e5219]">Flux de Production</h4>
+              <p class="text-xl font-black tracking-tight">Évolution des Récoltes</p>
+            </div>
+            <div class="flex items-center gap-2 px-4 py-2 bg-stone-50 rounded-full border border-stone-100">
+              <span class="w-2 h-2 rounded-full bg-[#3e5219]"></span>
+              <span class="text-[9px] font-black uppercase tracking-widest text-stone-400">Total Missions</span>
+            </div>
+          </header>
+          <div class="w-full h-[350px] relative">
+            <canvas #missionsChart></canvas>
+          </div>
+        </div>
+
+        <!-- Alert Distribution (Doughnut Chart) -->
+        <div class="lg:col-span-4 bg-stone-950 p-10 rounded-[3.5rem] shadow-3xl flex flex-col items-center text-white overflow-hidden relative group">
+          <div class="absolute inset-0 bg-gradient-to-br from-[#3e5219]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
+          <h4 class="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 mb-10 relative z-10">Santé de l'Infrastructure</h4>
+          <div class="relative w-full aspect-square max-w-[240px] z-10 scale-95 group-hover:scale-100 transition-transform duration-700">
+            <canvas #alertsChart></canvas>
+            <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+              <span class="text-[9px] font-black text-white/40 uppercase tracking-widest">Total</span>
+              <span class="text-4xl font-black tracking-tighter">{{ allAlertes.length || 0 }}</span>
+            </div>
+          </div>
+          <div class="mt-10 w-full space-y-4 relative z-10">
+            <div *ngFor="let stat of alertStats" class="flex justify-between items-center group/item cursor-default">
+              <span class="flex items-center gap-3 text-[9px] font-black uppercase tracking-widest text-white/50 group-hover/item:text-white transition-colors">
+                <span class="w-2 h-2 rounded-full shadow-[0_0_8px_var(--tw-shadow-color)]" [style.backgroundColor]="stat?.color" [style.--tw-shadow-color]="stat?.color"></span>
+                {{ stat?.name }}
               </span>
-              <span class="font-black text-on-surface">{{ stat.count }}</span>
+              <span class="text-sm font-black text-white/80">{{ stat?.count || 0 }}</span>
             </div>
           </div>
         </div>
 
-        <!-- Chart 2: Missions Trend -->
-        <div class="lg:col-span-2 bg-white p-8 rounded-[2.5rem] border border-stone-200 shadow-sm">
-          <h4 class="text-[10px] font-black uppercase tracking-widest text-outline mb-8 pl-4">Évolution des Récoltes</h4>
-          <div class="w-full h-[300px]">
-            <canvas #missionsChart></canvas>
-          </div>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- New Chart 3: Workforce Distribution -->
-        <div class="bg-white p-8 rounded-[2.5rem] border border-stone-200 shadow-sm">
-          <h4 class="text-[10px] font-black uppercase tracking-widest text-outline mb-8">Force de Travail par Rôle</h4>
-          <div class="w-full h-[250px]">
+        <!-- Workforce (Bar Chart) -->
+        <div class="lg:col-span-6 bg-white/60 backdrop-blur-2xl p-10 rounded-[3.5rem] border border-white/60 shadow-xl">
+          <header class="flex justify-between items-center mb-10">
+            <div class="space-y-1">
+              <h4 class="text-[10px] font-black uppercase tracking-[0.3em] text-[#3e5219]">Capital Humain</h4>
+              <p class="text-xl font-black tracking-tight">Répartition des Effectifs</p>
+            </div>
+          </header>
+          <div class="w-full h-[280px]">
             <canvas #workforceChart></canvas>
           </div>
         </div>
 
-        <!-- New Visual: Maturity Status -->
-        <div class="bg-white p-8 rounded-[2.5rem] border border-stone-200 shadow-sm flex flex-col justify-center">
-          <h4 class="text-[10px] font-black uppercase tracking-widest text-outline mb-6 text-center">Maturité Globale du Domaine</h4>
-          <div class="flex flex-col items-center gap-6">
-            <div class="relative w-32 h-32 flex items-center justify-center">
-              <svg class="w-full h-full -rotate-90">
-                <circle cx="64" cy="64" r="58" stroke="currentColor" stroke-width="8" fill="transparent" class="text-stone-100" />
-                <circle cx="64" cy="64" r="58" stroke="currentColor" stroke-width="8" fill="transparent" 
-                        [style.stroke-dasharray]="364.4" 
-                        [style.stroke-dashoffset]="364.4 * (1 - avgMaturity / 100)"
-                        class="text-primary transition-all duration-1000" />
+        <!-- Maturity (Circular Progress) -->
+        <div class="lg:col-span-6 bg-gradient-to-br from-[#3e5219] to-[#1e290b] p-10 rounded-[3.5rem] shadow-2xl shadow-[#3e5219]/20 text-white flex flex-col items-center justify-center relative overflow-hidden group">
+          <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-20 -mt-20 blur-3xl group-hover:bg-white/10 transition-all duration-1000"></div>
+          
+          <h4 class="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 mb-8 relative z-10 text-center">Préparation Globale</h4>
+          <div class="flex flex-col items-center gap-8 relative z-10">
+            <div class="relative w-44 h-44 flex items-center justify-center group-hover:scale-105 transition-transform duration-700">
+              <svg class="w-full h-full -rotate-90 filter drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">
+                <circle cx="88" cy="88" r="80" stroke="rgba(255,255,255,0.1)" stroke-width="12" fill="transparent" />
+                <circle cx="88" cy="88" r="80" stroke="white" stroke-width="12" fill="transparent" 
+                        stroke-linecap="round"
+                        [style.stroke-dasharray]="502.4" 
+                        [style.stroke-dashoffset]="502.4 * (1 - (avgMaturity || 0) / 100)"
+                        class="transition-all duration-[1.5s] cubic-bezier(0.4, 0, 0.2, 1)" />
               </svg>
-              <span class="absolute text-2xl font-black text-on-surface">{{ avgMaturity }}%</span>
+              <div class="absolute flex flex-col items-center">
+                <span class="text-5xl font-black tracking-tighter">{{ avgMaturity || 0 }}<span class="text-xl opacity-40">%</span></span>
+                <span class="text-[9px] font-black uppercase tracking-widest text-white/40 mt-1">Maturité</span>
+              </div>
             </div>
-            <div class="text-center">
-              <p class="text-sm font-bold text-on-surface">Moyenne de Maturité</p>
-              <p class="text-[10px] text-outline font-medium max-w-[200px] mt-1 italic">Indicateur de préparation pour la récolte globale.</p>
+            <div class="text-center space-y-2">
+              <p class="text-lg font-black tracking-tight leading-none italic">Statut du Domaine</p>
+              <p class="text-[10px] text-white/50 font-medium max-w-[240px] uppercase tracking-widest">Calculé sur la base de {{ allVergers.length || 0 }} vergers actifs.</p>
             </div>
           </div>
-        </div>
-      </div>
-
-      <!-- Decision Support Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 no-print">
-        <div class="bg-primary/5 p-6 rounded-[2rem] border border-primary/10">
-          <div class="flex items-center gap-3 mb-3">
-             <span class="material-symbols-outlined text-primary">analytics</span>
-             <h5 class="text-[10px] font-black uppercase text-primary tracking-widest">Taux de Résolution</h5>
-          </div>
-          <p class="text-2xl font-black text-primary">{{ resolutionRate }}%</p>
-          <p class="text-[10px] font-medium text-primary/60 mt-1 italic">Alertes traitées versus totales</p>
-        </div>
-
-        <div class="bg-secondary/5 p-6 rounded-[2rem] border border-secondary/10">
-          <div class="flex items-center gap-3 mb-3">
-             <span class="material-symbols-outlined text-secondary">flash_on</span>
-             <h5 class="text-[10px] font-black uppercase text-secondary tracking-widest">Urgence Moyenne</h5>
-          </div>
-          <p class="text-2xl font-black text-secondary">{{ urgentRatio }}%</p>
-          <p class="text-[10px] font-medium text-secondary/60 mt-1 italic">Missions classées comme urgentes</p>
-        </div>
-
-        <div class="bg-tertiary/5 p-6 rounded-[2rem] border border-tertiary/10">
-          <div class="flex items-center gap-3 mb-3">
-             <span class="material-symbols-outlined text-tertiary">group</span>
-             <h5 class="text-[10px] font-black uppercase text-tertiary tracking-widest">Activité Equipe</h5>
-          </div>
-          <p class="text-2xl font-black text-tertiary">{{ activeMissionsCount }}</p>
-          <p class="text-[10px] font-medium text-tertiary/60 mt-1 italic">Missions en cours d'exécution</p>
-        </div>
-
-        <div class="bg-stone-100 p-6 rounded-[2rem] border border-stone-200">
-          <div class="flex items-center gap-3 mb-3">
-             <span class="material-symbols-outlined text-stone-600">report_problem</span>
-             <h5 class="text-[10px] font-black uppercase text-stone-600 tracking-widest">Santé Vergers</h5>
-          </div>
-          <p class="text-2xl font-black text-stone-700">{{ riskScore }}%</p>
-          <p class="text-[10px] font-medium text-stone-500 mt-1 italic">Indicateur de risque global</p>
         </div>
       </div>
     </div>
   `,
-  styles: [``],
+  styles: [`
+    :host { display: block; overflow-x: hidden; }
+    
+    .animate-fade-in { animation: fadeIn 1s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    .kpi-card {
+      position: relative;
+      padding: 2.5rem 2rem;
+      border-radius: 2.5rem;
+      border-width: 1px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      overflow: hidden;
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: default;
+    }
+
+    .kpi-card:hover {
+      transform: translateY(-10px) scale(1.02);
+      box-shadow: 0 40px 80px -20px rgba(0,0,0,0.12);
+    }
+
+    .kpi-icon {
+      width: 3.5rem;
+      height: 3.5rem;
+      border-radius: 1.25rem;
+      display: flex;
+      items-center: center;
+      justify-content: center;
+      transition: all 0.5s ease;
+    }
+
+    .kpi-card:hover .kpi-icon {
+      transform: rotate(12deg) scale(1.1);
+    }
+
+    .kpi-glow {
+      position: absolute;
+      bottom: -20px;
+      right: -20px;
+      width: 80px;
+      height: 80px;
+      background: var(--accent);
+      filter: blur(40px);
+      opacity: 0.1;
+      transition: opacity 0.5s ease;
+    }
+
+    .kpi-card:hover .kpi-glow {
+      opacity: 0.3;
+    }
+
+    .shadow-3xl {
+      box-shadow: 0 40px 100px -30px rgba(0,0,0,0.3);
+    }
+
+    /* Hide scrollbar */
+    ::-webkit-scrollbar { width: 0px; background: transparent; }
+  `],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DirecteurAnalyticsComponent implements OnInit, AfterViewInit, OnDestroy {
@@ -164,7 +273,7 @@ export class DirecteurAnalyticsComponent implements OnInit, AfterViewInit, OnDes
   riskScore = 0;
   avgMaturity = 0;
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   ngAfterViewInit() {
     this.refreshData();
@@ -206,7 +315,7 @@ export class DirecteurAnalyticsComponent implements OnInit, AfterViewInit, OnDes
     this.renderMissionsChart(filteredCollectes);
     this.renderWorkforceChart();
     this.calculateMaturity();
-    
+
     this.cdr.detectChanges();
   }
 
@@ -230,7 +339,7 @@ export class DirecteurAnalyticsComponent implements OnInit, AfterViewInit, OnDes
     if (this.alertChartInstance) this.alertChartInstance.destroy();
 
     const types = ['MACHINE', 'ACCIDENT', 'INFRASTRUCTURE', 'WEATHER', 'OTHER'];
-    const colors = ['#3e5219', '#6b3b65', '#3e6842', '#ba1a1a', '#75796b'];
+    const colors = ['#3e5219', '#d97706', '#0f172a', '#dc2626', '#75796b'];
     const data = types.map(t => alerts.filter(a => a.type === t).length);
 
     this.alertStats = types.map((t, i) => ({ name: t, count: data[i], color: colors[i] }));
@@ -242,14 +351,22 @@ export class DirecteurAnalyticsComponent implements OnInit, AfterViewInit, OnDes
         datasets: [{
           data: data,
           backgroundColor: colors,
-          borderWidth: 0
+          borderWidth: 0,
+          hoverOffset: 15
         }]
       },
       options: {
         responsive: true,
-        cutout: '75%',
+        cutout: '82%',
         plugins: {
-          legend: { display: false }
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: 'rgba(0,0,0,0.8)',
+            padding: 12,
+            titleFont: { size: 10, weight: 'bold' },
+            bodyFont: { size: 10 },
+            displayColors: false
+          }
         }
       }
     });
@@ -258,17 +375,22 @@ export class DirecteurAnalyticsComponent implements OnInit, AfterViewInit, OnDes
   renderMissionsChart(collectes: Collecte[]) {
     if (this.missionChartInstance) this.missionChartInstance.destroy();
 
-    // Group by date
+    const ctx = this.missionsChartCanvas.nativeElement.getContext('2d');
+    if (!ctx) return;
+
+    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, 'rgba(62, 82, 25, 0.4)');
+    gradient.addColorStop(1, 'rgba(62, 82, 25, 0)');
+
     const lastN = parseInt(this.period);
     const labels = [];
     const counts = [];
-    
+
     for (let i = lastN - 1; i >= 0; i--) {
       const d = new Date();
       d.setDate(d.getDate() - i);
-      const dateStr = d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' });
-      labels.push(dateStr);
-      
+      labels.push(d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' }));
+
       const count = collectes.filter(c => {
         const cDate = new Date(c.startDate || '');
         return cDate.getDate() === d.getDate() && cDate.getMonth() === d.getMonth();
@@ -276,34 +398,51 @@ export class DirecteurAnalyticsComponent implements OnInit, AfterViewInit, OnDes
       counts.push(count);
     }
 
-    this.missionChartInstance = new Chart(this.missionsChartCanvas.nativeElement, {
+    this.missionChartInstance = new Chart(ctx, {
       type: 'line',
       data: {
         labels: labels,
         datasets: [{
-          label: 'Nombre de missions',
+          label: 'Récoltes',
           data: counts,
           borderColor: '#3e5219',
-          backgroundColor: 'rgba(62, 82, 25, 0.05)',
+          borderWidth: 4,
+          backgroundColor: gradient,
           fill: true,
-          tension: 0.4,
-          pointRadius: 4,
-          pointBackgroundColor: '#3e5219'
+          tension: 0.45,
+          pointRadius: 6,
+          pointBackgroundColor: '#ffffff',
+          pointBorderColor: '#3e5219',
+          pointBorderWidth: 2,
+          pointHoverRadius: 8,
+          pointHoverBackgroundColor: '#3e5219'
         }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            mode: 'index',
+            intersect: false,
+            backgroundColor: '#1e1c12',
+            padding: 15,
+            titleFont: { size: 12, weight: 'bold' },
+            bodyFont: { size: 12 }
+          }
+        },
         scales: {
-          y: { 
-            beginAtZero: true, 
-            grid: { display: false },
-            ticks: { font: { size: 10, weight: 'bold' } }
+          y: {
+            beginAtZero: true,
+            grid: { color: 'rgba(0,0,0,0.03)', drawTicks: false },
+            border: { display: false },
+            ticks: { padding: 10, font: { size: 9, weight: 'bold' }, color: '#1e1c12/40' }
           },
-          x: { 
+          x: {
             grid: { display: false },
-            ticks: { font: { size: 9, weight: 'bold' } }
+            border: { display: false },
+            ticks: { padding: 10, font: { size: 9, weight: 'bold' }, color: '#1e1c12/40' }
           }
         }
       }
@@ -313,19 +452,26 @@ export class DirecteurAnalyticsComponent implements OnInit, AfterViewInit, OnDes
   renderWorkforceChart() {
     if (this.workforceChartInstance) this.workforceChartInstance.destroy();
 
+    const ctx = this.workforceChartCanvas.nativeElement.getContext('2d');
+    if (!ctx) return;
+
+    const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+    gradient.addColorStop(0, '#3e5219');
+    gradient.addColorStop(1, '#a3b18a');
+
     const roles = ['DIRECTEUR', 'RESPONSABLE_LOGISTIQUE', 'CHEF_EQUIPE_RECOLTE', 'OLEICULTEUR', 'OUVRIER_RECOLTE'];
     const data = roles.map(r => this.allUsers.filter(u => u.role === r).length);
 
-    this.workforceChartInstance = new Chart(this.workforceChartCanvas.nativeElement, {
+    this.workforceChartInstance = new Chart(ctx, {
       type: 'bar',
       data: {
-        labels: ['Dir', 'Log', 'Chef', 'Prop', 'Ouvrier'],
+        labels: ['Dir.', 'Log.', 'Chef', 'Prop.', 'Ouvrier'],
         datasets: [{
-          label: 'Effectifs',
           data: data,
-          backgroundColor: '#3e5219',
-          borderRadius: 8,
-          barThickness: 20
+          backgroundColor: gradient,
+          borderRadius: 12,
+          barThickness: 32,
+          hoverBackgroundColor: '#1e1c12'
         }]
       },
       options: {
@@ -333,8 +479,17 @@ export class DirecteurAnalyticsComponent implements OnInit, AfterViewInit, OnDes
         maintainAspectRatio: false,
         plugins: { legend: { display: false } },
         scales: {
-          y: { beginAtZero: true, grid: { display: false }, ticks: { font: { size: 9 } } },
-          x: { grid: { display: false }, ticks: { font: { size: 9, weight: 'bold' } } }
+          y: {
+            beginAtZero: true,
+            grid: { color: 'rgba(0,0,0,0.03)', drawTicks: false },
+            border: { display: false },
+            ticks: { stepSize: 1, font: { size: 9, weight: 'bold' } }
+          },
+          x: {
+            grid: { display: false },
+            border: { display: false },
+            ticks: { font: { size: 10, weight: 'bold' } }
+          }
         }
       }
     });

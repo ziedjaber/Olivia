@@ -328,57 +328,66 @@ export class WebsocketService {
   // }
 
   async connect(): Promise<void> {
-  if (this.connected) return;
+    if (this.connected || (this.client && this.client.active)) return;
 
-  const token = await this.getFreshToken();
-  if (!token) {
-    console.error('[WebSocket] Aucun token disponible');
-    return;
+    console.log('[WebSocket] Tentative de connexion...');
+    const token = await this.getFreshTokenWithRetry();
+    
+    if (!token) {
+      console.error('[WebSocket] Impossible d\'obtenir un token après plusieurs tentatives');
+      return;
+    }
+
+    this.client = new Client({
+      brokerURL: 'ws://localhost:8080/ws',
+      connectHeaders: { Authorization: `Bearer ${token}` },
+      reconnectDelay: 5000,
+      heartbeatIncoming: 4000,
+      heartbeatOutgoing: 4000,
+
+      beforeConnect: async () => {
+        const freshToken = await this.getFreshToken();
+        if (freshToken && this.client) {
+          this.client.connectHeaders = { Authorization: `Bearer ${freshToken}` };
+        }
+      },
+
+      onConnect: () => {
+        this.connected = true;
+        console.log('[WebSocket] Connecté au serveur');
+        this.subscribeToMessages();
+        this.subscribeToTyping();
+        this.subscribeToNotifications();
+      },
+
+      onStompError: (frame) => {
+        console.error('[WebSocket] Erreur STOMP :', frame.headers['message']);
+        if (frame.headers['message']?.includes('JWT')) {
+            this.disconnect(); // Force reconnect with new token
+        }
+      },
+
+      onDisconnect: () => {
+        this.connected = false;
+        console.log('[WebSocket] Déconnecté');
+      },
+
+      onWebSocketError: (error) => {
+        console.error('[WebSocket] Erreur transport :', error);
+      }
+    });
+
+    this.client.activate();
   }
 
-  this.client = new Client({
-    brokerURL: 'ws://localhost:8080/ws',
-
-    connectHeaders: {
-      Authorization: `Bearer ${token}`
-    },
-
-    reconnectDelay: 5000,
-
-    // refresh token avant chaque reconnexion
-    beforeConnect: async () => {
-      const freshToken = await this.getFreshToken();
-      if (freshToken && this.client) {
-        this.client.connectHeaders = {
-          Authorization: `Bearer ${freshToken}`
-        };
-      }
-    },
-
-    onConnect: () => {
-      this.connected = true;
-      console.log('[WebSocket] Connecté');
-      this.subscribeToMessages();
-      this.subscribeToTyping();
-      this.subscribeToNotifications();
-    },
-
-    onStompError: (frame) => {
-      console.error('[WebSocket] Erreur STOMP :', frame.headers['message']);
-    },
-
-    onDisconnect: () => {
-      this.connected = false;
-      console.log('[WebSocket] Déconnecté');
-    },
-
-    onWebSocketError: (error) => {
-      console.error('[WebSocket] Erreur connexion :', error);
+  private async getFreshTokenWithRetry(retries = 3): Promise<string | null> {
+    for (let i = 0; i < retries; i++) {
+      const token = await this.getFreshToken();
+      if (token) return token;
+      await new Promise(resolve => setTimeout(resolve, 1000));
     }
-  });
-
-  this.client.activate();
-}
+    return null;
+  }
 
 private async getFreshToken(): Promise<string | null> {
   try {
@@ -395,9 +404,11 @@ private async getFreshToken(): Promise<string | null> {
 }
 
   private subscribeToMessages(): void {
+    console.log('[Websocket] Subscribing to /user/queue/messages');
     this.client.subscribe(
       '/user/queue/messages',
       (msg: IMessage) => {
+        console.log('[Websocket] Received message from queue:', msg.body);
         const message: Message = JSON.parse(msg.body);
         this.messageSubject.next(message);
       }

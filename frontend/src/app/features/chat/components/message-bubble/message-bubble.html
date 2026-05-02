@@ -6,7 +6,12 @@
 
   <div class="msg-row">
     <div class="msg-bubble">
-      {{ message.content }}
+      <div *ngIf="message.imageUrl" class="msg-image-container mb-2">
+        <img [src]="getFullImageUrl(message.imageUrl)" 
+             class="max-w-full rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
+             alt="Image partagée">
+      </div>
+      <p *ngIf="message.content">{{ message.content }}</p>
     </div>
   </div>
 

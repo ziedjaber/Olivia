@@ -168,6 +168,7 @@ export class ChatWindowComponent implements OnInit, OnDestroy, AfterViewChecked 
           if (!this.messages.some(m => m.id === msg.id)) {
             this.messages.push(msg);
             this.shouldScroll = true;
+            this.cdr.detectChanges();
           }
         }
       })

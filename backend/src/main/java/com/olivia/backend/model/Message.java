@@ -17,6 +17,7 @@ public class Message {
     private String senderRole;
     private String receiverId;
     private String content;
+    private String imageUrl;
     private String timestamp;
     private boolean read;
    

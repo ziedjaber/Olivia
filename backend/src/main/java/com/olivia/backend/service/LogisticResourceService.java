@@ -16,6 +16,9 @@ import java.util.concurrent.TimeUnit;
 public class LogisticResourceService {
 
     @org.springframework.beans.factory.annotation.Autowired
+    private Firestore db;
+
+    @org.springframework.beans.factory.annotation.Autowired
     private EmailService emailService;
 
     @org.springframework.beans.factory.annotation.Autowired
@@ -25,12 +28,12 @@ public class LogisticResourceService {
 
     public List<LogisticResource> getAllResources() {
         try {
-            Firestore db = FirestoreClient.getFirestore();
             QuerySnapshot query = db.collection(COLLECTION_NAME).get().get(30, TimeUnit.SECONDS);
             List<LogisticResource> resources = new ArrayList<>();
             for (QueryDocumentSnapshot document : query.getDocuments()) {
-                resources.add(document.toObject(LogisticResource.class));
-
+                LogisticResource r = document.toObject(LogisticResource.class);
+                if (r.getId() == null) r.setId(document.getId());
+                resources.add(r);
             }
             return resources;
         } catch (Exception e) {
@@ -43,10 +46,11 @@ public class LogisticResourceService {
         if (id == null)
             return Optional.empty();
         try {
-            Firestore db = FirestoreClient.getFirestore();
             var doc = db.collection(COLLECTION_NAME).document(id).get().get(30, TimeUnit.SECONDS);
             if (doc.exists()) {
-                return Optional.ofNullable(doc.toObject(LogisticResource.class));
+                LogisticResource r = doc.toObject(LogisticResource.class);
+                if (r != null && r.getId() == null) r.setId(doc.getId());
+                return Optional.ofNullable(r);
             }
         } catch (Exception e) {
             log.error("Error fetching logistic resource by id {}: {}", id, e.getMessage());
@@ -56,7 +60,6 @@ public class LogisticResourceService {
 
     public LogisticResource createResource(LogisticResource resource) {
         try {
-            Firestore db = FirestoreClient.getFirestore();
             if (resource.getId() == null || resource.getId().isEmpty()) {
                 resource.setId(UUID.randomUUID().toString());
             }
@@ -65,21 +68,8 @@ public class LogisticResourceService {
                 resource.setSku("#RES-" + (100 + new Random().nextInt(900)));
             }
 
-            Map<String, Object> data = new HashMap<>();
-            data.put("id", resource.getId());
-            data.put("sku", resource.getSku());
-            data.put("name", resource.getName());
-            data.put("type", resource.getType());
-            data.put("description", resource.getDescription());
-            data.put("pricePerHour", resource.getPricePerHour());
-            data.put("images", resource.getImages() != null ? resource.getImages() : new ArrayList<>());
-            data.put("stockLevel", resource.getStockLevel());
-            data.put("location", resource.getLocation());
-            data.put("status", resource.getStatus());
-
-            String resourceId = resource.getId();
-            db.collection(COLLECTION_NAME).document(resourceId).set(data).get(30, TimeUnit.SECONDS);
-            log.info("Successfully saved logistic resource {} to Firestore", resourceId);
+            db.collection(COLLECTION_NAME).document(resource.getId()).set(resource).get(30, TimeUnit.SECONDS);
+            log.info("Successfully saved logistic resource {} to Firestore", resource.getId());
             return resource;
         } catch (Exception e) {
             log.error("Error creating logistic resource: {}", e.getMessage());
@@ -90,22 +80,8 @@ public class LogisticResourceService {
     public LogisticResource updateResource(String id, LogisticResource resource) {
         if (id == null) throw new IllegalArgumentException("ID cannot be null");
         try {
-            Firestore db = FirestoreClient.getFirestore();
             resource.setId(id);
-
-            Map<String, Object> data = new HashMap<>();
-            data.put("id", id);
-            data.put("sku", resource.getSku());
-            data.put("name", resource.getName());
-            data.put("type", resource.getType());
-            data.put("description", resource.getDescription());
-            data.put("pricePerHour", resource.getPricePerHour());
-            data.put("images", resource.getImages() != null ? resource.getImages() : new ArrayList<>());
-            data.put("stockLevel", resource.getStockLevel());
-            data.put("location", resource.getLocation());
-            data.put("status", resource.getStatus());
-
-            db.collection(COLLECTION_NAME).document(id).set(data).get(30, TimeUnit.SECONDS);
+            db.collection(COLLECTION_NAME).document(id).set(resource).get(30, TimeUnit.SECONDS);
 
             // 3. Low Stock Alert
             if (resource.getStockLevel() < 10) {
@@ -136,7 +112,6 @@ public class LogisticResourceService {
     public void deleteResource(String id) {
         if (id == null) return;
         try {
-            Firestore db = FirestoreClient.getFirestore();
             db.collection(COLLECTION_NAME).document(id).delete().get(30, TimeUnit.SECONDS);
         } catch (Exception e) {
             log.error("Error deleting logistic resource {}: {}", id, e.getMessage());

@@ -22,9 +22,6 @@ import { DialogService } from '../../../core/services/dialog.service';
         </div>
         
         <div class="flex gap-4 animate-in slide-in-from-right duration-700">
-           <button (click)="loadAll()" class="p-3 bg-white/80 backdrop-blur-md rounded-2xl border border-stone-100 hover:bg-white hover:rotate-180 transition-all duration-500 shadow-sm">
-             <span class="material-symbols-outlined text-stone-400">refresh</span>
-           </button>
            <button (click)="openCreateModal()" 
                   class="bg-[#3e5219] text-white px-8 py-3.5 font-black rounded-2xl shadow-lg shadow-[#3e5219]/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-3 text-[10px] uppercase tracking-widest">
             <span class="material-symbols-outlined">oil_barrel</span>
@@ -81,11 +78,11 @@ import { DialogService } from '../../../core/services/dialog.service';
       <div class="bg-white rounded-[2.5rem] p-8 border border-stone-100 shadow-xl flex flex-col md:flex-row gap-6">
         <div class="flex-grow relative">
           <span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-stone-300">search</span>
-          <input [(ngModel)]="searchTerm" type="text" placeholder="Rechercher par verger, campagne ou centre..."
+          <input [(ngModel)]="searchTerm" (ngModelChange)="currentPage = 1" type="text" placeholder="Rechercher par verger, campagne ou centre..."
                  class="w-full bg-stone-50 border border-stone-100 rounded-xl pl-12 pr-4 py-3 text-sm font-bold outline-none focus:bg-white focus:border-[#3e5219] transition-all shadow-inner">
         </div>
         <div class="flex gap-4">
-           <select [(ngModel)]="statusFilter" class="bg-stone-50 border border-stone-100 rounded-xl px-6 py-3 text-sm font-black outline-none focus:bg-white focus:border-[#3e5219] transition-all">
+           <select [(ngModel)]="statusFilter" (ngModelChange)="currentPage = 1" class="bg-stone-50 border border-stone-100 rounded-xl px-6 py-3 text-sm font-black outline-none focus:bg-white focus:border-[#3e5219] transition-all">
               <option value="">Tous les Statuts</option>
               <option value="PLANNED">PLANNED</option>
               <option value="PROCESSING">PROCESSING</option>
@@ -364,13 +361,13 @@ export class TriturationPlanningComponent implements OnInit {
   triturations: Trituration[] = [];
   finishedCollectes: Collecte[] = [];
   millingCenters: MillingCenter[] = [];
-  
+
   searchTerm = '';
   statusFilter = '';
   currentPage = 1;
   itemsPerPage = 5;
   loading = false;
-  
+
   stats = { totalInputWeight: 0, totalOil: 0, avgRatio: 0 };
 
   showModal = false;
@@ -390,15 +387,17 @@ export class TriturationPlanningComponent implements OnInit {
 
     this.triturationService.getTriturations().subscribe({
       next: (data) => {
+        console.log('[DEBUG] Triturations received:', data);
         this.triturations = data || [];
         this.calculateStats();
         // Give a slight delay to avoid flicker and show the beautiful skeleton
         setTimeout(() => {
-            this.loading = false;
-            this.cdr.detectChanges();
+          this.loading = false;
+          this.cdr.detectChanges();
         }, 800);
       },
-      error: () => {
+      error: (err) => {
+        console.error('[DEBUG] Error fetching triturations:', err);
         this.loading = false;
         this.dialogService.alert("Erreur", "Impossible de charger les données de trituration.", "danger");
       }
@@ -427,8 +426,8 @@ export class TriturationPlanningComponent implements OnInit {
     let result = this.triturations;
     if (this.searchTerm) {
       const s = this.searchTerm.toLowerCase();
-      result = result.filter(t => 
-        (t.vergerName?.toLowerCase().includes(s)) || 
+      result = result.filter(t =>
+        (t.vergerName?.toLowerCase().includes(s)) ||
         (t.millName?.toLowerCase().includes(s))
       );
     }
@@ -452,7 +451,7 @@ export class TriturationPlanningComponent implements OnInit {
 
   calculateRatio(tri: Trituration): number {
     if (!tri.inputWeightKg || !tri.oilProducedLiters) return 0;
-    return Math.min((tri.oilProducedLiters / tri.inputWeightKg) * 100 * 4, 100); 
+    return Math.min((tri.oilProducedLiters / tri.inputWeightKg) * 100 * 4, 100);
   }
 
   private emptyTrituration(): Partial<Trituration> {
@@ -499,18 +498,24 @@ export class TriturationPlanningComponent implements OnInit {
 
   saveTrituration() {
     if (!this.currentTrituration.collecteId || !this.currentTrituration.millId) return;
-    
+
+    console.log('[DEBUG] Saving trituration:', this.currentTrituration);
+
     const request = this.isEditing && this.currentTrituration.id
       ? this.triturationService.updateTrituration(this.currentTrituration.id, this.currentTrituration as Trituration)
       : this.triturationService.createTrituration(this.currentTrituration as Trituration);
 
     request.subscribe({
-      next: () => {
+      next: (res) => {
+        console.log('[DEBUG] Save response:', res);
         this.toggleModal();
         this.loadAll();
         this.dialogService.alert("Succès", "Le protocole de trituration a été synchronisé.", "success");
       },
-      error: () => this.dialogService.alert("Erreur", "Échec de la synchronisation du protocole.", "danger")
+      error: (err) => {
+        console.error('[DEBUG] Save error:', err);
+        this.dialogService.alert("Erreur", "Échec de la synchronisation du protocole.", "danger");
+      }
     });
   }
 
@@ -528,7 +533,7 @@ export class TriturationPlanningComponent implements OnInit {
 
   saveResults() {
     if (!this.currentTrituration.id) return;
-    
+
     const update: Trituration = {
       ...(this.currentTrituration as Trituration),
       status: 'COMPLETED',

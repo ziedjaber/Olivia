@@ -18,6 +18,9 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class AuditService {
 
+    @org.springframework.beans.factory.annotation.Autowired
+    private Firestore db;
+
     private static final String COLLECTION_NAME = "audit_logs";
 
     /**
@@ -39,7 +42,6 @@ public class AuditService {
      */
     public void log(String userId, String userName, String userRole, String action, String entityType, String entityId, String details) {
         try {
-            Firestore db = FirestoreClient.getFirestore();
             AuditLog auditLog = new AuditLog();
             auditLog.setId(UUID.randomUUID().toString());
             auditLog.setTimestamp(Instant.now().toString());
@@ -67,7 +69,6 @@ public class AuditService {
      */
     public List<AuditLog> getAll() {
         try {
-            Firestore db = FirestoreClient.getFirestore();
             // Récupération simple sans orderBy pour éviter les problèmes d'index Firestore non créés
             QuerySnapshot query = db.collection(COLLECTION_NAME).get().get(30, TimeUnit.SECONDS);
             

@@ -1,34 +1,50 @@
 <div class="messenger-input-area">
-
-  <div class="actions-left">
-    <div class="action-icon" title="Ajouter une image">
-      <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
-    </div>
-    <div class="action-icon" title="Ajouter un sticker">
-      <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm3.5 8c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5zm-7 0c.83 0 1.5.67 1.5 1.5S9.33 13 8.5 13 7 12.33 7 11.5 7.67 10 8.5 10zm3.5 7.5c-2.33 0-4.31-1.46-5.11-3.5h10.22c-.8 2.04-2.78 3.5-5.11 3.5z"/></svg>
+  <!-- Image Preview Area -->
+  <div *ngIf="imagePreview" class="preview-container">
+    <div class="preview-card">
+      <img [src]="imagePreview" alt="Aperçu">
+      <button class="remove-btn" (click)="removePreview()">×</button>
     </div>
   </div>
 
-  <div class="input-container-inner">
-    <textarea
-      class="input-field"
-      [(ngModel)]="content"
-      (input)="onInput()"
-      (keydown)="onKeyDown($event)"
-      placeholder="Aa"
-      rows="1"
-    ></textarea>
+  <div class="input-main-row">
+    <div class="actions-left">
+      <button class="action-icon" (click)="fileInput.click()">
+        <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+        <input #fileInput type="file" hidden (change)="onFileSelected($event)" accept="image/*">
+      </button>
+      
+      <div class="emoji-trigger-wrapper relative">
+        <button class="action-icon" (click)="toggleEmojiPicker()">
+          <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm3.5 8c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5zm-7 0c.83 0 1.5.67 1.5 1.5S9.33 13 8.5 13 7 12.33 7 11.5 7.67 10 8.5 10zm3.5 7.5c-2.33 0-4.31-1.46-5.11-3.5h10.22c-.8 2.04-2.78 3.5-5.11 3.5z"/></svg>
+        </button>
+        <div *ngIf="showEmojiPicker" class="emoji-picker-mini">
+          <span *ngFor="let emoji of commonEmojis" (click)="addEmoji(emoji, $event)">{{ emoji }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="input-container-inner">
+      <textarea
+        class="input-field"
+        [(ngModel)]="content"
+        (input)="onInput()"
+        (keydown)="onKeyDown($event)"
+        placeholder="Écrivez votre message..."
+        rows="1"
+      ></textarea>
+    </div>
+
+    <button
+      class="send-btn"
+      (click)="send()"
+      [disabled]="!content.trim() && !selectedFile"
+      [class.active]="content.trim() || selectedFile"
+    >
+      <div *ngIf="isUploading" class="upload-spinner"></div>
+      <svg *ngIf="!isUploading" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+      </svg>
+    </button>
   </div>
-
-  <button
-    class="send-btn"
-    (click)="send()"
-    [disabled]="!content.trim()"
-    title="Envoyer"
-  >
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-      <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-    </svg>
-  </button>
-
 </div>
