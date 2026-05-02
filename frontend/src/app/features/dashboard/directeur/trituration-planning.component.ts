@@ -15,14 +15,14 @@ import { DialogService } from '../../../core/services/dialog.service';
       
       <!-- Premium Header -->
       <header class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-stone-100 pb-8">
-        <div>
+        <div class="animate-in slide-in-from-left duration-700">
           <span class="text-[10px] font-black text-[#3e5219] uppercase tracking-[0.4em] mb-2 block">Production & Refining</span>
           <h1 class="text-4xl font-black text-[#1e1c12] tracking-tighter">Planning <span class="text-[#3e5219] italic">Trituration</span></h1>
           <p class="text-[#1e1c12]/60 font-medium mt-1 italic">Strategic oversight and production analytics for olive oil extraction.</p>
         </div>
         
-        <div class="flex gap-4">
-           <button (click)="loadAll()" class="p-3 bg-white/80 backdrop-blur-md rounded-2xl border border-stone-100 hover:bg-white hover:scale-105 transition-all shadow-sm">
+        <div class="flex gap-4 animate-in slide-in-from-right duration-700">
+           <button (click)="loadAll()" class="p-3 bg-white/80 backdrop-blur-md rounded-2xl border border-stone-100 hover:bg-white hover:rotate-180 transition-all duration-500 shadow-sm">
              <span class="material-symbols-outlined text-stone-400">refresh</span>
            </button>
            <button (click)="openCreateModal()" 
@@ -35,44 +35,46 @@ import { DialogService } from '../../../core/services/dialog.service';
 
       <!-- Stats Overview -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="bg-white rounded-[2.5rem] p-8 border border-stone-100 shadow-xl flex items-center gap-6 group hover:border-[#3e5219]/20 transition-all duration-500">
-          <div class="w-16 h-16 rounded-[1.5rem] bg-[#3e5219]/10 flex items-center justify-center text-[#3e5219] group-hover:scale-110 transition-transform duration-500">
-            <span class="material-symbols-outlined text-3xl">scale</span>
-          </div>
-          <div>
-            <span class="text-[10px] font-black text-stone-400 uppercase tracking-widest block mb-1">Tonnage Global</span>
-            <div class="flex items-baseline gap-2">
-              <span class="text-3xl font-black text-[#1e1c12] tracking-tighter">{{ stats.totalInputWeight | number:'1.0-0' }}</span>
-              <span class="text-sm font-black text-stone-400">KG</span>
+        <ng-container *ngIf="!loading; else statsSkeleton">
+          <div class="bg-white rounded-[2.5rem] p-8 border border-stone-100 shadow-xl flex items-center gap-6 group hover:border-[#3e5219]/20 transition-all duration-500">
+            <div class="w-16 h-16 rounded-[1.5rem] bg-[#3e5219]/10 flex items-center justify-center text-[#3e5219] group-hover:scale-110 transition-transform duration-500">
+              <span class="material-symbols-outlined text-3xl">scale</span>
+            </div>
+            <div>
+              <span class="text-[10px] font-black text-stone-400 uppercase tracking-widest block mb-1">Tonnage Global</span>
+              <div class="flex items-baseline gap-2">
+                <span class="text-3xl font-black text-[#1e1c12] tracking-tighter">{{ stats.totalInputWeight | number:'1.0-0' }}</span>
+                <span class="text-sm font-black text-stone-400">KG</span>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div class="bg-white rounded-[2.5rem] p-8 border border-stone-100 shadow-xl flex items-center gap-6 group hover:border-[#3e5219]/20 transition-all duration-500">
-          <div class="w-16 h-16 rounded-[1.5rem] bg-amber-500/10 flex items-center justify-center text-amber-600 group-hover:scale-110 transition-transform duration-500">
-            <span class="material-symbols-outlined text-3xl">water_drop</span>
-          </div>
-          <div>
-            <span class="text-[10px] font-black text-stone-400 uppercase tracking-widest block mb-1">Huile Produite</span>
-            <div class="flex items-baseline gap-2">
-              <span class="text-3xl font-black text-[#1e1c12] tracking-tighter">{{ stats.totalOil | number:'1.0-0' }}</span>
-              <span class="text-sm font-black text-stone-400">Litres</span>
+          <div class="bg-white rounded-[2.5rem] p-8 border border-stone-100 shadow-xl flex items-center gap-6 group hover:border-[#3e5219]/20 transition-all duration-500">
+            <div class="w-16 h-16 rounded-[1.5rem] bg-amber-500/10 flex items-center justify-center text-amber-600 group-hover:scale-110 transition-transform duration-500">
+              <span class="material-symbols-outlined text-3xl">water_drop</span>
+            </div>
+            <div>
+              <span class="text-[10px] font-black text-stone-400 uppercase tracking-widest block mb-1">Huile Produite</span>
+              <div class="flex items-baseline gap-2">
+                <span class="text-3xl font-black text-[#1e1c12] tracking-tighter">{{ stats.totalOil | number:'1.0-0' }}</span>
+                <span class="text-sm font-black text-stone-400">Litres</span>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div class="bg-stone-900 rounded-[2.5rem] p-8 shadow-2xl flex items-center gap-6 group">
-          <div class="w-16 h-16 rounded-[1.5rem] bg-white/10 flex items-center justify-center text-primary group-hover:rotate-12 transition-transform">
-            <span class="material-symbols-outlined text-3xl">percent</span>
-          </div>
-          <div>
-            <span class="text-[10px] font-black text-white/40 uppercase tracking-widest block mb-1">Rendement Moyen</span>
-            <div class="flex items-baseline gap-2">
-              <span class="text-3xl font-black text-white tracking-tighter">{{ stats.avgRatio | number:'1.1-1' }}</span>
-              <span class="text-sm font-black text-white/50">%</span>
+          <div class="bg-stone-900 rounded-[2.5rem] p-8 shadow-2xl flex items-center gap-6 group">
+            <div class="w-16 h-16 rounded-[1.5rem] bg-white/10 flex items-center justify-center text-primary group-hover:rotate-12 transition-transform">
+              <span class="material-symbols-outlined text-3xl">percent</span>
+            </div>
+            <div>
+              <span class="text-[10px] font-black text-white/40 uppercase tracking-widest block mb-1">Rendement Moyen</span>
+              <div class="flex items-baseline gap-2">
+                <span class="text-3xl font-black text-white tracking-tighter">{{ stats.avgRatio | number:'1.1-1' }}</span>
+                <span class="text-sm font-black text-white/50">%</span>
+              </div>
             </div>
           </div>
-        </div>
+        </ng-container>
       </div>
 
       <!-- Search and Filters -->
@@ -93,8 +95,16 @@ import { DialogService } from '../../../core/services/dialog.service';
       </div>
 
       <!-- Main Plan Table -->
-      <div class="bg-white rounded-[3rem] border border-stone-100 shadow-2xl overflow-hidden animate-up">
-        <div class="overflow-x-auto">
+      <div class="bg-white rounded-[3rem] border border-stone-100 shadow-2xl overflow-hidden animate-up relative">
+        <!-- Loader Overlay -->
+        <div *ngIf="loading" class="absolute inset-0 bg-white/40 backdrop-blur-[2px] z-10 flex items-center justify-center">
+            <div class="flex flex-col items-center gap-4">
+                <div class="w-12 h-12 border-4 border-[#3e5219]/20 border-t-[#3e5219] rounded-full animate-spin"></div>
+                <p class="text-[10px] font-black text-[#3e5219] uppercase tracking-widest animate-pulse">Synchronisation des données...</p>
+            </div>
+        </div>
+
+        <div class="overflow-x-auto min-h-[400px]">
           <table class="w-full text-left">
             <thead>
               <tr class="bg-stone-50/50 border-b border-stone-100">
@@ -106,76 +116,94 @@ import { DialogService } from '../../../core/services/dialog.service';
               </tr>
             </thead>
             <tbody class="divide-y divide-stone-50">
-              <tr *ngFor="let tri of pagedTriturations" class="group hover:bg-[#3e5219]/[0.02] transition-colors">
-                <td class="px-8 py-7">
-                  <div class="flex items-center gap-4">
-                    <div class="w-10 h-10 rounded-xl bg-stone-50 flex items-center justify-center text-stone-400 group-hover:bg-white group-hover:text-[#3e5219] transition-all shadow-sm border border-stone-100">
-                      <span class="material-symbols-outlined text-lg">description</span>
+              <ng-container *ngIf="!loading; else tableSkeleton">
+                <tr *ngFor="let tri of pagedTriturations; let i = index" 
+                    class="group hover:bg-[#3e5219]/[0.02] transition-colors animate-in fade-in slide-in-from-bottom-2"
+                    [style.animation-delay.ms]="i * 50">
+                  <td class="px-8 py-7">
+                    <div class="flex items-center gap-4">
+                      <div class="w-10 h-10 rounded-xl bg-stone-50 flex items-center justify-center text-stone-400 group-hover:bg-white group-hover:text-[#3e5219] transition-all shadow-sm border border-stone-100">
+                        <span class="material-symbols-outlined text-lg">description</span>
+                      </div>
+                      <div>
+                        <p class="font-black text-[#1e1c12] text-base tracking-tight leading-none mb-1">{{ tri.vergerName }}</p>
+                        <p class="text-[9px] font-black text-stone-400 uppercase tracking-widest">{{ tri.oliveType }} • {{ tri.inputWeightKg }} KG</p>
+                      </div>
                     </div>
-                    <div>
-                      <p class="font-black text-[#1e1c12] text-base tracking-tight leading-none mb-1">{{ tri.vergerName }}</p>
-                      <p class="text-[9px] font-black text-stone-400 uppercase tracking-widest">{{ tri.oliveType }} • {{ tri.inputWeightKg }} KG</p>
+                  </td>
+                  <td class="px-8 py-7">
+                    <div class="flex items-center gap-2">
+                      <span class="material-symbols-outlined text-stone-300 text-lg">factory</span>
+                      <span class="text-xs font-black text-stone-600 uppercase">{{ tri.millName }}</span>
                     </div>
-                  </div>
-                </td>
-                <td class="px-8 py-7">
-                  <div class="flex items-center gap-2">
-                    <span class="material-symbols-outlined text-stone-300 text-lg">factory</span>
-                    <span class="text-xs font-black text-stone-600 uppercase">{{ tri.millName }}</span>
-                  </div>
-                </td>
-                <td class="px-8 py-7 text-center">
-                  <span class="px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest shadow-sm"
-                        [ngClass]="{
-                          'bg-stone-100 text-stone-500': tri.status === 'PLANNED',
-                          'bg-amber-100 text-amber-700': tri.status === 'PROCESSING',
-                          'bg-emerald-100 text-emerald-700': tri.status === 'COMPLETED'
-                        }">
-                    {{ tri.status }}
-                  </span>
-                </td>
-                <td class="px-8 py-7">
-                  <div class="flex flex-col items-center gap-2">
-                    <span class="text-xs font-black" [ngClass]="tri.oilProducedLiters ? 'text-[#1e1c12]' : 'text-stone-300'">
-                      {{ tri.oilProducedLiters || '---' }} L
+                  </td>
+                  <td class="px-8 py-7 text-center">
+                    <span class="px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest shadow-sm"
+                          [ngClass]="{
+                            'bg-stone-100 text-stone-500': tri.status === 'PLANNED',
+                            'bg-amber-100 text-amber-700': tri.status === 'PROCESSING',
+                            'bg-emerald-100 text-emerald-700': tri.status === 'COMPLETED'
+                          }">
+                      {{ tri.status }}
                     </span>
-                    <div class="w-24 h-1.5 bg-stone-100 rounded-full overflow-hidden shadow-inner">
-                      <div class="h-full bg-[#3e5219] transition-all duration-700" 
-                           [style.width.%]="calculateRatio(tri)"></div>
+                  </td>
+                  <td class="px-8 py-7">
+                    <div class="flex flex-col items-center gap-2">
+                      <span class="text-xs font-black" [ngClass]="tri.oilProducedLiters ? 'text-[#1e1c12]' : 'text-stone-300'">
+                        {{ tri.oilProducedLiters || '---' }} L
+                      </span>
+                      <div class="w-24 h-1.5 bg-stone-100 rounded-full overflow-hidden shadow-inner">
+                        <div class="h-full bg-[#3e5219] transition-all duration-700" 
+                             [style.width.%]="calculateRatio(tri)"></div>
+                      </div>
                     </div>
-                  </div>
-                </td>
-                <td class="px-8 py-7 text-right">
-                  <div class="flex justify-end gap-2">
-                    <button (click)="onEdit(tri)" class="w-10 h-10 rounded-xl bg-white border border-stone-200 text-stone-400 hover:text-[#3e5219] flex items-center justify-center transition-all shadow-sm">
-                      <span class="material-symbols-outlined text-lg">edit</span>
-                    </button>
-                    <button *ngIf="tri.status === 'PLANNED'" (click)="updateStatus(tri, 'PROCESSING')" 
-                            class="w-10 h-10 rounded-xl bg-stone-900 text-white flex items-center justify-center hover:scale-110 transition-all shadow-lg">
-                      <span class="material-symbols-outlined text-lg text-primary">play_arrow</span>
-                    </button>
-                    <button *ngIf="tri.status === 'PROCESSING'" (click)="openResultModal(tri)" 
-                            class="px-5 py-2.5 bg-[#3e5219] text-white text-[9px] font-black uppercase tracking-widest rounded-xl hover:opacity-90 shadow-lg transition-all flex items-center gap-2">
-                      <span class="material-symbols-outlined text-base">check_circle</span> Clôturer
-                    </button>
-                    <button (click)="onDelete(tri)" 
-                            class="w-10 h-10 rounded-xl bg-white border border-stone-200 text-stone-300 hover:text-red-500 flex items-center justify-center hover:scale-110 transition-all shadow-sm">
-                      <span class="material-symbols-outlined text-lg">delete</span>
-                    </button>
-                  </div>
-                </td>
-              </tr>
+                  </td>
+                  <td class="px-8 py-7 text-right">
+                    <div class="flex justify-end gap-2">
+                      <button (click)="onEdit(tri)" class="w-10 h-10 rounded-xl bg-white border border-stone-200 text-stone-400 hover:text-[#3e5219] flex items-center justify-center transition-all shadow-sm">
+                        <span class="material-symbols-outlined text-lg">edit</span>
+                      </button>
+                      <button *ngIf="tri.status === 'PLANNED'" (click)="updateStatus(tri, 'PROCESSING')" 
+                              class="w-10 h-10 rounded-xl bg-stone-900 text-white flex items-center justify-center hover:scale-110 transition-all shadow-lg">
+                        <span class="material-symbols-outlined text-lg text-primary">play_arrow</span>
+                      </button>
+                      <button *ngIf="tri.status === 'PROCESSING'" (click)="openResultModal(tri)" 
+                              class="px-5 py-2.5 bg-[#3e5219] text-white text-[9px] font-black uppercase tracking-widest rounded-xl hover:opacity-90 shadow-lg transition-all flex items-center gap-2">
+                        <span class="material-symbols-outlined text-base">check_circle</span> Clôturer
+                      </button>
+                      <button (click)="onDelete(tri)" 
+                              class="w-10 h-10 rounded-xl bg-white border border-stone-200 text-stone-300 hover:text-red-500 flex items-center justify-center hover:scale-110 transition-all shadow-sm">
+                        <span class="material-symbols-outlined text-lg">delete</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <!-- Empty State -->
+                <tr *ngIf="filteredTriturations.length === 0">
+                  <td colspan="5" class="py-20 text-center">
+                    <div class="flex flex-col items-center gap-4">
+                      <div class="w-20 h-20 bg-stone-50 rounded-full flex items-center justify-center text-stone-200">
+                        <span class="material-symbols-outlined text-5xl">inventory_2</span>
+                      </div>
+                      <div>
+                        <p class="text-stone-900 font-black text-xl tracking-tight">Aucun protocole trouvé</p>
+                        <p class="text-stone-400 text-sm font-medium">Ajustez vos filtres ou créez une nouvelle planification.</p>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </ng-container>
             </tbody>
           </table>
           
           <!-- Pagination -->
           <div class="px-8 py-6 border-t border-stone-50 flex items-center justify-between bg-stone-50/30">
-            <p class="text-[10px] font-black text-stone-400 uppercase tracking-widest">Page {{ currentPage }} de {{ totalPages }}</p>
+            <p class="text-[10px] font-black text-stone-400 uppercase tracking-widest">Page {{ currentPage }} de {{ totalPages || 1 }}</p>
             <div class="flex gap-2">
               <button (click)="prevPage()" [disabled]="currentPage === 1" class="p-2 rounded-lg bg-white border border-stone-100 disabled:opacity-30">
                 <span class="material-symbols-outlined">chevron_left</span>
               </button>
-              <button (click)="nextPage()" [disabled]="currentPage === totalPages" class="p-2 rounded-lg bg-white border border-stone-100 disabled:opacity-30">
+              <button (click)="nextPage()" [disabled]="currentPage === totalPages || totalPages === 0" class="p-2 rounded-lg bg-white border border-stone-100 disabled:opacity-30">
                 <span class="material-symbols-outlined">chevron_right</span>
               </button>
             </div>
@@ -185,8 +213,8 @@ import { DialogService } from '../../../core/services/dialog.service';
 
       <!-- CREATE / EDIT MODAL -->
       <div *ngIf="showModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-stone-900/60 backdrop-blur-xl" (click)="toggleModal()"></div>
-        <div class="relative bg-[#f4edde] w-full max-w-xl rounded-[3rem] shadow-2xl p-10 space-y-8 border border-white/20 animate-slide-up">
+        <div class="absolute inset-0 bg-stone-900/60 backdrop-blur-xl animate-in fade-in duration-300" (click)="toggleModal()"></div>
+        <div class="relative bg-[#f4edde] w-full max-w-xl rounded-[3rem] shadow-2xl p-10 space-y-8 border border-white/20 animate-in slide-in-from-bottom-8 duration-500">
           <header>
             <span class="text-[10px] font-black text-[#3e5219] uppercase tracking-[0.3em] block mb-2 font-headline">Gestion du protocole</span>
             <h3 class="text-3xl font-black text-[#1e1c12] tracking-tighter">{{ isEditing ? 'Modifier' : 'Nouvelle' }} Planification</h3>
@@ -237,8 +265,8 @@ import { DialogService } from '../../../core/services/dialog.service';
 
       <!-- RESULTS MODAL -->
       <div *ngIf="showResultModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-stone-900/60 backdrop-blur-xl" (click)="showResultModal = false"></div>
-        <div class="relative bg-[#f4edde] w-full max-w-xl rounded-[3rem] shadow-2xl p-10 space-y-8 border border-white/20 animate-slide-up">
+        <div class="absolute inset-0 bg-stone-900/60 backdrop-blur-xl animate-in fade-in duration-300" (click)="showResultModal = false"></div>
+        <div class="relative bg-[#f4edde] w-full max-w-xl rounded-[3rem] shadow-2xl p-10 space-y-8 border border-white/20 animate-in slide-in-from-bottom-8 duration-500">
           <header>
             <span class="text-[10px] font-black text-amber-600 uppercase tracking-[0.3em] block mb-2 italic">Production Analytics</span>
             <h3 class="text-3xl font-black text-[#1e1c12] tracking-tighter">Enregistrer les Résultats</h3>
@@ -276,11 +304,54 @@ import { DialogService } from '../../../core/services/dialog.service';
         </div>
       </div>
     </div>
+
+    <!-- SKELETON TEMPLATES -->
+    <ng-template #statsSkeleton>
+        <div *ngFor="let i of [1,2,3]" class="bg-white rounded-[2.5rem] p-8 border border-stone-100 shadow-xl flex items-center gap-6 animate-pulse">
+            <div class="w-16 h-16 rounded-[1.5rem] bg-stone-100 shrink-0"></div>
+            <div class="space-y-2 flex-grow">
+                <div class="h-2 w-12 bg-stone-100 rounded"></div>
+                <div class="h-8 w-24 bg-stone-100 rounded"></div>
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template #tableSkeleton>
+        <tr *ngFor="let i of [1,2,3,4,5]" class="animate-pulse">
+            <td class="px-8 py-7">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-xl bg-stone-100"></div>
+                    <div class="space-y-2">
+                        <div class="h-4 w-32 bg-stone-100 rounded"></div>
+                        <div class="h-2 w-20 bg-stone-100 rounded"></div>
+                    </div>
+                </div>
+            </td>
+            <td class="px-8 py-7"><div class="h-4 w-24 bg-stone-100 rounded"></div></td>
+            <td class="px-8 py-7"><div class="mx-auto h-6 w-16 bg-stone-100 rounded-full"></div></td>
+            <td class="px-8 py-7">
+                <div class="flex flex-col items-center gap-2">
+                    <div class="h-4 w-12 bg-stone-100 rounded"></div>
+                    <div class="h-1.5 w-24 bg-stone-100 rounded-full"></div>
+                </div>
+            </td>
+            <td class="px-8 py-7"><div class="ml-auto h-8 w-24 bg-stone-100 rounded-xl"></div></td>
+        </tr>
+    </ng-template>
   `,
   styles: [`
     :host { display: block; background: #f4edde; min-height: 100vh; }
     .animate-up { animation: slideUp 0.6s cubic-bezier(0, 0, 0.2, 1) forwards; }
     @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    
+    .animate-fade-in { animation: fadeIn 0.8s ease-out forwards; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    /* Custom scrollbar for better look */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #3e521920; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: #3e521940; }
   `]
 })
 export class TriturationPlanningComponent implements OnInit {
@@ -315,11 +386,22 @@ export class TriturationPlanningComponent implements OnInit {
 
   loadAll() {
     this.loading = true;
-    this.triturationService.getTriturations().subscribe(data => {
-      this.triturations = data || [];
-      this.calculateStats();
-      this.loading = false;
-      this.cdr.detectChanges();
+    this.cdr.detectChanges(); // Force skeleton display
+
+    this.triturationService.getTriturations().subscribe({
+      next: (data) => {
+        this.triturations = data || [];
+        this.calculateStats();
+        // Give a slight delay to avoid flicker and show the beautiful skeleton
+        setTimeout(() => {
+            this.loading = false;
+            this.cdr.detectChanges();
+        }, 800);
+      },
+      error: () => {
+        this.loading = false;
+        this.dialogService.alert("Erreur", "Impossible de charger les données de trituration.", "danger");
+      }
     });
 
     this.collecteService.getCollectes().subscribe(data => {
@@ -346,8 +428,8 @@ export class TriturationPlanningComponent implements OnInit {
     if (this.searchTerm) {
       const s = this.searchTerm.toLowerCase();
       result = result.filter(t => 
-        t.vergerName.toLowerCase().includes(s) || 
-        t.millName.toLowerCase().includes(s)
+        (t.vergerName?.toLowerCase().includes(s)) || 
+        (t.millName?.toLowerCase().includes(s))
       );
     }
     if (this.statusFilter) {

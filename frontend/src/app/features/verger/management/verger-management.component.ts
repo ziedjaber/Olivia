@@ -416,7 +416,7 @@ export class VergerManagementComponent implements OnInit, AfterViewInit {
 
 loadVergers() {
   this.loading = true;
-  this.cdr.markForCheck();
+  this.cdr.detectChanges(); // Force skeleton display
 
   const request = this.isGrower
     ? this.vergerService.getMyVergers()
@@ -425,9 +425,12 @@ loadVergers() {
   request.subscribe({
     next: (data: Verger[]) => {
       this.vergers = data;
-      this.loading = false;
-      this.cdr.detectChanges();
-      this.updateMapMarkers();
+      // Slight delay to appreciate the smooth skeleton transition
+      setTimeout(() => {
+        this.loading = false;
+        this.cdr.detectChanges();
+        this.updateMapMarkers();
+      }, 800);
     },
     error: () => {
       this.loading = false;

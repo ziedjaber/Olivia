@@ -48,13 +48,17 @@ export class UserManagementComponent implements OnInit {
 
   loadUsers() {
     this.loading = true;
-    this.cdr.markForCheck();
+    this.cdr.detectChanges(); // Show skeletons immediately
+
     this.userService.getAllUsers().subscribe({
       next: (data) => {
         this.ngZone.run(() => {
           this.users = data;
-          this.loading = false;
-          this.cdr.detectChanges();
+          // Smooth transition delay
+          setTimeout(() => {
+            this.loading = false;
+            this.cdr.detectChanges();
+          }, 800);
         });
       },
       error: () => {
