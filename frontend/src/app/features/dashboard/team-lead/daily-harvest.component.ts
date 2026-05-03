@@ -93,7 +93,7 @@ import { HarvestMapComponent } from './harvest-map.component';
                            <span class="text-[9px] font-black text-warning uppercase tracking-[0.3em] block mb-1">Protocole de securite</span>
                            <p class="text-[11px] font-bold text-on-surface-variant italic leading-relaxed">Please verify personnel presence and verify materials have arrived securely.</p>
                         </div>
-                        <button (click)="verifyDay(col)" class="w-full py-4 bg-warning text-white text-[10px] font-black uppercase tracking-widest rounded-2xl shadow-lg hover:brightness-95 transition-all flex items-center justify-center gap-2">
+                        <button (click)="verifyDay(col)" class="w-full py-4 bg-warning text-black text-[10px] font-black uppercase tracking-widest rounded-2xl shadow-lg hover:brightness-95 transition-all flex items-center justify-center gap-2">
                            <span class="material-symbols-outlined text-lg font-black">fact_check</span> Validate Entry
                         </button>
                      </div>

@@ -1,4 +1,4 @@
 /** Renseigner `geminiApiKey` avec une clé Google AI Studio (ne pas commiter de clé réelle). */
 export const environment = {
-  geminiApiKey: 'AIzaSyCB28MZwmbTN-qmppdG2Uw31FjnZYd6o00'
+  geminiApiKey: 'AIzaSyAKy-8i8MxfD9B0Ec1TRS3blQBPBa4pWJs'
 };

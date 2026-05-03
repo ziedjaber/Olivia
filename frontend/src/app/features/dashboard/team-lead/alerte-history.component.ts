@@ -121,7 +121,7 @@ import { DialogService } from '../../../core/services/dialog.service';
               <button type="submit" [disabled]="loading"
                       class="px-12 py-5 bg-error text-white font-black rounded-2xl shadow-2xl hover:shadow-error/40 hover:-translate-y-1 active:translate-y-0 active:scale-95 transition-all text-xs uppercase tracking-[0.2em] flex items-center gap-4">
                 <span *ngIf="loading" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-                <span>{{ loading ? 'TRANSMISSION...' : 'TRANSMETTRE L\`ALERTE D\'URGENCE' }}</span>
+                <span>{{ loading ? 'TRANSMISSION...' : "TRANSMETTRE" }}</span>
                 <span class="material-symbols-outlined text-[20px]">send</span>
               </button>
             </div>
@@ -247,13 +247,20 @@ import { DialogService } from '../../../core/services/dialog.service';
                 </td>
                 <td class="p-6">
                   <div class="flex items-center justify-end gap-2">
-                    <button (click)="viewDetails(a)" class="w-9 h-9 rounded-xl flex items-center justify-center text-outline hover:text-primary hover:bg-primary/10 transition-all border border-transparent hover:border-primary/20" title="Voir les preuves">
-                      <span class="material-symbols-outlined text-lg">visibilité</span>
-                    </button>
-                    <button *ngIf="a.statut === 'NON_TRAITEE'" (click)="confirmDelete(a)" class="w-9 h-9 rounded-xl flex items-center justify-center text-outline hover:text-error hover:bg-error/10 transition-all border border-transparent hover:border-error/20" title="Retirer l'alerte">
-                      <span class="material-symbols-outlined text-lg"> Retirer l'alerte</span>
-                    </button>
-                  </div>
+  
+  <button (click)="viewDetails(a)"
+    class="w-9 h-9 rounded-xl flex items-center justify-center text-outline hover:text-primary hover:bg-primary/10 transition-all border border-transparent hover:border-primary/20"
+    title="Voir les preuves">
+    <span class="material-symbols-outlined text-lg">visibility</span>
+  </button>
+
+  <button *ngIf="a.statut === 'NON_TRAITEE'" (click)="confirmDelete(a)"
+    class="w-9 h-9 rounded-xl flex items-center justify-center text-outline hover:text-error hover:bg-error/10 transition-all border border-transparent hover:border-error/20"
+    title="Retirer l'alerte">
+    <span class="material-symbols-outlined text-lg">delete</span>
+  </button>
+
+</div>
                 </td>
               </tr>
               <tr *ngIf="filteredAlerts.length === 0">

@@ -32,9 +32,9 @@ import { ChatService } from '../../../../features/chat/services/chat';
       <div class="relative z-10 flex flex-col h-full">
         
         <!-- Brand Area -->
-        <div class="flex items-center justify-center shrink-0 border-b border-gray-50 bg-white py-3 relative overflow-hidden">
+        <div class="flex items-center justify-center shrink-0 border-b border-gray-50 py-3 relative overflow-hidden">
           <img src="logo.png" alt="Olivia Logo"
-               class="max-h-20 w-auto object-contain transition-all duration-300"
+               class="max-h-40 w-auto object-contain transition-all duration-300"
                [class.max-h-12]="isCollapsed()" />
         </div>
 
@@ -161,7 +161,7 @@ import { ChatService } from '../../../../features/chat/services/chat';
                 </a>
                 <a class="nav-link" routerLink="/emergency-history" routerLinkActive="active-link">
                   <span class="nav-icon-wrapper !text-orange-500 pulse-icon-slow"><span class="material-symbols-outlined nav-icon">history</span></span>
-                  <span class="nav-text">Historique Alertes</span>
+                  <span class="nav-text">Alertes</span>
                 </a>
               </div>
             </ng-container>
@@ -267,7 +267,7 @@ import { ChatService } from '../../../../features/chat/services/chat';
     .nav-link:hover { @apply bg-gradient-to-r from-gray-50/50 to-gray-50; }
     .nav-icon-wrapper { @apply w-5 h-5 flex items-center justify-center text-gray-500 transition-all duration-300 flex-shrink-0; }
     .nav-icon { @apply text-[20px] transition-all duration-300; }
-    .nav-text { @apply text-[13px] font-bold tracking-tight text-gray-600 transition-all duration-300; }
+    .nav-text { @apply text-[15px] font-bold tracking-tight text-gray-600 transition-all duration-300; }
     .active-link { @apply text-[#3e5219] bg-gradient-to-r from-[#3e5219]/10 to-[#3e5219]/5 border border-[#3e5219]/20 shadow-sm; }
     .active-link .nav-icon-wrapper { @apply text-[#3e5219] bg-white shadow-sm rounded-lg; }
     .active-link .nav-text { @apply text-[#3e5219]; }

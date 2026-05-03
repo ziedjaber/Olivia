@@ -22,7 +22,7 @@ export interface AiLogisticsResult {
   providedIn: 'root'
 })
 export class AiService {
-  private readonly geminiModelId = 'gemini-flash-latest';
+  private readonly geminiModelId = 'gemini-1.5-flash';
 
   suggestLogistics(
     mission: Collecte,

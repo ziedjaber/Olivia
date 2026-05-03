@@ -32,7 +32,8 @@ export const routes: Routes = [
         children: [
           { path: 'analytics', loadComponent: () => import('./features/dashboard/logistique/analytics/logistics-analytics.component').then(m => m.LogisticsAnalyticsComponent) },
           { path: 'inventory', loadComponent: () => import('./features/dashboard/logistique/inventory/inventory-management.component').then(m => m.InventoryManagementComponent) },
-          { path: 'provisioning', loadComponent: () => import('./features/dashboard/logistique/provisioning/provisioning-demands.component').then(m => m.ProvisioningDemandsComponent) }
+          { path: 'provisioning', loadComponent: () => import('./features/dashboard/logistique/provisioning/provisioning-demands.component').then(m => m.ProvisioningDemandsComponent) },
+          { path: 'missions', loadComponent: () => import('./features/dashboard/logistique/mission-assignments.component').then(m => m.MissionAssignmentsComponent) }
         ]
       },
 
