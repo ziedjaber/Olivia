@@ -70,6 +70,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/notifications/test").permitAll()
                         .requestMatchers("/api/test/**").permitAll()
                         .requestMatchers("/api/prediction/**").permitAll()
+                        .requestMatchers("/api/ai/**").permitAll()
                         // Autorisation des routes WebSocket pour ton Chat
                         .requestMatchers("/ws/**", "/ws/info/**", "/ws/iframe.html", "/ws/jsonp/**").permitAll()
                         .requestMatchers("/uploads/**").permitAll()

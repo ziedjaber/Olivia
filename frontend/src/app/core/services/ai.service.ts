@@ -1,11 +1,10 @@
-import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable, catchError, map, throwError } from 'rxjs';
 import { Collecte } from './collecte.service';
 import { Verger } from './verger.service';
 import { LogisticResource } from './logistique.service';
 import { environment } from '../../../environments/environment';
-
-import { GoogleGenerativeAI } from '@google/generative-ai';
 
 /** Réponse structurée : liste + justification globale de la sélection. */
 export interface AiLogisticsResult {
@@ -22,15 +21,16 @@ export interface AiLogisticsResult {
   providedIn: 'root'
 })
 export class AiService {
-  private readonly geminiModelId = 'gemini-1.5-flash';
+  private http = inject(HttpClient);
+  // URL of the new Spring Boot endpoint
+  private apiUrl = `${environment.apiBaseUrl}/ai/suggest-logistics`;
 
   suggestLogistics(
     mission: Collecte,
     verger: Verger,
     inventory: LogisticResource[]
   ): Observable<AiLogisticsResult> {
-    return new Observable(observer => {
-      const promptText = `
+    const promptText = `
 You are an expert agricultural logistics planner specialized in olive harvesting operations.
 
 Your task is to determine the optimal set of resources required to complete a harvesting mission efficiently and at the lowest possible cost.
@@ -119,49 +119,31 @@ Additionally:
 - Avoid over-provisioning (do not suggest excessive unused resources)
 `;
 
-      const executeAi = async () => {
-        try {
-          const apiKey = environment.geminiApiKey?.trim();
-          if (!apiKey) {
-            observer.error(
-              new Error(
-                'Clé API Gemini manquante : renseignez `geminiApiKey` dans src/environments/environment.ts (clé depuis Google AI Studio).'
-              )
-            );
-            return;
-          }
+    return this.http.post<{text: string}>(this.apiUrl, { prompt: promptText }).pipe(
+      map(response => {
+        const rawText = response.text;
+        const jsonText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+        const parsed = JSON.parse(jsonText) as unknown;
+        let selectionJustification = '';
+        let resources: AiLogisticsResult['resources'] = [];
 
-          const genAI = new GoogleGenerativeAI(apiKey);
-          const model = genAI.getGenerativeModel({ model: this.geminiModelId });
-          const result = await model.generateContent(promptText);
-          const response = await result.response;
-          const rawText = response.text();
-          
-          const jsonText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
-          const parsed = JSON.parse(jsonText) as unknown;
-          let selectionJustification = '';
-          let resources: AiLogisticsResult['resources'];
-
-          if (Array.isArray(parsed)) {
-            resources = parsed as AiLogisticsResult['resources'];
-          } else if (parsed && typeof parsed === 'object') {
-            const o = parsed as Record<string, unknown>;
-            selectionJustification = String(o['selectionJustification'] ?? '').trim();
-            const raw = o['resources'];
-            resources = Array.isArray(raw) ? (raw as AiLogisticsResult['resources']) : [];
-          } else {
-            throw new Error('Unexpected AI JSON shape');
-          }
-
-          observer.next({ resources, selectionJustification });
-          observer.complete();
-        } catch (error) {
-          console.error("[AiService] Google Gemini Official SDK Error:", error);
-          observer.error(error);
+        if (Array.isArray(parsed)) {
+          resources = parsed as AiLogisticsResult['resources'];
+        } else if (parsed && typeof parsed === 'object') {
+          const o = parsed as Record<string, unknown>;
+          selectionJustification = String(o['selectionJustification'] ?? '').trim();
+          const raw = o['resources'];
+          resources = Array.isArray(raw) ? (raw as AiLogisticsResult['resources']) : [];
+        } else {
+          throw new Error('Unexpected AI JSON shape');
         }
-      };
 
-      executeAi();
-    });
+        return { resources, selectionJustification };
+      }),
+      catchError(error => {
+        console.error("[AiService] Backend Error:", error);
+        return throwError(() => error);
+      })
+    );
   }
 }
