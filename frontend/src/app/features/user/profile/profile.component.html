@@ -95,7 +95,7 @@
           <button type="submit" [disabled]="updating"
                   class="bg-primary text-on-primary py-5 px-16 rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-4 min-w-[280px]">
             <span *ngIf="updating" class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-            {{ updating ? 'Enregistrement...' : 'Enregistrer les modifications' }}
+            {{ updating ? 'Enregistrement...' : 'Enregistrer' }}
           </button>
         </div>
       </form>

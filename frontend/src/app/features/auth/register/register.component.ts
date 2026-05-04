@@ -13,7 +13,7 @@ import { throwError } from 'rxjs';
   templateUrl: './register.component.html'
 })
 export class RegisterComponent {
-  user = { email: '', password: '', fullName: '', role: 'OLEICULTEUR' };
+  user = { email: '', password: '', fullName: '', role: 'OUVRIER_RECOLTE' };
   loading = false;
   message = '';
   success = false;

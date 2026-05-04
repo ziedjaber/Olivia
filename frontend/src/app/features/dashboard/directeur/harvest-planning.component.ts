@@ -301,7 +301,7 @@ interface Verger {
               
               <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div class="group">
-                  <label class="block text-[10px] font-black text-outline uppercase tracking-widest mb-3">Domaine Cible</label>
+                  <label class="block text-[10px] font-black text-outline uppercase tracking-widest mb-3">Verger</label>
                   <select [(ngModel)]="newCollecte.vergerId" class="w-full bg-stone-50 border border-stone-100 focus:border-primary/40 focus:bg-white rounded-[1.5rem] px-6 py-5 text-sm font-bold text-on-surface outline-none transition-all cursor-pointer shadow-inner">
                     <option [value]="null">Sélectionnez le Domaine</option>
                     <option *ngFor="let v of allVergers" [value]="v.id">{{ v.nom }} ({{ v.niveauMaturite }}%)</option>

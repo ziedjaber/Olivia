@@ -18,12 +18,12 @@ import { DialogService } from '../../../core/services/dialog.service';
       <header class="mb-12 max-w-7xl mx-auto">
         <div class="flex items-center gap-2 text-primary font-black text-[10px] uppercase tracking-[0.25em] mb-2">
           <span class="w-10 h-[1px] bg-primary"></span>
-          Logistics Control
+          Contrôle Logistique
         </div>
         <h1 class="text-4xl font-black text-on-surface tracking-tighter" style="font-family: Manrope, sans-serif;">
-          Assigned <span class="text-primary italic">Missions</span>
+          Missions <span class="text-primary italic">Assignées</span>
         </h1>
-        <p class="text-on-surface-variant text-sm font-medium mt-1">Manage logistical provisioning for harvest operations.</p>
+        <p class="text-on-surface-variant text-sm font-medium mt-1">Gérer l'approvisionnement logistique des opérations de récolte.</p>
       </header>
 
       <div class="max-w-7xl mx-auto">
@@ -48,9 +48,10 @@ import { DialogService } from '../../../core/services/dialog.service';
                     </div>
 
                     <div class="mb-4">
-                        <h4 class="text-[10px] font-black text-outline uppercase tracking-[0.2em] mb-2 border-b border-outline-variant/10 pb-2">Currently Provisioned Resources</h4>
+                        <h4 class="text-[10px] font-black text-outline uppercase tracking-[0.2em] mb-2 border-b border-outline-variant/10 pb-2">
+Ressources actuellement provisionnées</h4>
                         <div *ngIf="!mission.requiredResources || mission.requiredResources.length === 0" class="text-xs font-bold text-outline italic">
-                           No resources assigned.
+                           Aucune ressource assignée.
                         </div>
                         <ul *ngIf="mission.requiredResources && mission.requiredResources.length > 0" class="space-y-1">
                            <li *ngFor="let res of mission.requiredResources" class="text-xs font-bold text-on-surface flex justify-between items-center bg-white p-2 rounded-lg border border-outline-variant/5">
@@ -66,10 +67,10 @@ import { DialogService } from '../../../core/services/dialog.service';
                        {{ mission.requiredResources && mission.requiredResources.length > 0 ? 'Update' : 'Provison' }}
                     </button>
                     <button *ngIf="mission.requiredResources && mission.requiredResources.length > 0 && !mission.logisticsReady" (click)="markReady(mission)" class="flex-grow py-4 mt-6 rounded-2xl bg-primary text-on-primary font-black text-[10px] uppercase tracking-[0.2em] shadow-xl hover:scale-105 active:scale-95 transition-all">
-                       Mark Ready
+                       Marquer prêt
                     </button>
                     <button *ngIf="mission.logisticsReady" disabled class="flex-grow py-4 mt-6 rounded-2xl bg-green-500 text-white font-black text-[10px] uppercase tracking-[0.2em] shadow-xl opacity-80 cursor-not-allowed">
-                       Ready ✓
+                       Prêt ✓
                     </button>
                  </div>
               </div>
@@ -165,7 +166,7 @@ import { DialogService } from '../../../core/services/dialog.service';
 
             <div class="p-6 border-t border-outline-variant/10 bg-surface-container-low/30">
                <button (click)="finalizeProvisioning()" class="w-full py-4 rounded-2xl bg-primary text-on-primary font-black text-[10px] uppercase tracking-[0.3em] shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all">
-                  {{ (activeMission.requiredResources || []).length > 0 ? 'Update Provisioning' : 'Confirm Provisioning' }}
+                  {{ (activeMission.requiredResources || []).length > 0 ? 'Update Provisioning' : 'Confirmer' }}
                </button>
             </div>
          </div>

@@ -145,7 +145,7 @@ import { Router } from '@angular/router';
                     class="w-full group relative overflow-hidden py-5 bg-error text-white font-black rounded-3xl shadow-[0_20px_50px_rgba(239,68,68,0.3)] hover:shadow-error/50 hover:-translate-y-1 active:translate-y-0 active:scale-95 transition-all text-sm uppercase tracking-[0.2em] disabled:opacity-50">
               <span class="relative z-10 flex items-center justify-center gap-3">
                  <span *ngIf="loading" class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-                 <span>{{ loading ? "Transmission en cours..." : "Transmettre l'alerte d'urgence" }}</span>
+                 <span>{{ loading ? "Transmission en cours..." : "Transmettre" }}</span>
                  <span class="material-symbols-outlined text-[18px]">send</span>
               </span>
               <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
