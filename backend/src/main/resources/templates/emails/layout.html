@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Olivia Cooperative</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0e1a07;
+    font-family: 'DM Sans', sans-serif;
+    padding: 48px 20px;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ─── WRAPPER ─── */
+  .olivia-wrapper {
+    max-width: 620px;
+    margin: 0 auto;
+  }
+
+  /* ─── BRAND BAR ─── */
+  .olivia-brand-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 0 0 28px;
+  }
+
+  .olivia-brand-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #a8c87a;
+    letter-spacing: 0.04em;
+  }
+
+  .olivia-brand-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #4a7c1f;
+  }
+
+  .olivia-brand-tagline {
+    font-size: 11px;
+    color: #5a7a3a;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  /* ─── FOOTER ─── */
+  .olivia-footer {
+    background: #090f04;
+    border: 1px solid #1e3008;
+    border-top: none;
+    border-radius: 0 0 20px 20px;
+    padding: 32px 50px;
+    text-align: center;
+  }
+
+  .olivia-footer-rule {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #2a4010, transparent);
+    margin-bottom: 24px;
+  }
+
+  .olivia-footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin-bottom: 18px;
+  }
+
+  .olivia-footer-link {
+    font-size: 12px;
+    color: #3a5020;
+    text-decoration: none;
+    letter-spacing: 0.05em;
+  }
+
+  .olivia-footer-copy {
+    font-size: 11.5px;
+    color: #2e4018;
+    letter-spacing: 0.04em;
+    line-height: 1.7;
+  }
+
+  .olivia-footer-copy strong {
+    color: #4a6a28;
+    font-weight: 500;
+  }
+
+  /* ─── SHARED: BADGE ─── */
+  .olivia-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .olivia-badge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    animation: olivia-pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes olivia-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.35; }
+  }
+
+  /* ─── SHARED: TITLE & LEAD ─── */
+  .olivia-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 38px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 16px;
+    position: relative;
+    z-index: 2;
+    letter-spacing: -0.01em;
+  }
+
+  .olivia-divider {
+    width: 48px;
+    height: 2px;
+    border-radius: 2px;
+    margin: 24px 0;
+    position: relative;
+    z-index: 2;
+  }
+
+  .olivia-lead {
+    font-size: 15px;
+    line-height: 1.7;
+    font-weight: 300;
+    position: relative;
+    z-index: 2;
+    max-width: 460px;
+  }
+
+  /* ─── SHARED: STATS BAND ─── */
+  .olivia-stats-band {
+    border-left: 1px solid #2a4a10;
+    border-right: 1px solid #2a4a10;
+    display: flex;
+  }
+
+  .olivia-stat-block {
+    flex: 1;
+    padding: 32px 36px;
+    position: relative;
+  }
+
+  .olivia-stat-block::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #3a6e14, transparent);
+  }
+
+  .olivia-stat-block + .olivia-stat-block {
+    border-left: 1px solid #1e3a0a;
+  }
+
+  .olivia-stat-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: #4a6a2a;
+    margin-bottom: 10px;
+  }
+
+  .olivia-stat-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 500;
+    color: #c8e89a;
+    letter-spacing: 0.01em;
+  }
+
+  /* ─── SHARED: BODY CARD ─── */
+  .olivia-body-card {
+    border: 1px solid #2a4a10;
+    border-top: none;
+    padding: 44px 50px;
+  }
+
+  .olivia-body-text {
+    font-size: 15px;
+    line-height: 1.75;
+    font-weight: 300;
+    margin-bottom: 36px;
+  }
+
+  /* ─── SHARED: CTA ─── */
+  .olivia-cta-wrapper {
+    text-align: center;
+    margin: 40px 0 32px;
+  }
+
+  .olivia-btn {
+    display: inline-block;
+    padding: 18px 56px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  /* ─── SHARED: ALERT BOX ─── */
+  .olivia-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    border-radius: 10px;
+    border: 1px solid;
+    padding: 18px 22px;
+  }
+
+  .olivia-alert-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .olivia-alert-text {
+    font-size: 12.5px;
+    line-height: 1.6;
+    font-weight: 400;
+  }
+
+  .olivia-alert-text strong {
+    font-weight: 500;
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 520px) {
+    .olivia-footer { padding: 28px; }
+    .olivia-stats-band { flex-direction: column; }
+    .olivia-stat-block + .olivia-stat-block { border-left: none; border-top: 1px solid #1e3a0a; }
+    .olivia-body-card { padding: 32px 24px; }
+    .olivia-btn { display: block; padding: 16px 24px; text-align: center; }
+    .olivia-title { font-size: 30px; }
+  }
+</style>
+</head>
+<body>
+<div class="olivia-wrapper">
+
+  <!-- ─── BRAND BAR ─── -->
+  <div class="olivia-brand-bar">
+    <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
+      <ellipse cx="16" cy="13" rx="6" ry="9" fill="#2a5c0a" stroke="#5aaa1e" stroke-width="0.8"/>
+      <ellipse cx="16" cy="13" rx="3" ry="5.5" fill="#1a3c06"/>
+      <path d="M16 22 Q22 26 26 30" stroke="#4a8a18" stroke-width="1.2" stroke-linecap="round"/>
+      <path d="M21 8 Q26 4 28 6" stroke="#4a8a18" stroke-width="1" stroke-linecap="round"/>
+      <circle cx="24" cy="7" r="2.5" fill="#3a7012"/>
+      <path d="M11 7 Q7 3 6 6" stroke="#4a8a18" stroke-width="1" stroke-linecap="round"/>
+      <circle cx="8" cy="6.5" r="2" fill="#3a7012"/>
+    </svg>
+    <span class="olivia-brand-name">Olivia</span>
+    <div class="olivia-brand-dot"></div>
+    <span class="olivia-brand-tagline">Cooperative Network</span>
+  </div>
+
+  <!-- ─── INJECTED CONTENT ─── -->
+  <div th:insert="${content}">
+    <!-- email-specific content injected here -->
+  </div>
+
+  <!-- ─── FOOTER ─── -->
+  <div class="olivia-footer">
+    <div class="olivia-footer-rule"></div>
+    <div class="olivia-footer-links">
+      <a href="#" class="olivia-footer-link">Support</a>
+      <a href="#" class="olivia-footer-link">Privacy Policy</a>
+      <a href="#" class="olivia-footer-link">Unsubscribe</a>
+    </div>
+    <p class="olivia-footer-copy">
+      &copy; 2026 <strong>Olivia Cooperative</strong> &mdash; All rights reserved.<br>
+      Sustainability &bull; Quality &bull; Innovation
+    </p>
+  </div>
+
+</div>
+</body>
+</html>

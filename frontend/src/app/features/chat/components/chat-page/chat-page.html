@@ -1,0 +1,21 @@
+<div
+  class="fixed top-0 right-0 h-screen w-full sm:w-[600px] md:w-[800px] lg:w-[900px] z-50 bg-surface text-on-surface shadow-2xl transition-transform duration-300 ease-in-out transform flex flex-col"
+  [class.translate-x-full]="!(isChatOpen$ | async)"
+>
+  <div class="flex justify-between items-center px-6 py-4 border-b border-outline-variant/10" style="background-color: #fdfff8;">
+    <h2 class="text-lg font-bold font-headline flex items-center gap-2">
+      <span class="material-symbols-outlined text-primary">chat</span>
+      Messages
+    </h2>
+    <button (click)="closeChat()" class="p-2 rounded-full hover:bg-surface-container-highest transition-colors text-on-surface-variant flex items-center">
+      <span class="material-symbols-outlined">close</span>
+    </button>
+  </div>
+
+  <div class="flex-1 overflow-hidden flex flex-col bg-background relative">
+    <div class="absolute inset-0 flex">
+      <app-conversation-list class="w-1/3 border-r border-outline-variant/10"></app-conversation-list>
+      <app-chat-window class="flex-1 flex flex-col"></app-chat-window>
+    </div>
+  </div>
+</div>

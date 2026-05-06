@@ -1,0 +1,136 @@
+package com.olivia.backend.controller;
+
+import com.olivia.backend.model.User;
+import com.olivia.backend.model.Role;
+import com.olivia.backend.service.FileService;
+import com.olivia.backend.service.UserService;
+
+import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import java.util.Map;
+
+@Slf4j
+@RestController
+@RequestMapping("/api/users")
+@CrossOrigin(origins = "*")
+public class UserController {
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private FileService fileService;
+
+    @GetMapping("/me")
+    public ResponseEntity<?> getMe() {
+        try {
+            String uid = SecurityContextHolder.getContext().getAuthentication().getName();
+            return ResponseEntity.ok(userService.getUserById(uid));
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body("Profile not found");
+        }
+    }
+
+    @PutMapping("/me")
+    public ResponseEntity<?> updateMe(@RequestBody User user) {
+        try {
+            userService.updateProfile(user);
+            return ResponseEntity.ok("Profile updated successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error updating profile: " + e.getMessage());
+        }
+    }
+
+    @GetMapping
+    @PreAuthorize("hasAnyAuthority('ROLE_DIRECTEUR', 'ROLE_CHEF_EQUIPE_RECOLTE')")
+    public ResponseEntity<?> getAllUsers() {
+        try {
+            return ResponseEntity.ok(userService.getAllUsers());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error fetching users");
+        }
+    }
+
+    @PutMapping("/{id}/role")
+    @PreAuthorize("hasAnyAuthority('ROLE_DIRECTEUR')")
+    public ResponseEntity<?> updateRole(@PathVariable String id, @RequestBody Map<String, String> body) {
+        try {
+            Role role = Role.valueOf(body.get("role"));
+            userService.updateRole(id, role);
+            return ResponseEntity.ok("Role updated successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error updating role");
+        }
+    }
+
+    @PutMapping("/{id}/status")
+    @PreAuthorize("hasAnyAuthority('ROLE_DIRECTEUR')")
+    public ResponseEntity<?> toggleStatus(@PathVariable String id, @RequestBody Map<String, Boolean> body) {
+        try {
+            userService.toggleStatus(id, body.get("active"));
+            return ResponseEntity.ok("User status updated successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error updating status");
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_DIRECTEUR')")
+    public ResponseEntity<?> deleteUser(@PathVariable String id) {
+        log.info("[Admin] Request to delete user: {}", id);
+        try {
+            userService.deleteUser(id);
+            return ResponseEntity.ok("User deleted successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error deleting user: " + e.getMessage());
+        }
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_DIRECTEUR')")
+    public ResponseEntity<?> updateUser(@PathVariable String id, @RequestBody User user) {
+        log.info("[Admin] Request to update user: {}. New Data: {}", id, user.getFullName());
+        try {
+            user.setId(id);
+            userService.updateUserByAdmin(user);
+            return ResponseEntity.ok("User updated successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error updating user: " + e.getMessage());
+        }
+    }
+
+    @Autowired
+    private com.olivia.backend.service.AuthService authService;
+
+    @PostMapping("/admin/create")
+    @PreAuthorize("hasAnyAuthority('ROLE_DIRECTEUR')")
+    public ResponseEntity<?> adminCreateUser(@RequestBody com.olivia.backend.dto.AuthDTOs.RegisterRequest request) {
+        try {
+            authService.register(request);
+            return ResponseEntity.ok("User created successfully by admin");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error creating user: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/avatar")
+    public ResponseEntity<?> uploadAvatar(@RequestParam("file") MultipartFile file) {
+        try {
+            String uid = SecurityContextHolder.getContext().getAuthentication().getName();
+            User user = userService.getUserById(uid);
+            String fileName = fileService.saveAvatar(file, user.getId());
+            String avatarUrl = "/uploads/avatars/" + fileName;
+            user.setAvatarUrl(avatarUrl);
+            userService.updateProfile(user);
+            return ResponseEntity.ok(avatarUrl);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Upload failed: " + e.getMessage());
+        }
+    }
+}

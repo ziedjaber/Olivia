@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0e1a07;
+    font-family: 'DM Sans', sans-serif;
+    padding: 48px 20px;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrapper {
+    max-width: 620px;
+    margin: 0 auto;
+  }
+
+  /* ─── BRAND BAR ─── */
+  .brand-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 0 0 28px;
+  }
+
+  .brand-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #a8c87a;
+    letter-spacing: 0.04em;
+  }
+
+  .brand-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #4a7c1f;
+  }
+
+  .brand-tagline {
+    font-size: 11px;
+    color: #5a7a3a;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  /* ─── HERO ─── */
+  .hero {
+    background: linear-gradient(160deg, #1e1500 0%, #160f00 40%, #110c00 100%);
+    border-radius: 20px 20px 0 0;
+    padding: 60px 50px 50px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid #3a2a00;
+    border-bottom: none;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -80px;
+    right: -60px;
+    width: 340px;
+    height: 340px;
+    background: radial-gradient(circle, rgba(245, 158, 11, 0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -40px;
+    left: -40px;
+    width: 220px;
+    height: 220px;
+    background: radial-gradient(circle, rgba(180, 100, 0, 0.1) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  /* Storm watermark */
+  .hero-watermark {
+    position: absolute;
+    right: -10px;
+    top: -10px;
+    opacity: 0.06;
+    width: 240px;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(245, 158, 11, 0.12);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    color: #fbbf24;
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .badge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #f59e0b;
+    box-shadow: 0 0 6px rgba(245, 158, 11, 0.9);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.35; }
+  }
+
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 38px;
+    font-weight: 700;
+    color: #fef3c7;
+    line-height: 1.2;
+    margin-bottom: 16px;
+    position: relative;
+    z-index: 2;
+    letter-spacing: -0.01em;
+  }
+
+  .hero-title span { color: #f59e0b; }
+
+  .hero-divider {
+    width: 48px;
+    height: 2px;
+    background: linear-gradient(90deg, #b45309, #fbbf24);
+    margin: 24px 0;
+    border-radius: 2px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero-subtitle {
+    font-size: 15px;
+    color: #92703a;
+    line-height: 1.7;
+    max-width: 460px;
+    position: relative;
+    z-index: 2;
+    font-weight: 300;
+  }
+
+  /* ─── STATS BAND ─── */
+  .stats-band {
+    background: #120d00;
+    border-left: 1px solid #3a2a00;
+    border-right: 1px solid #3a2a00;
+    display: flex;
+  }
+
+  .stat-block {
+    flex: 1;
+    padding: 32px 36px;
+    position: relative;
+  }
+
+  .stat-block + .stat-block { border-left: 1px solid #2a1e00; }
+
+  .stat-block::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #92400e, transparent);
+  }
+
+  .stat-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: #5c3d10;
+    margin-bottom: 10px;
+  }
+
+  .stat-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 500;
+    color: #fde68a;
+    letter-spacing: 0.01em;
+    line-height: 1.3;
+  }
+
+  .stat-value.normal {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: #c4922a;
+  }
+
+  /* ─── BODY CARD ─── */
+  .body-card {
+    background: #0f0900;
+    border: 1px solid #3a2a00;
+    border-top: none;
+    padding: 44px 50px;
+  }
+
+  .body-text {
+    font-size: 15px;
+    color: #7a5a28;
+    line-height: 1.75;
+    font-weight: 300;
+    margin-bottom: 36px;
+  }
+
+  .body-text strong {
+    color: #c4922a;
+    font-weight: 500;
+  }
+
+  /* ─── IMPACT GRID ─── */
+  .impact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 0 0 36px;
+  }
+
+  .impact-card {
+    background: #160e00;
+    border: 1px solid #2e1e00;
+    border-radius: 12px;
+    padding: 22px 22px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .impact-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #92400e, transparent);
+  }
+
+  .impact-card.full-width {
+    grid-column: 1 / -1;
+  }
+
+  .impact-card-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: #5c3d10;
+    margin-bottom: 10px;
+  }
+
+  .impact-card-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 500;
+    color: #fde68a;
+    line-height: 1.3;
+  }
+
+  .impact-card-value.amber {
+    color: #f59e0b;
+  }
+
+  .impact-card-value.small {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: #c4922a;
+  }
+
+  /* ─── PROTOCOL STEPS ─── */
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 0 0 40px;
+  }
+
+  .step {
+    display: flex;
+    gap: 18px;
+    align-items: flex-start;
+    padding: 18px 0;
+    border-bottom: 1px solid #1e1000;
+  }
+
+  .step:last-child { border-bottom: none; }
+
+  .step-num {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: rgba(180, 83, 9, 0.12);
+    border: 1px solid rgba(180, 83, 9, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: #d97706;
+    margin-top: 2px;
+  }
+
+  .step-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: #d4a444;
+    margin-bottom: 4px;
+  }
+
+  .step-desc {
+    font-size: 13px;
+    color: #6a4820;
+    line-height: 1.5;
+    font-weight: 300;
+  }
+
+  /* ─── CTA ─── */
+  .cta-wrapper {
+    text-align: center;
+    margin: 40px 0 32px;
+  }
+
+  .cta-button {
+    display: inline-block;
+    background: linear-gradient(135deg, #92400e 0%, #b45309 60%, #d97706 100%);
+    color: #fef3c7;
+    padding: 18px 56px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    box-shadow: 0 4px 30px rgba(180, 83, 9, 0.35), 0 1px 0 rgba(255,255,255,0.08) inset;
+  }
+
+  .cta-button::after {
+    content: ' →';
+    font-weight: 300;
+  }
+
+  /* ─── ALERT BOX ─── */
+  .alert-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    background: rgba(180, 83, 9, 0.07);
+    border: 1px solid rgba(200, 100, 10, 0.25);
+    border-radius: 10px;
+    padding: 18px 22px;
+  }
+
+  .alert-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .alert-text {
+    font-size: 12.5px;
+    color: #8a5820;
+    line-height: 1.6;
+    font-weight: 400;
+  }
+
+  .alert-text strong {
+    color: #c07830;
+    font-weight: 500;
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  /* ─── FOOTER ─── */
+  .footer {
+    background: #090f04;
+    border: 1px solid #1e3008;
+    border-top: none;
+    border-radius: 0 0 20px 20px;
+    padding: 32px 50px;
+    text-align: center;
+  }
+
+  .footer-rule {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #2a4010, transparent);
+    margin-bottom: 24px;
+  }
+
+  .footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin-bottom: 18px;
+  }
+
+  .footer-link {
+    font-size: 12px;
+    color: #3a5020;
+    text-decoration: none;
+    letter-spacing: 0.05em;
+  }
+
+  .footer-copy {
+    font-size: 11.5px;
+    color: #2e4018;
+    letter-spacing: 0.04em;
+    line-height: 1.7;
+  }
+
+  .footer-copy strong { color: #4a6a28; font-weight: 500; }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 520px) {
+    .hero, .body-card { padding: 40px 28px; }
+    .footer { padding: 28px; }
+    .stats-band { flex-direction: column; }
+    .stat-block + .stat-block { border-left: none; border-top: 1px solid #2a1e00; }
+    .hero-title { font-size: 30px; }
+    .impact-grid { grid-template-columns: 1fr; }
+    .cta-button { display: block; padding: 16px 32px; }
+  }
+</style>
+</head>
+<body th:replace="~{emails/layout :: body(content=~{:: .weather-content})}">
+<div class="weather-content">
+<div class="wrapper">
+
+  <!-- Brand Bar -->
+  <div class="brand-bar">
+    <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
+      <ellipse cx="16" cy="13" rx="6" ry="9" fill="#2a5c0a" stroke="#5aaa1e" stroke-width="0.8"/>
+      <ellipse cx="16" cy="13" rx="3" ry="5.5" fill="#1a3c06"/>
+      <path d="M16 22 Q22 26 26 30" stroke="#4a8a18" stroke-width="1.2" stroke-linecap="round"/>
+      <path d="M21 8 Q26 4 28 6" stroke="#4a8a18" stroke-width="1" stroke-linecap="round"/>
+      <circle cx="24" cy="7" r="2.5" fill="#3a7012"/>
+      <path d="M11 7 Q7 3 6 6" stroke="#4a8a18" stroke-width="1" stroke-linecap="round"/>
+      <circle cx="8" cy="6.5" r="2" fill="#3a7012"/>
+    </svg>
+    <span class="brand-name">Olivia</span>
+    <div class="brand-dot"></div>
+    <span class="brand-tagline">Cooperative Network</span>
+  </div>
+
+  <!-- Hero -->
+  <div class="hero">
+    <!-- Storm cloud watermark -->
+    <svg class="hero-watermark" viewBox="0 0 240 200" fill="none">
+      <ellipse cx="120" cy="110" rx="90" ry="60" fill="#d97706"/>
+      <ellipse cx="80" cy="90" rx="55" ry="45" fill="#d97706"/>
+      <ellipse cx="160" cy="95" rx="50" ry="40" fill="#d97706"/>
+      <ellipse cx="120" cy="75" rx="45" ry="38" fill="#d97706"/>
+      <line x1="95" y1="140" x2="80" y2="180" stroke="#f59e0b" stroke-width="6" stroke-linecap="round"/>
+      <line x1="115" y1="145" x2="100" y2="185" stroke="#f59e0b" stroke-width="6" stroke-linecap="round"/>
+      <line x1="135" y1="140" x2="120" y2="180" stroke="#f59e0b" stroke-width="6" stroke-linecap="round"/>
+    </svg>
+
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      Meteorological Warning
+    </div>
+
+    <h1 class="hero-title">
+      Severe Weather<br><span th:text="${alertType}">Detected.</span>
+    </h1>
+
+    <div class="hero-divider"></div>
+
+    <p class="hero-subtitle">
+      A significant weather event is approaching the harvest regions. Field operations must be adjusted according to safety protocols immediately.
+    </p>
+  </div>
+
+  <!-- Stats Band -->
+  <div class="stats-band">
+    <div class="stat-block">
+      <div class="stat-label">Expected Impact</div>
+      <div class="stat-value amber" th:text="${impactLevel}">High</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-label">Affected Sectors</div>
+      <div class="stat-value small" th:text="${sectors}">Central Basin, North Slope</div>
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div class="body-card">
+    <p class="body-text">
+      All <strong>Team Leads</strong> are advised to secure equipment and ensure personnel are moved to designated safety zones immediately. Do not resume operations until the all-clear is issued.
+    </p>
+
+    <!-- Safety Protocol Steps -->
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div>
+          <div class="step-title">Secure all field equipment</div>
+          <div class="step-desc">Lock machinery, cover harvest crates and seal storage units</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div>
+          <div class="step-title">Move personnel to safety zones</div>
+          <div class="step-desc">Escort all workers to the designated shelter locations on-site</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div>
+          <div class="step-title">Monitor the regional radar</div>
+          <div class="step-desc">Track storm progression and await the official all-clear notification</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="cta-wrapper">
+      <a href="http://localhost:4200/dashboard" class="cta-button">View Regional Radar</a>
+    </div>
+
+    <!-- Warning note -->
+    <div class="alert-box">
+      <span class="alert-icon">⚠</span>
+      <div class="alert-text">
+        <strong>Mission Suspension Active</strong>
+        No field operations are authorized until conditions are deemed safe. This alert will be lifted automatically once the weather event has passed.
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div class="footer-rule"></div>
+    <div class="footer-links">
+      <a href="#" class="footer-link">Support</a>
+      <a href="#" class="footer-link">Safety Protocols</a>
+      <a href="#" class="footer-link">Unsubscribe</a>
+    </div>
+    <p class="footer-copy">
+      &copy; 2026 <strong>Olivia Cooperative</strong> &mdash; All rights reserved.<br>
+      Sustainability &bull; Quality &bull; Innovation
+    </p>
+  </div>
+
+</div>
+</div>
+</body>
+</html>

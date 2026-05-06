@@ -1,0 +1,21 @@
+# .gitignore for Olivia project
+# IDE directories
+.vscode/
+.idea/
+# Build artefacts
+backend/target/
+frontend/node_modules/
+# Logs
+*.log
+# OS files
+Thumbs.db
+.DS_Store
+# Ignore uploaded resources (large files, long paths)
+backend/uploads/**
+# Maven/Gradle caches
+.m2/
+.gradle/
+# Temporary files
+*.tmp
+# Environment files
+.env
