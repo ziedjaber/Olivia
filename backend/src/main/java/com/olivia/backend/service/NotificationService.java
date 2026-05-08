@@ -1,25 +1,29 @@
 package com.olivia.backend.service;
 
 import com.google.firebase.messaging.*;
+import com.olivia.backend.model.Notification;
+import com.olivia.backend.repository.NotificationRepository;
+import com.olivia.backend.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.*;
 
 @Service
 public class NotificationService {
 
-    private final com.google.cloud.firestore.Firestore db;
-    private final org.springframework.messaging.simp.SimpMessagingTemplate messagingTemplate;
+    @Autowired
+    private NotificationRepository notificationRepository;
 
-    private static final String COL_NOTIF = "notifications";
+    @Autowired
+    private UserRepository userRepository;
 
-    public NotificationService(com.google.cloud.firestore.Firestore db, org.springframework.messaging.simp.SimpMessagingTemplate messagingTemplate) {
-        this.db = db;
-        this.messagingTemplate = messagingTemplate;
-    }
+    @Autowired
+    private org.springframework.messaging.simp.SimpMessagingTemplate messagingTemplate;
 
     public String sendNotification(String title, String body) throws Exception {
         Message message = Message.builder()
-                .setNotification(Notification.builder()
+                .setNotification(com.google.firebase.messaging.Notification.builder()
                         .setTitle(title)
                         .setBody(body)
                         .build())
@@ -31,16 +35,17 @@ public class NotificationService {
 
     public void sendToUser(String recipientUid, String title, String body, String type) {
         try {
-            Map<String, Object> notif = new HashMap<>();
+            Notification notif = new Notification();
             String id = UUID.randomUUID().toString();
-            notif.put("id", id);
-            notif.put("recipientUid", recipientUid);
-            notif.put("title", title);
-            notif.put("body", body);
-            notif.put("type", type != null ? type : "INFO");
-            notif.put("read", false);
-            notif.put("createdAt", java.time.Instant.now().toString());
-            db.collection(COL_NOTIF).document(id).set(notif).get();
+            notif.setId(id);
+            notif.setRecipientUid(recipientUid);
+            notif.setTitle(title);
+            notif.setBody(body);
+            notif.setType(type != null ? type : "INFO");
+            notif.setRead(false);
+            notif.setCreatedAt(java.time.Instant.now().toString());
+
+            notificationRepository.save(notif);
             messagingTemplate.convertAndSend("/topic/notifications/" + recipientUid, notif);
         } catch (Exception e) {
             System.err.println("Failed to send in-app notification to " + recipientUid + ": " + e.getMessage());
@@ -49,44 +54,25 @@ public class NotificationService {
 
     public void notifyRole(com.olivia.backend.model.Role role, String title, String body, String type) {
         try {
-            var docs = db.collection("users")
-                    .whereEqualTo("role", role.name())
-                    .get().get().getDocuments();
-            for (var doc : docs) {
-                sendToUser(doc.getId(), title, body, type);
+            var users = userRepository.findAll().stream()
+                    .filter(u -> role.equals(u.getRole()))
+                    .toList();
+            for (var user : users) {
+                sendToUser(user.getId(), title, body, type);
             }
         } catch (Exception e) {
             System.err.println("Failed to notify users with role " + role + ": " + e.getMessage());
         }
     }
 
-    public List<Map<String, Object>> getUserNotifications(String uid) throws Exception {
-        var docs = db.collection(COL_NOTIF)
-                .whereEqualTo("recipientUid", uid)
-                .limit(50)
-                .get().get().getDocuments();
-        
-        List<Map<String, Object>> list = new ArrayList<>();
-        for (var doc : docs) {
-            Map<String, Object> data = doc.getData();
-            data.put("id", doc.getId());
-            list.add(data);
-        }
-
-        list.sort((a, b) -> {
-            String ca = (String) a.getOrDefault("createdAt", "");
-            String cb = (String) b.getOrDefault("createdAt", "");
-            return cb.compareTo(ca);
-        });
-
-        return list;
+    public List<Notification> getUserNotifications(String uid) throws Exception {
+        return notificationRepository.findByRecipientUid(uid, 50);
     }
 
     public void markAsRead(String notificationId, String uid) throws Exception {
-        var docRef = db.collection(COL_NOTIF).document(notificationId);
-        var doc = docRef.get().get();
-        if (doc.exists() && uid.equals(doc.getString("recipientUid"))) {
-            docRef.update("read", true).get();
+        var optNotif = notificationRepository.findById(notificationId);
+        if (optNotif.isPresent() && uid.equals(optNotif.get().getRecipientUid())) {
+            notificationRepository.updateField(notificationId, "read", true);
             Map<String, Object> signal = new HashMap<>();
             signal.put("type", "READ_UPDATE");
             signal.put("notificationId", notificationId);
@@ -97,16 +83,13 @@ public class NotificationService {
     }
 
     public void markAllAsRead(String uid) throws Exception {
-        var docs = db.collection(COL_NOTIF)
-                .whereEqualTo("recipientUid", uid)
-                .whereEqualTo("read", false)
-                .get().get().getDocuments();
+        var docs = notificationRepository.findUnreadByRecipientUid(uid);
         
         if (docs.isEmpty()) return;
 
-        com.google.cloud.firestore.WriteBatch batch = db.batch();
+        com.google.cloud.firestore.WriteBatch batch = notificationRepository.batch();
         for (var doc : docs) {
-            batch.update(doc.getReference(), "read", true);
+            batch.update(notificationRepository.getReference(doc.getId()), "read", true);
         }
         batch.commit().get();
 
@@ -116,12 +99,11 @@ public class NotificationService {
     }
 
     public void markSelectedAsRead(List<String> ids, String uid) throws Exception {
-        com.google.cloud.firestore.WriteBatch batch = db.batch();
+        com.google.cloud.firestore.WriteBatch batch = notificationRepository.batch();
         for (String id : ids) {
-            var docRef = db.collection(COL_NOTIF).document(id);
-            var doc = docRef.get().get();
-            if (doc.exists() && uid.equals(doc.getString("recipientUid"))) {
-                batch.update(docRef, "read", true);
+            var opt = notificationRepository.findById(id);
+            if (opt.isPresent() && uid.equals(opt.get().getRecipientUid())) {
+                batch.update(notificationRepository.getReference(id), "read", true);
             }
         }
         batch.commit().get();
@@ -133,12 +115,11 @@ public class NotificationService {
     }
 
     public void deleteSelected(List<String> ids, String uid) throws Exception {
-        com.google.cloud.firestore.WriteBatch batch = db.batch();
+        com.google.cloud.firestore.WriteBatch batch = notificationRepository.batch();
         for (String id : ids) {
-            var docRef = db.collection(COL_NOTIF).document(id);
-            var doc = docRef.get().get();
-            if (doc.exists() && uid.equals(doc.getString("recipientUid"))) {
-                batch.delete(docRef);
+            var opt = notificationRepository.findById(id);
+            if (opt.isPresent() && uid.equals(opt.get().getRecipientUid())) {
+                batch.delete(notificationRepository.getReference(id));
             }
         }
         batch.commit().get();
@@ -148,3 +129,4 @@ public class NotificationService {
         messagingTemplate.convertAndSend("/topic/notifications/" + uid, signal);
     }
 }
+

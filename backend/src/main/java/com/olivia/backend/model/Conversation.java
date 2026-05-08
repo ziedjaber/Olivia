@@ -5,9 +5,9 @@ package com.olivia.backend.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
 
 import java.util.HashMap;
+
 import java.util.List;
 import java.util.Map;
 
@@ -15,7 +15,6 @@ import java.util.Map;
 @NoArgsConstructor
 public class Conversation {
 
-    @Id
     private String id;
 
     private List<String> participantIds;

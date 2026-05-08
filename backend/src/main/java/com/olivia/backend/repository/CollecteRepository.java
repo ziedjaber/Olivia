@@ -2,6 +2,7 @@ package com.olivia.backend.repository;
 
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
+import com.olivia.backend.exceptions.BusinessLogicException;
 import com.olivia.backend.model.Collecte;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,7 +75,7 @@ public class CollecteRepository {
             db.collection(COLLECTION).document(c.getId()).set(c).get(30, TimeUnit.SECONDS);
         } catch (Exception e) {
             log.error("[ERROR] Error saving collecte {}: {}", c.getId(), e.getMessage());
-            throw new RuntimeException("Failed to save collecte", e);
+            throw new BusinessLogicException("Failed to save collecte", e);
         }
     }
 
@@ -83,7 +84,7 @@ public class CollecteRepository {
             db.collection(COLLECTION).document(id).delete().get(30, TimeUnit.SECONDS);
         } catch (Exception e) {
             log.error("[ERROR] Error deleting collecte {}: {}", id, e.getMessage());
-            throw new RuntimeException("Failed to delete collecte", e);
+            throw new BusinessLogicException("Failed to delete collecte", e);
         }
     }
 
@@ -92,7 +93,7 @@ public class CollecteRepository {
             db.collection(COLLECTION).document(id).update(field, value).get(30, TimeUnit.SECONDS);
         } catch (Exception e) {
             log.error("[ERROR] Error updating field {} for collecte {}: {}", field, id, e.getMessage());
-            throw new RuntimeException("Failed to update field", e);
+            throw new BusinessLogicException("Failed to update field", e);
         }
     }
 

@@ -2,16 +2,14 @@ package com.olivia.backend.config;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseToken;
-import com.google.firebase.cloud.FirestoreClient;
-import com.google.cloud.firestore.Firestore;  
-import com.google.cloud.firestore.DocumentSnapshot;
-
-import com.google.cloud.firestore.QuerySnapshot;
+import com.olivia.backend.model.User;
+import com.olivia.backend.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,21 +19,15 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Component
 public class JwtFilter extends OncePerRequestFilter {
 
-    private final Firestore firestore;
+    @Autowired
+    private UserRepository userRepository;
 
-    public JwtFilter(Firestore firestore) {
-        this.firestore = firestore;
-    }
-
-    // Simple cache to prevent querying Firestore on every single request, 
-    // which causes latency and intermittent 403 errors on timeouts.
     private static final ConcurrentHashMap<String, String> roleCache = new ConcurrentHashMap<>();
 
     @Override
@@ -43,17 +35,12 @@ public class JwtFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String authHeader = request.getHeader("Authorization");
-        log.info("[JwtFilter] ENTRY: Processing request to {}. Auth Header: {}", request.getRequestURI(), authHeader != null ? "FOUND" : "MISSING");
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
-            log.info("[JwtFilter] Bearer token detected. Proceeding to verify.");
 
             try {
-                log.info("[JwtFilter] Decoding token for URI: {}", request.getRequestURI());
-                
                 if (token == null || token.isEmpty() || token.equals("undefined") || token.equals("null")) {
-                    log.warn("[JwtFilter] Invalid token string detected: '{}'. Skipping auth.", token);
                     filterChain.doFilter(request, response);
                     return;
                 }
@@ -61,7 +48,6 @@ public class JwtFilter extends OncePerRequestFilter {
                 FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdToken(token);
                 String email = decodedToken.getEmail();
                 String uid = decodedToken.getUid();
-                log.info("[JwtFilter] Token decode successful. UID: {}, Email: {}", uid, email);
 
                 String role = roleCache.get(uid);
 
@@ -69,31 +55,18 @@ public class JwtFilter extends OncePerRequestFilter {
                     synchronized (uid.intern()) {
                         role = roleCache.get(uid);
                         if (role == null) {
-                            // TRY UID LOOKUP FROM FIRESTORE (Primary)
                             try {
-                                DocumentSnapshot doc = firestore.collection("users").document(uid).get().get(10, TimeUnit.SECONDS);
-                                if (doc.exists()) {
-                                    Object roleObj = doc.get("role");
-                                    if (roleObj != null) {
-                                        role = roleObj.toString().trim().toUpperCase().replace(" ", "_");
-                                        log.info("[JwtFilter] Role found by UID {}: {}", uid, role);
-                                    }
+                                var userOpt = userRepository.findById(uid);
+                                if (userOpt.isPresent()) {
+                                    role = userOpt.get().getRole().name();
                                 } else if (email != null) {
-                                    // FALLBACK TO EMAIL QUERY
-                                    log.info("[JwtFilter] UID document miss. Falling back to email lookup for {}", email);
-                                    var query = firestore.collection("users")
-                                            .whereEqualTo("email", email.toLowerCase())
-                                            .get().get(10, TimeUnit.SECONDS);
-                                    if (!query.isEmpty()) {
-                                        Object roleObj = query.getDocuments().get(0).get("role");
-                                        if (roleObj != null) {
-                                            role = roleObj.toString().trim().toUpperCase().replace(" ", "_");
-                                            log.info("[JwtFilter] Role found by Email {}: {}", email, role);
-                                        }
+                                    var userByEmail = userRepository.findByEmail(email);
+                                    if (userByEmail.isPresent()) {
+                                        role = userByEmail.get().getRole().name();
                                     }
                                 }
                             } catch (Exception firestoreEx) {
-                                log.error("[JwtFilter] Firestore identity bridge failed for UID {}: {}", uid, firestoreEx.getMessage());
+                                log.error("[JwtFilter] Repository identity bridge failed for UID {}: {}", uid, firestoreEx.getMessage());
                             }
 
                             if (role == null) {
@@ -101,9 +74,7 @@ public class JwtFilter extends OncePerRequestFilter {
                                 role = "USER";
                             }
                             
-                            // Cache the role (even if it's the fallback USER) to prevent repeated Firestore hits during outages
                             roleCache.put(uid, role);
-                            log.debug("[JwtFilter] Role cached for UID {}: {}", uid, role);
                         }
                     }
                 }
@@ -114,10 +85,9 @@ public class JwtFilter extends OncePerRequestFilter {
                 
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-                log.info("[JwtFilter] Access Granted. Context: {} | Authority: {}", uid, authority.getAuthority());
 
             } catch (Exception e) {
-                log.error("[JwtFilter] AUTHENTICATION CRITICAL FAILURE: {}", e.getMessage(), e);
+                log.error("[JwtFilter] AUTHENTICATION CRITICAL FAILURE: {}", e.getMessage());
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.setContentType("application/json");
                 String errorMsg = e.getMessage() != null ? e.getMessage() : "Invalid or expired Firebase token";

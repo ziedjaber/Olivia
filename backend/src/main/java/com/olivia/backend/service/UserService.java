@@ -1,26 +1,28 @@
 package com.olivia.backend.service;
 
-import com.google.cloud.firestore.Firestore;
-import com.google.cloud.firestore.DocumentSnapshot;
-import com.google.firebase.cloud.FirestoreClient;
+import com.olivia.backend.exceptions.ResourceNotFoundException;
+import com.olivia.backend.exceptions.BusinessLogicException;
 import com.olivia.backend.model.User;
 import com.olivia.backend.model.Role;
+import com.olivia.backend.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
-
 import java.util.Map;
 import java.util.HashMap;
+import lombok.extern.slf4j.Slf4j;
 
-import java.util.stream.Collectors;
-
+@Slf4j
 @Service
 public class UserService {
-    @org.springframework.beans.factory.annotation.Autowired
-    private Firestore db;
+
+    @Autowired
+    private UserRepository userRepository;
+
     private final AuthService authService;
     private final AuditService auditService;
     
-    @org.springframework.beans.factory.annotation.Autowired
+    @Autowired
     private NotificationService notificationService;
 
     public UserService(AuthService authService, AuditService auditService) {
@@ -28,52 +30,32 @@ public class UserService {
         this.auditService = auditService;
     }
 
-
-    public List<User> getAllUsers() throws Exception {
-        return db.collection("users").get().get().getDocuments().stream()
-                .map(doc -> {
-                    User u = doc.toObject(User.class);
-                    u.setId(doc.getId());
-                    return u;
-                })
-                .collect(Collectors.toList());
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 
-    public User getProfile(String email) throws Exception {
-        String normalizedEmail = email.toLowerCase();
-        var docs = db.collection("users").whereEqualTo("email", normalizedEmail).get().get().getDocuments();
-        if (docs.isEmpty()) {
-            throw new Exception("User not found: " + normalizedEmail);
-        }
-        var doc = docs.get(0);
-        User user = doc.toObject(User.class);
-        user.setId(doc.getId());
-        return user;
+    public User getProfile(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "email", email));
     }
 
-    public User getUserById(String id) throws Exception {
-        DocumentSnapshot doc = db.collection("users").document(id).get().get();
-        if (!doc.exists()) {
-            throw new Exception("User not found with ID: " + id);
-        }
-        User user = doc.toObject(User.class);
-        user.setId(doc.getId());
-        return user;
+    public User getUserById(String id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
     }
 
-    public void updateProfile(User user) throws Exception {
+    public void updateProfile(User user) {
         if (user.getEmail() != null) {
             user.setEmail(user.getEmail().toLowerCase());
         }
-        db.collection("users").document(user.getId()).set(user).get();
+        userRepository.save(user);
         
         String currentUid = authService.extractUserIdFromToken();
         auditService.log(currentUid != null ? currentUid : user.getId(), "UPDATE", "USERS", "Updated profile: " + user.getFullName(), user.getId());
-
     }
 
-    public void updateRole(String id, Role role) throws Exception {
-        db.collection("users").document(id).update("role", role).get();
+    public void updateRole(String id, Role role) {
+        userRepository.updateField(id, "role", role);
         
         String currentUid = authService.extractUserIdFromToken();
         auditService.log(currentUid, "UPDATE", "USERS", "Changed user role to " + role, id);
@@ -82,8 +64,8 @@ public class UserService {
         notificationService.notifyRole(Role.DIRECTEUR, "Changement de Rôle", "L'utilisateur " + id + " a maintenant le rôle: " + role, "INFO");
     }
 
-    public void toggleStatus(String id, boolean active) throws Exception {
-        db.collection("users").document(id).update("active", active).get();
+    public void toggleStatus(String id, boolean active) {
+        userRepository.updateField(id, "active", active);
         
         String currentUid = authService.extractUserIdFromToken();
         auditService.log(currentUid, "UPDATE", "USERS", (active ? "Activated" : "Suspended") + " user account", id);
@@ -92,7 +74,7 @@ public class UserService {
         notificationService.notifyRole(Role.DIRECTEUR, "Statut Compte Modifié", "Le compte " + id + " a été " + (active ? "activé" : "suspendu"), "WARNING");
     }
 
-    public void deleteUser(String id) throws Exception {
+    public void deleteUser(String id) {
         authService.deleteUser(id);
         String currentUid = authService.extractUserIdFromToken();
         auditService.log(currentUid, "DELETE", "USERS", "Permanently deleted user account", id);
@@ -101,20 +83,23 @@ public class UserService {
         notificationService.notifyRole(Role.DIRECTEUR, "Compte Supprimé", "Le compte utilisateur " + id + " a été définitivement supprimé.", "ERROR");
     }
 
-    public void updateUserByAdmin(User user) throws Exception {
+    public void updateUserByAdmin(User user) {
         if (user.getEmail() != null) {
             user.setEmail(user.getEmail().toLowerCase());
         }
-        // Update Firestore
-        db.collection("users").document(user.getId()).set(user).get();
+        userRepository.save(user);
         
-        // Update custom claims if role changed
+                // Update custom claims if role changed
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", user.getRole().name());
-        com.google.firebase.auth.FirebaseAuth.getInstance().setCustomUserClaims(user.getId(), claims);
+        try {
+            com.google.firebase.auth.FirebaseAuth.getInstance().setCustomUserClaims(user.getId(), claims);
+        } catch (com.google.firebase.auth.FirebaseAuthException e) {
+            log.warn("[UserService] Failed to set custom claims for user {}: {}", user.getId(), e.getMessage());
+            throw new BusinessLogicException("Failed to update user claims: " + e.getMessage());
+        }
         
         String currentUid = authService.extractUserIdFromToken();
         auditService.log(currentUid, "UPDATE", "USERS", "Admin update of user: " + user.getFullName(), user.getId());
-
     }
 }

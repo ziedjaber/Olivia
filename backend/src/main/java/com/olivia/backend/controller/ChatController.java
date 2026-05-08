@@ -1,11 +1,9 @@
 package com.olivia.backend.controller;
 
-import com.google.cloud.firestore.Firestore;
 import com.olivia.backend.dto.ChatMessageDTO;
 import com.olivia.backend.dto.TypingDTO;
 import com.olivia.backend.model.Conversation;
 import com.olivia.backend.model.Message;
-import com.olivia.backend.model.User;
 import com.olivia.backend.service.ChatService;
 import com.olivia.backend.service.ConversationService;
 import com.olivia.backend.service.FileService;
@@ -20,7 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,62 +38,36 @@ public class ChatController {
     @Autowired
     private FileService fileService;
 
-    // ← injection du Bean Firestore depuis FirebaseConfig
-    @Autowired
-    private Firestore db;
+    @MessageMapping("/chat.send")
+    public void sendMessage(@Payload ChatMessageDTO dto, Principal principal) {
+        if (principal == null) {
+            System.err.println("[Chat] ERREUR : Principal null");
+            return;
+        }
 
-//     @MessageMapping("/chat.send")
-// public void sendMessage(@Payload ChatMessageDTO dto, Principal principal) throws Exception {
-//     if (principal == null) {
-//         System.err.println("[Chat] Principal null - impossible d'envoyer");
-//         return;
-//     }
+        String senderId = principal.getName();
+        System.out.println("[Chat] Message de " + senderId + " vers " + dto.getReceiverId() + " | content: " + dto.getContent());
 
-//     String senderId = principal.getName();
-//     System.out.println("[Chat] Message reçu de : " + senderId + " vers " + dto.getReceiverId());
+        try {
+            Message saved = chatService.save(dto, senderId);
 
-//     Message saved = chatService.save(dto, senderId);
+            System.out.println("[Chat] Message sauvegardé avec ID: " + saved.getId());
 
-//     // Envoi au receiver
-//     System.out.println("[Chat] Envoi à receiver: " + dto.getReceiverId());
-//     messagingTemplate.convertAndSendToUser(
-//         dto.getReceiverId(), "/queue/messages", saved);
+            // Echo au sender
+            System.out.println("[Chat] Tentative d'envoi WebSocket à senderId: " + senderId);
+            messagingTemplate.convertAndSendToUser(senderId, "/queue/messages", saved);
+            
+            // Au receiver
+            System.out.println("[Chat] Tentative d'envoi WebSocket à receiverId: " + dto.getReceiverId());
+            messagingTemplate.convertAndSendToUser(dto.getReceiverId(), "/queue/messages", saved);
 
-//     // Envoi à l'expéditeur (pour qu'il voie son propre message en temps réel)
-//     System.out.println("[Chat] Envoi à sender (echo): " + senderId);
-//     messagingTemplate.convertAndSendToUser(
-//         senderId, "/queue/messages", saved);
-// }
-
-@MessageMapping("/chat.send")
-public void sendMessage(@Payload ChatMessageDTO dto, Principal principal) {
-    if (principal == null) {
-        System.err.println("[Chat] ERREUR : Principal null");
-        return;
+            System.out.println("[Chat] WebSocket OK : " + saved.getContent());
+        } catch (Exception e) {
+            System.err.println("[Chat] Erreur lors du save/envoi : " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
-    String senderId = principal.getName();
-    System.out.println("[Chat] Message de " + senderId + " vers " + dto.getReceiverId() + " | content: " + dto.getContent());
-
-    try {
-        Message saved = chatService.save(dto, senderId);
-
-        System.out.println("[Chat] Message sauvegardé avec ID: " + saved.getId());
-
-        // Echo au sender
-        System.out.println("[Chat] Tentative d'envoi WebSocket à senderId: " + senderId);
-        messagingTemplate.convertAndSendToUser(senderId, "/queue/messages", saved);
-        
-        // Au receiver
-        System.out.println("[Chat] Tentative d'envoi WebSocket à receiverId: " + dto.getReceiverId());
-        messagingTemplate.convertAndSendToUser(dto.getReceiverId(), "/queue/messages", saved);
-
-        System.out.println("[Chat] WebSocket OK : " + saved.getContent());
-    } catch (Exception e) {
-        System.err.println("[Chat] Erreur lors du save/envoi : " + e.getMessage());
-        e.printStackTrace();
-    }
-}
     @MessageMapping("/chat.typing")
     public void typing(@Payload TypingDTO dto, Principal principal) {
         if (principal == null)
@@ -161,42 +132,8 @@ public void sendMessage(@Payload ChatMessageDTO dto, Principal principal) {
     @ResponseBody
     public ResponseEntity<String> migrateConversations() {
         try {
-            List<Conversation> all = db.collection("conversations")
-                    .get().get().toObjects(Conversation.class);
-
-            int count = 0;
-            for (Conversation conv : all) {
-                boolean needsMigration = conv.getParticipantNames() == null
-                        || conv.getParticipantNames().isEmpty();
-
-                if (needsMigration && conv.getParticipantIds() != null) {
-                    Map<String, String> names = new HashMap<>();
-                    Map<String, String> roles = new HashMap<>();
-                    Map<String, Integer> unread = new HashMap<>();
-
-                    for (String uid : conv.getParticipantIds()) {
-                        User u = userService.getUserById(uid);
-                        names.put(uid, u != null ? u.getFullName() : "Utilisateur");
-                        roles.put(uid, u != null && u.getRole() != null
-                                ? u.getRole().name()
-                                : "");
-                        unread.put(uid, 0);
-                    }
-
-                    Map<String, Object> updates = new HashMap<>();
-                    updates.put("participantNames", names);
-                    updates.put("participantRoles", roles);
-                    updates.put("unreadCount", unread);
-                    updates.put("lastTimestamp", LocalDateTime.now().toString());
-
-                    db.collection("conversations")
-                            .document(conv.getId())
-                            .update(updates).get();
-                    count++;
-                }
-            }
-            return ResponseEntity.ok("Migration OK — " + count + " conversations");
-
+            conversationService.fixMissingParticipantNames();
+            return ResponseEntity.ok("Migration OK");
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Erreur : " + e.getMessage());
         }

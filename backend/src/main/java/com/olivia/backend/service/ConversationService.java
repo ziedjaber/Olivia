@@ -1,9 +1,8 @@
 package com.olivia.backend.service;
 
-import com.google.cloud.firestore.Firestore;
-import com.google.firebase.cloud.FirestoreClient;
 import com.olivia.backend.model.Conversation;
 import com.olivia.backend.model.User;
+import com.olivia.backend.repository.ConversationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,29 +12,21 @@ import java.util.*;
 @Service
 public class ConversationService {
 
-    @Autowired private Firestore db;  // ← injection Bean
-    @Autowired private UserService userService;
+    @Autowired 
+    private ConversationRepository conversationRepository;
+    
+    @Autowired 
+    private UserService userService;
    
     public Conversation getOrCreate(String userId1, String userId2) {
-        try {
+        List<Conversation> existing = conversationRepository.findByParticipantId(userId1);
 
-            List<Conversation> existing = db.collection("conversations")
-                .whereArrayContains("participantIds", userId1)
-                .get().get()
-                .toObjects(Conversation.class);
-
-            return existing.stream()
-                .filter(c -> c.getParticipantIds() != null
-                          && c.getParticipantIds().contains(userId2))
-                .findFirst()
-                .orElseGet(() -> createConversation(userId1, userId2));
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+        return existing.stream()
+            .filter(c -> c.getParticipantIds() != null
+                      && c.getParticipantIds().contains(userId2))
+            .findFirst()
+            .orElseGet(() -> createConversation(userId1, userId2));
     }
-
 
     private Conversation createConversation(String id1, String id2) {
         try {
@@ -54,11 +45,8 @@ public class ConversationService {
             conv.setParticipantNames(names);
 
             Map<String, String> roles = new HashMap<>();
-            // Role est un enum — on appelle .name() pour avoir la String
-            roles.put(id1, user1 != null && user1.getRole() != null
-                ? user1.getRole().name() : "");
-            roles.put(id2, user2 != null && user2.getRole() != null
-                ? user2.getRole().name() : "");
+            roles.put(id1, user1 != null && user1.getRole() != null ? user1.getRole().name() : "");
+            roles.put(id2, user2 != null && user2.getRole() != null ? user2.getRole().name() : "");
             conv.setParticipantRoles(roles);
 
             Map<String, Integer> unread = new HashMap<>();
@@ -66,12 +54,9 @@ public class ConversationService {
             unread.put(id2, 0);
             conv.setUnreadCount(unread);
 
-            db.collection("conversations")
-              .document(conv.getId())
-              .set(conv).get();
+            conversationRepository.save(conv);
 
             return conv;
-
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -79,14 +64,8 @@ public class ConversationService {
     }
 
     public List<Conversation> getConversationsByUser(String userId) {
-    try {
+        List<Conversation> convs = conversationRepository.findByParticipantId(userId);
 
-        List<Conversation> convs = db.collection("conversations")
-                .whereArrayContains("participantIds", userId)
-                .get().get()
-                .toObjects(Conversation.class);
-
-        // Force l'initialisation des Maps si elles sont null
         for (Conversation conv : convs) {
             if (conv.getParticipantNames() == null || conv.getParticipantNames().isEmpty()) {
                 conv.setParticipantNames(new HashMap<>());
@@ -100,30 +79,18 @@ public class ConversationService {
         }
 
         return convs;
-
-    } catch (Exception e) {
-        e.printStackTrace();
-        return List.of();
     }
-}
+
     public void updateLastMessage(String conversationId, String content) {
-        try {
-            Map<String, Object> updates = new HashMap<>();
-            updates.put("lastMessage", content);
-            updates.put("lastTimestamp", LocalDateTime.now().toString());
-            db.collection("conversations")
-              .document(conversationId)
-              .update(updates).get();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("lastMessage", content);
+        updates.put("lastTimestamp", LocalDateTime.now().toString());
+        conversationRepository.updateFields(conversationId, updates);
     }
 
     public void fixMissingParticipantNames() {
         try {
-            List<Conversation> conversations = db.collection("conversations")
-                    .get().get()
-                    .toObjects(Conversation.class);
+            List<Conversation> conversations = conversationRepository.findAll();
 
             for (Conversation conv : conversations) {
                 if (conv.getParticipantNames() == null || conv.getParticipantNames().isEmpty()) {
@@ -145,16 +112,12 @@ public class ConversationService {
                         updates.put("participantNames", updatedNames);
                         updates.put("participantRoles", updatedRoles);
                         
-                        db.collection("conversations")
-                          .document(conv.getId())
-                          .update(updates).get();
-                        
-                        System.out.println("Conversation " + conv.getId() + " mise à jour avec succès.");
+                        conversationRepository.updateFields(conv.getId(), updates);
                     }
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println("[ERROR] Failed to fix missing participant names: " + e.getMessage());
         }
     }
 }

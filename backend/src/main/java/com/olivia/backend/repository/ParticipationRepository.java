@@ -1,6 +1,7 @@
 package com.olivia.backend.repository;
 
 import com.google.cloud.firestore.Firestore;
+import com.olivia.backend.exceptions.BusinessLogicException;
 import com.olivia.backend.model.Participation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,7 +84,7 @@ public class ParticipationRepository {
             db.collection(COLLECTION).document(p.getId()).set(p).get(30, TimeUnit.SECONDS);
         } catch (Exception e) {
             log.error("[ERROR] Failed to save participation: {}", e.getMessage());
-            throw new RuntimeException("Failed to save participation", e);
+            throw new BusinessLogicException("Failed to save participation", e);
         }
     }
 
@@ -94,4 +95,14 @@ public class ParticipationRepository {
             log.error("[ERROR] Failed to delete participation: {}", e.getMessage());
         }
     }
+
+    public void updateField(String id, String field, Object value) {
+        try {
+            db.collection(COLLECTION).document(id).update(field, value).get(30, TimeUnit.SECONDS);
+        } catch (Exception e) {
+            log.error("[ERROR] Failed to update participation field: {}", e.getMessage());
+            throw new BusinessLogicException("Failed to update participation field", e);
+        }
+    }
 }
+

@@ -70,13 +70,8 @@
             <version>9.3.0</version>
         </dependency>
 
-        <!-- 4. BASES DE DONNÉES (MongoDB) -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-mongodb</artifactId>
-        </dependency>
-
         <!-- 5. TES FONCTIONNALITÉS (Mail & Templating) -->
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-mail</artifactId>
@@ -91,17 +86,19 @@
             <version>20231013</version>
         </dependency>
 
-        <!-- 6. UTILITAIRES -->
+        <!-- 6. UTILITAIRES validateur de données -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
+        <!-- Lombok pour réduire le code répétitif (Getters/Setters) -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>${lombok.version}</version>
             <optional>true</optional>
         </dependency>
+        <!-- Outil de redémarrage automatique (très pratique pour le dev) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
@@ -109,6 +106,13 @@
         </dependency>
 
         <!-- 7. TESTS -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Test de performance -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>

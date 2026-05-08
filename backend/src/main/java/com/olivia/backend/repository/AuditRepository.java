@@ -2,6 +2,7 @@ package com.olivia.backend.repository;
 
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
+import com.olivia.backend.exceptions.BusinessLogicException;
 import com.olivia.backend.model.AuditLog;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,7 @@ public class AuditRepository {
             db.collection(COLLECTION).document(logEntry.getId()).set(logEntry).get(30, TimeUnit.SECONDS);
         } catch (Exception e) {
             log.error("[ERROR] Failed to save audit log: {}", e.getMessage());
+            throw new BusinessLogicException("Failed to save audit log", e);
         }
     }
 

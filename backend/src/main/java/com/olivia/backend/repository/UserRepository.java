@@ -1,6 +1,7 @@
 package com.olivia.backend.repository;
 
 import com.google.cloud.firestore.Firestore;
+import com.olivia.backend.exceptions.BusinessLogicException;
 import com.olivia.backend.model.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,7 +70,7 @@ public class UserRepository {
             db.collection(COLLECTION).document(user.getId()).set(user).get(30, TimeUnit.SECONDS);
         } catch (Exception e) {
             log.error("[ERROR] Failed to save user {}: {}", user.getId(), e.getMessage());
-            throw new RuntimeException("Failed to save user", e);
+            throw new BusinessLogicException("Failed to save user", e);
         }
     }
 
@@ -78,7 +79,17 @@ public class UserRepository {
             db.collection(COLLECTION).document(id).update(field, value).get(30, TimeUnit.SECONDS);
         } catch (Exception e) {
             log.error("[ERROR] Failed to update user field: {}", e.getMessage());
-            throw new RuntimeException("Failed to update user field", e);
+            throw new BusinessLogicException("Failed to update user field", e);
+        }
+    }
+
+    public void deleteById(String id) {
+        try {
+            db.collection(COLLECTION).document(id).delete().get(30, TimeUnit.SECONDS);
+        } catch (Exception e) {
+            log.error("[ERROR] Failed to delete user: {}", e.getMessage());
+            throw new BusinessLogicException("Failed to delete user", e);
         }
     }
 }
+

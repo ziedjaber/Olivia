@@ -1,6 +1,7 @@
 package com.olivia.backend.repository;
 
 import com.google.cloud.firestore.Firestore;
+import com.olivia.backend.exceptions.BusinessLogicException;
 import com.olivia.backend.model.LogisticResource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +54,7 @@ public class LogisticResourceRepository {
             db.collection(COLLECTION).document(resource.getId()).set(resource).get(30, TimeUnit.SECONDS);
         } catch (Exception e) {
             log.error("[ERROR] Failed to save logistic resource: {}", e.getMessage());
-            throw new RuntimeException("Failed to save logistic resource", e);
+            throw new BusinessLogicException("Failed to save logistic resource", e);
         }
     }
 

@@ -7,18 +7,15 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/notifications")
 @CrossOrigin(origins = "*")
 public class NotificationController {
 
-    private final NotificationService notificationService;
-    private final com.google.cloud.firestore.Firestore firestore;
-
-    public NotificationController(NotificationService notificationService, com.google.cloud.firestore.Firestore firestore) {
-        this.notificationService = notificationService;
-        this.firestore = firestore;
-    }
+    @Autowired
+    private NotificationService notificationService;
 
     private String currentUid() {
         return SecurityContextHolder.getContext().getAuthentication().getName();
@@ -58,7 +55,7 @@ public class NotificationController {
 
     @PutMapping("/bulk-read")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> markBulkAsRead(@RequestBody java.util.List<String> ids) {
+    public ResponseEntity<?> markBulkAsRead(@RequestBody List<String> ids) {
         try {
             notificationService.markSelectedAsRead(ids, currentUid());
             return ResponseEntity.ok("Sélection marquée comme lue");
@@ -69,7 +66,7 @@ public class NotificationController {
 
     @PostMapping("/bulk-delete")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> deleteBulk(@RequestBody java.util.List<String> ids) {
+    public ResponseEntity<?> deleteBulk(@RequestBody List<String> ids) {
         try {
             notificationService.deleteSelected(ids, currentUid());
             return ResponseEntity.ok("Sélection supprimée");
@@ -82,19 +79,16 @@ public class NotificationController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> sendTestNotification() {
         try {
-            java.util.Map<String, Object> notif = new java.util.HashMap<>();
-            notif.put("id", java.util.UUID.randomUUID().toString());
-            notif.put("recipientUid", currentUid());
-            notif.put("title", "Test Notification");
-            notif.put("body", "Ceci est une notification de test générée à " + new java.util.Date());
-            notif.put("type", "INFO");
-            notif.put("read", false);
-            notif.put("createdAt", java.time.Instant.now().toString());
-            
-            firestore.collection("notifications").document(notif.get("id").toString()).set(notif).get();
+            notificationService.sendToUser(
+                currentUid(), 
+                "Test Notification", 
+                "Ceci est une notification de test générée à " + new java.util.Date(), 
+                "INFO"
+            );
             return ResponseEntity.ok("Notification de test envoyée à " + currentUid());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Erreur test: " + e.getMessage());
         }
     }
 }
+

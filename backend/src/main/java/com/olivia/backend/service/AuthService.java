@@ -1,44 +1,50 @@
 package com.olivia.backend.service;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
 import com.google.firebase.auth.UserRecord;
-import com.google.firebase.cloud.FirestoreClient;
-import com.google.cloud.firestore.Firestore;
-import com.google.cloud.firestore.QuerySnapshot;
-import com.olivia.backend.dto.AuthDTOs.*;
+import com.olivia.backend.dto.AuthDTOs.AuthResponse;
+import com.olivia.backend.dto.AuthDTOs.RegisterRequest;
+import com.olivia.backend.dto.AuthDTOs.SocialCompleteRequest;
+import com.olivia.backend.exceptions.BusinessLogicException;
+import com.olivia.backend.exceptions.UnauthorizedActionException;
 import com.olivia.backend.model.Role;
 import com.olivia.backend.model.User;
+import com.olivia.backend.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
-
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
+import com.olivia.backend.service.FileService;
+import com.olivia.backend.service.EmailService;
 
 @Slf4j
 @Service
 public class AuthService {
 
-    @org.springframework.beans.factory.annotation.Autowired
+    @Autowired
     private FileService fileService;
 
-
-    @org.springframework.beans.factory.annotation.Autowired
+    @Autowired
     private EmailService emailService;
 
-    @org.springframework.beans.factory.annotation.Autowired
-    private Firestore db; // Injected robust bean
+    @Autowired
+    private UserRepository userRepository;
 
-
-    public String register(RegisterRequest request) throws Exception {
+    public String register(RegisterRequest request) {
         String normalizedEmail = request.getEmail().toLowerCase();
         log.info("[Auth] Starting registration for: {}", normalizedEmail);
         
         try {
+            // Check if user already exists
+            if (userRepository.findByEmail(normalizedEmail).isPresent()) {
+                throw new BusinessLogicException("A user with this email already exists: " + normalizedEmail);
+            }
+
             // 1. Create user in Firebase Auth
             UserRecord.CreateRequest createRequest = new UserRecord.CreateRequest()
                     .setEmail(normalizedEmail)
@@ -50,23 +56,31 @@ public class AuthService {
             log.info("[Auth] UserRecord created with UID: {}", userRecord.getUid());
 
             // 2. Set custom claims for RBAC
+            Role registrationRole = (request.getRole() != null) ? request.getRole() : Role.OUVRIER_RECOLTE;
+            // Force OUVRIER_RECOLTE for public registration as per requirements
+            registrationRole = Role.OUVRIER_RECOLTE;
+            
             Map<String, Object> claims = new HashMap<>();
-            claims.put("role", request.getRole().name());
-            log.info("[Auth] Setting custom claims (role: {})...", request.getRole());
+            claims.put("role", registrationRole.name());
+            log.info("[Auth] Setting custom claims (role: {})...", registrationRole);
+            try {
             FirebaseAuth.getInstance().setCustomUserClaims(userRecord.getUid(), claims);
+        } catch (FirebaseAuthException e) {
+            log.warn("[Auth] Failed to set custom claims for UID {}: {}", userRecord.getUid(), e.getMessage());
+            throw new BusinessLogicException("Failed to set custom claims: " + e.getMessage());
+        }
 
             // 3. Save extra info in Firestore
             log.info("[Firestore] Saving user profile to 'users' collection...");
             User user = new User();
             user.setId(userRecord.getUid());
             user.setEmail(normalizedEmail);
-            user.setPassword(request.getPassword()); // Storing password in Firestore profile as requested
+            user.setPassword(request.getPassword()); 
             user.setFullName(request.getFullName());
-            user.setRole(request.getRole());
+            user.setRole(registrationRole);
             user.setActive(true);
 
-            // Using .get(30, TimeUnit.SECONDS) to prevent infinite hang if Firestore is unreachable
-            db.collection("users").document(user.getId()).set(user).get(30, TimeUnit.SECONDS);
+            userRepository.save(user);
             log.info("[Firestore] User profile saved successfully.");
 
             // 4. Send Welcome Email
@@ -80,20 +94,19 @@ public class AuthService {
                 log.warn("[Auth] Welcome email failed but registration succeeded: {}", emailEx.getMessage());
             }
 
-
             return "User registered successfully";
+        } catch (BusinessLogicException e) {
+            throw e;
         } catch (Exception e) {
             log.error("[Auth] Registration failed: {}", e.getMessage(), e);
-            throw e;
+            throw new BusinessLogicException("Registration failed: " + e.getMessage());
         }
     }
 
-    public AuthResponse login(String idToken) throws Exception {
+    public AuthResponse login(String idToken) {
         log.info("[Auth] Verifying login token...");
         try {
-            // 1. Verify the token provided by the frontend
-            FirebaseToken decodedToken =
-                FirebaseAuth.getInstance().verifyIdToken(idToken);
+            FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdToken(idToken);
             String normalizedEmail = decodedToken.getEmail().toLowerCase();
             log.info("[Auth] Token verified for: {}", normalizedEmail);
 
@@ -108,21 +121,12 @@ public class AuthService {
                 }
             }
 
-            QuerySnapshot query = null;
-            try {
-                // 2. Fetch user from Firestore
-                log.info("[Firestore] Searching for user profile: {}", normalizedEmail);
-                query = db.collection("users").whereEqualTo("email", normalizedEmail).get().get(30, TimeUnit.SECONDS);
-            } catch (Exception firestoreEx) {
-                // IMPORTANT: do not block login when Firestore identity bridge is temporarily unavailable
-                log.error("[Auth] Firestore unavailable during login for {}: {}", normalizedEmail, firestoreEx.getMessage());
-            }
+            User user = userRepository.findByEmail(normalizedEmail).orElse(null);
 
-            if (query != null && !query.isEmpty()) {
-                User user = query.getDocuments().get(0).toObject(User.class);
+            if (user != null) {
                 if (!user.isActive()) {
                     log.warn("[Auth] Login denied. Account suspended for: {}", normalizedEmail);
-                    throw new Exception("Your account is suspended. Contact the Director.");
+                    throw new UnauthorizedActionException("Your account is suspended. Contact the Director.");
                 }
                 log.info("[Auth] Login successful for: {}", user.getFullName());
                 return new AuthResponse(
@@ -137,8 +141,6 @@ public class AuthService {
                 );
             }
 
-            // Firestore not reachable OR no profile found:
-            // fallback to claims-based role to keep valid users able to log in.
             Role fallbackRole = extractRoleFromClaims(decodedToken);
             boolean needsProfile = fallbackRole == null;
             String fallbackName = userRecord.getDisplayName() != null ? userRecord.getDisplayName() : normalizedEmail;
@@ -153,9 +155,11 @@ public class AuthService {
                     localAvatarPath,
                     needsProfile
             );
+        } catch (UnauthorizedActionException e) {
+            throw e;
         } catch (Exception e) {
             log.error("[Auth] Login verification failed: {}", e.getMessage());
-            throw e;
+            throw new UnauthorizedActionException("Login failed: " + e.getMessage());
         }
     }
 
@@ -173,19 +177,26 @@ public class AuthService {
         }
     }
 
-    public AuthResponse completeSocialRegistration(SocialCompleteRequest request) throws Exception {
+    public AuthResponse completeSocialRegistration(SocialCompleteRequest request) {
         log.info("[Auth] Finalizing social registration for role: {}", request.getRole());
         try {
-            com.google.firebase.auth.FirebaseToken decodedToken = 
-                com.google.firebase.auth.FirebaseAuth.getInstance().verifyIdToken(request.getIdToken());
+            FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdToken(request.getIdToken());
             
             String uid = decodedToken.getUid();
             String email = decodedToken.getEmail().toLowerCase();
 
-            // 1. Set custom claims for RBAC
+            Role finalRole = (request.getRole() != null) ? request.getRole() : Role.OUVRIER_RECOLTE;
+            // Force OUVRIER_RECOLTE for social completion as well
+            finalRole = Role.OUVRIER_RECOLTE;
+
             Map<String, Object> claims = new HashMap<>();
-            claims.put("role", request.getRole().name());
+            claims.put("role", finalRole.name());
+            try {
             FirebaseAuth.getInstance().setCustomUserClaims(uid, claims);
+        } catch (FirebaseAuthException e) {
+            log.warn("[Auth] Failed to set custom claims for UID {}: {}", uid, e.getMessage());
+            throw new BusinessLogicException("Failed to set custom claims: " + e.getMessage());
+        }
 
             UserRecord userRecord = FirebaseAuth.getInstance().getUser(uid);
             String photoUrl = userRecord.getPhotoUrl();
@@ -198,29 +209,29 @@ public class AuthService {
                 }
             }
 
-            // 2. Save user profile in Firestore
             User user = new User();
             user.setId(uid);
             user.setEmail(email);
             user.setFullName(request.getFullName());
-            user.setRole(request.getRole());
+            user.setRole(finalRole);
             user.setActive(true);
             user.setAvatarUrl(localAvatarPath);
 
-            db.collection("users").document(uid).set(user).get(30, TimeUnit.SECONDS);
+            userRepository.save(user);
             log.info("[Firestore] Social profile complete for: {}", email);
 
             return new AuthResponse(uid, request.getIdToken(), email, user.getFullName(), user.getRole(), true, user.getAvatarUrl(), false);
         } catch (Exception e) {
             log.error("[Auth] Social completion failed: {}", e.getMessage());
-            throw e;
+            throw new BusinessLogicException("Social registration completion failed: " + e.getMessage());
         }
     }
+
     public String extractUserIdFromToken() {
         try {
             var auth = SecurityContextHolder.getContext().getAuthentication();
             if (auth != null && auth.isAuthenticated()) {
-                return auth.getName(); // The principal in our JwtFilter is the UID
+                return auth.getName(); 
             }
         } catch (Exception e) {
             log.error("[Auth] Failed to extract UID from security context: {}", e.getMessage());
@@ -228,13 +239,18 @@ public class AuthService {
         return null;
     }
 
-    public void deleteUser(String uid) throws Exception {
+    public void deleteUser(String uid) {
         log.info("[Auth] Deleting user from Firebase Auth and Firestore: {}", uid);
-        FirebaseAuth.getInstance().deleteUser(uid);
-        db.collection("users").document(uid).delete().get(30, TimeUnit.SECONDS);
+        try {
+            FirebaseAuth.getInstance().deleteUser(uid);
+            userRepository.deleteById(uid);
+        } catch (Exception e) {
+            log.error("[Auth] Deletion failed for UID {}: {}", uid, e.getMessage());
+            throw new BusinessLogicException("Failed to delete user: " + e.getMessage());
+        }
     }
 
-    public void sendForgotPasswordEmail(String email) throws Exception {
+    public void sendForgotPasswordEmail(String email) {
         log.info("[Auth] Generating password reset link for: {}", email);
         try {
             String resetLink = FirebaseAuth.getInstance().generatePasswordResetLink(email);
@@ -246,7 +262,8 @@ public class AuthService {
             log.info("[Auth] Password reset email dispatched to: {}", email);
         } catch (Exception e) {
             log.error("[Auth] Failed to generate reset link: {}", e.getMessage());
-            throw new Exception("Could not process password recovery. Ensure the email is registered.");
+            throw new BusinessLogicException("Could not process password recovery. Ensure the email is registered.");
         }
     }
 }
+

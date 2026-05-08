@@ -57,6 +57,13 @@ import { ChatService } from '../../../../features/chat/services/chat';
             <span class="nav-text">Notifications</span>
           </a>
 
+          <a class="nav-link" routerLink="/performance" routerLinkActive="active-link">
+            <span class="nav-icon-wrapper">
+              <span class="material-symbols-outlined nav-icon text-emerald-600">speed</span>
+            </span>
+            <span class="nav-text font-black text-emerald-800">Performance</span>
+          </a>
+
           <div *ngIf="user()?.role !== 'RESPONSABLE_LOGISTIQUE'" class="mt-4 mb-2 animate-fade-in-delayed-1">
             <p class="px-5 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 section-header">Collaboration</p>
             <a class="nav-link" routerLink="/directory" routerLinkActive="active-link">

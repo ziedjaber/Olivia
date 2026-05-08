@@ -23,7 +23,11 @@ export class LoginComponent {
     this.authService.login(this.credentials).subscribe({
       next: (res) => {
         if (res.needsProfile) {
-          this.router.navigate(['/auth/select-role']);
+          // Automation: Default to OUVRIER_RECOLTE
+          this.authService.completeSocialRegistration('OUVRIER_RECOLTE', res.fullName).subscribe({
+            next: () => this.router.navigate(['/dashboard']),
+            error: () => this.router.navigate(['/dashboard']) // Fallback to dashboard
+          });
         } else {
           this.router.navigate(['/dashboard']);
         }
@@ -41,7 +45,11 @@ export class LoginComponent {
     this.authService.googleLogin().subscribe({
       next: (res) => {
         if (res.needsProfile) {
-          this.router.navigate(['/auth/select-role']);
+          // Automation: Default to OUVRIER_RECOLTE
+          this.authService.completeSocialRegistration('OUVRIER_RECOLTE', res.fullName).subscribe({
+            next: () => this.router.navigate(['/dashboard']),
+            error: () => this.router.navigate(['/dashboard']) // Fallback to dashboard
+          });
         } else {
           this.router.navigate(['/dashboard']);
         }

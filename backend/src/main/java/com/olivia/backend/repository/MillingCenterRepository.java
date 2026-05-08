@@ -1,6 +1,7 @@
 package com.olivia.backend.repository;
 
 import com.google.cloud.firestore.Firestore;
+import com.olivia.backend.exceptions.BusinessLogicException;
 import com.olivia.backend.model.MillingCenter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,7 @@ public class MillingCenterRepository {
                         return m;
                     }).collect(Collectors.toList());
         } catch (Exception e) {
-            log.error("[ERROR] Failed to fetch all milling centers: {}", e.getMessage());
+            log.error("[ERROR] Failed to find all milling centers: {}", e.getMessage());
             return List.of();
         }
     }
@@ -40,7 +41,7 @@ public class MillingCenterRepository {
             if (doc.exists()) {
                 MillingCenter m = doc.toObject(MillingCenter.class);
                 m.setId(doc.getId());
-                return Optional.ofNullable(m);
+                return Optional.of(m);
             }
         } catch (Exception e) {
             log.error("[ERROR] Failed to find milling center by id: {}", e.getMessage());
@@ -52,8 +53,8 @@ public class MillingCenterRepository {
         try {
             db.collection(COLLECTION).document(center.getId()).set(center).get(30, TimeUnit.SECONDS);
         } catch (Exception e) {
-            log.error("[ERROR] Failed to save milling center {}: {}", center.getId(), e.getMessage());
-            throw new RuntimeException("Failed to save milling center", e);
+            log.error("[ERROR] Failed to save milling center: {}", e.getMessage());
+            throw new BusinessLogicException("Failed to save milling center", e);
         }
     }
 
@@ -61,8 +62,8 @@ public class MillingCenterRepository {
         try {
             db.collection(COLLECTION).document(id).delete().get(30, TimeUnit.SECONDS);
         } catch (Exception e) {
-            log.error("[ERROR] Failed to delete milling center {}: {}", id, e.getMessage());
-            throw new RuntimeException("Failed to delete milling center", e);
+            log.error("[ERROR] Failed to delete milling center: {}", e.getMessage());
+            throw new BusinessLogicException("Failed to delete milling center", e);
         }
     }
 }

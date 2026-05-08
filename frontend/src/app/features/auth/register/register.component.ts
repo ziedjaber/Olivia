@@ -52,13 +52,22 @@ export class RegisterComponent {
     this.authService.googleLogin().subscribe({
       next: (res) => {
         if (res.needsProfile) {
-          this.router.navigate(['/auth/select-role']);
+          // Automation: Default to OUVRIER_RECOLTE as per requirements
+          this.authService.completeSocialRegistration('OUVRIER_RECOLTE', res.fullName).subscribe({
+            next: () => {
+              this.router.navigate(['/dashboard']);
+            },
+            error: (err) => {
+              this.message = 'Echec de finalisation du profil. Veuillez reessayer.';
+              this.loading = false;
+            }
+          });
         } else {
           this.router.navigate(['/dashboard']);
         }
       },
       error: (err) => {
-        this.message = 'Echec de inscription Google. Veuillez reessayer.';
+        this.message = 'Echec de l\'inscription Google. Veuillez reessayer.';
         this.loading = false;
       }
     });

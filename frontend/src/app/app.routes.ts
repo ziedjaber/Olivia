@@ -14,7 +14,6 @@ export const routes: Routes = [
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
   { path: 'auth/login', component: LoginComponent },
   { path: 'auth/register', component: RegisterComponent },
-  { path: 'auth/select-role', loadComponent: () => import('./features/auth/registration-role/registration-role.component').then(m => m.RegistrationRoleComponent) },
   { 
     path: '', 
     component: MainLayoutComponent,
@@ -53,7 +52,8 @@ export const routes: Routes = [
       { path: 'emergency-report', loadComponent: () => import('./features/alerte/alerte-report.component').then(m => m.AlerteReportComponent) },
       { path: 'emergency-intel', loadComponent: () => import('./features/alerte/alerte-management.component').then(m => m.AlerteManagementComponent) },
       { path: 'emergency-history', loadComponent: () => import('./features/dashboard/team-lead/alerte-history.component').then(m => m.AlerteHistoryComponent) },
-      { path: 'historique', loadComponent: () => import('./features/historique/historique.component').then(m => m.HistoriqueComponent) }
+      { path: 'historique', loadComponent: () => import('./features/historique/historique.component').then(m => m.HistoriqueComponent) },
+      { path: 'performance', loadComponent: () => import('./features/benchmark-results/benchmark-results.component').then(m => m.BenchmarkResultsComponent) }
     ]
   },
 ];
